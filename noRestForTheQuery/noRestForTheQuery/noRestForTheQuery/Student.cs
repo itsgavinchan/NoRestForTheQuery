@@ -13,6 +13,8 @@ namespace noRestForTheQuery
         public Vector2 position;
         public Vector2 velocity;
         public Rectangle collisionRectangle;
+        public bool jumping;
+        public bool collided;
 
         public Student(Texture2D studentSprite, Vector2 startPos)
         {
@@ -20,6 +22,8 @@ namespace noRestForTheQuery
             position = startPos;
             velocity = Vector2.Zero;
             collisionRectangle = new Rectangle( (int)position.X, (int)position.Y, sprite.Width, sprite.Height);
+            jumping = false;
+            collided = false;
         }
         
     }
