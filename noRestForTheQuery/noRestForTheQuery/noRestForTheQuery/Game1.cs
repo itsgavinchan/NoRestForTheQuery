@@ -18,74 +18,79 @@ namespace noRestForTheQuery
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        const int WINDOW_WIDTH = 800;
+        const int WINDOW_HEIGHT = 600;
+        const float GRAVITY = 9.81F;
+
+        //Student
+        Texture2D studentSprite;
+        Student student;
+
+        //Testing platform array
+        Texture2D platformSprite;
+        List<Platform> platforms = new List<Platform>();
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
-        }
+            graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
+            graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+        }
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            studentSprite = Content.Load<Texture2D>(@"Sprites/simplePlayer");
+            platformSprite = Content.Load<Texture2D>(@"Sprites/simplePlatform");
 
-            // TODO: use this.Content to load your game content here
+            //Student starts in the top center of the screen for testing
+            student = new Student(studentSprite, new Vector2(WINDOW_WIDTH / 2 - studentSprite.Width / 2, 0 ));
+
+            //One platform in the middle of the screen to test
+            platforms.Add( new Platform( platformSprite, 
+                                         new Vector2( 100, 400 ),
+                                         600, 10) );
+            
         }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            student.position.X += student.velocity.X;
+            student.position.Y += student.velocity.Y;
+            handleStudentPlatformCollision();
 
             base.Update(gameTime);
         }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(student.sprite, student.position, Color.White);
+
+            for (int i = 0; i < platforms.Count; ++i)
+            {
+                spriteBatch.Draw(platforms[i].sprite, platforms[i].position,
+                                 platforms[i].collisionRectangle, Color.Black);
+            }
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+        protected void handleStudentPlatformCollision()
+        {
         }
     }
 }
