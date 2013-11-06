@@ -8,7 +8,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\simplePlatform.xnb</Output>
-      <Time>2013-11-05T17:07:48.0648705-05:00</Time>
+      <Time>2013-11-05T20:05:28.4506097-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\simplePlayer.png</Source>
@@ -17,7 +17,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\simplePlayer.xnb</Output>
-      <Time>2013-11-05T17:07:53.0111534-05:00</Time>
+      <Time>2013-11-05T20:05:28.4516098-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
