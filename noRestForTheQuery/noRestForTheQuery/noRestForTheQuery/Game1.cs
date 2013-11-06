@@ -33,6 +33,7 @@ namespace noRestForTheQuery
 
         //Misc
         KeyboardState oldKeyState = Keyboard.GetState();
+        Random rand = new Random();
 
         public Game1()
         {
@@ -56,10 +57,9 @@ namespace noRestForTheQuery
             student = new Student(studentSprite, new Vector2(WINDOW_WIDTH / 2 - studentSprite.Width / 2, 200 ));
 
             //One platform in the middle of the screen to test
-            platforms.Add(new Platform(platformSprite, new Vector2(100, 400), 600, 20));
-            platforms.Add(new Platform(platformSprite, new Vector2(500, 350), 100, 50));
-            platforms.Add(new Platform(platformSprite, new Vector2(500, 230), 100, 50));
-            
+            platforms.Add(new Platform(new Vector2(100, 400), 600, 20));
+            platforms.Add(new Platform(new Vector2(500, 300), 100, 20));
+            platforms.Add(new Platform(new Vector2(200, 350), 100, 50));
         }
         protected override void UnloadContent()
         {
@@ -98,7 +98,7 @@ namespace noRestForTheQuery
             //Bookkeeping
             student.velocity.Y += GRAVITY;                              //Influence of gravity
             handleStudentPlatformCollision();                           //Handle student/platform collision
-            if (student.velocity.Y == 0) { student.jumping = false; }   //Reset jump state
+            if (student.velocity.Y == 0 && student.jumping ) { student.jumping = false; }   //Reset jump state
             if (oldKeyState.IsKeyUp(Keys.A) || oldKeyState.IsKeyUp(Keys.D)) { student.velocity.X = 0; }
             oldKeyState = Keyboard.GetState();
             base.Update(gameTime);
@@ -108,13 +108,13 @@ namespace noRestForTheQuery
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
 
-            spriteBatch.Draw(student.sprite, student.position, Color.White);
-
             for (int i = 0; i < platforms.Count; ++i)
             {
-                spriteBatch.Draw(platforms[i].sprite, platforms[i].position,
+                spriteBatch.Draw(platformSprite, platforms[i].position,
                                  platforms[i].collisionRectangle, Color.Black);
             }
+
+            spriteBatch.Draw(student.sprite, student.position, Color.White);
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -122,7 +122,8 @@ namespace noRestForTheQuery
         protected void handleStudentPlatformCollision()
         {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
-            for( int i = 0; i < platforms.Count; ++i ){
+            for (int i = 0; i < platforms.Count; ++i)
+            {
                 interLeft = Math.Max(student.collisionRectangle.Left, platforms[i].collisionRectangle.Left);
                 interTop = Math.Max(student.collisionRectangle.Top, platforms[i].collisionRectangle.Top);
                 interRight = Math.Min(student.collisionRectangle.Right, platforms[i].collisionRectangle.Right);
@@ -133,21 +134,33 @@ namespace noRestForTheQuery
                 if (interWidth >= 0 && interHeight >= 0) //If the intersecting rect is valid, they hit!
                 {
                     student.collided = true;
-                    if (interWidth > interHeight) //If they hit on the top/bot
+ 
+                    //Left and Right collision
+                    if(interHeight > interWidth)
                     {
-                        if (student.velocity.Y > 0) { student.position.Y -= interHeight+1; }
-                        else if (student.velocity.Y < 0) { student.position.Y += interHeight+2; } //+1 to height prevents "sticking"
-                        student.velocity.Y = 0;
-                    }
-                    else if (interWidth < interHeight) //If they hit on the left/right
-                    {
-                        if (student.velocity.X > 0) { student.position.X -= interWidth+2; }
-                        else if (student.velocity.X < 0) { student.position.X += interWidth+2; }
+                        //If they were walking to the right, stop them at the edge
+                        if (student.velocity.X > 0) { student.position.X -= interWidth; }
+
+                        //If they were walking to the left, stop them at the edge
+                        else if( student.velocity.X < 0 ) { student.position.X += interWidth; }
+
                         student.velocity.X = 0;
+                    }
+
+                    //Top collision
+                    else if (interWidth > 0)
+                    {
+                        //If they were falling, stop them and move them to the obstacle edge
+                        if (student.velocity.Y > 0)
+                        {
+                            student.position.Y -= interHeight;
+                            student.velocity.Y = 0;
+                        }
                     }
                 }
             }
         }
+
         protected void reset()
         {
             student.position.X = WINDOW_WIDTH / 2 - studentSprite.Width / 2;
