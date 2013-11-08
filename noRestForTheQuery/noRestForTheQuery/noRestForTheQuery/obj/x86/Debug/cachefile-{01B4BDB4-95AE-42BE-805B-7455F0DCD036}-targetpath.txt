@@ -1,2 +1,9 @@
-Content\Sprites\simplePlatform.xnb
-Content\Sprites\simplePlayer.xnb
+Content\Sprites\final.xnb
+Content\Sprites\homework.xnb
+Content\Sprites\marker.xnb
+Content\Sprites\midterm.xnb
+Content\Sprites\notebook.xnb
+Content\Sprites\pencil.xnb
+Content\Sprites\professor.xnb
+Content\Sprites\platform.xnb
+Content\Sprites\player.xnb
