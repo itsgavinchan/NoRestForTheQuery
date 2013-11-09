@@ -131,7 +131,6 @@ namespace noRestForTheQuery
 
 
             //Bookkeeping
-            student.velocity.Y += GRAVITY;                              //Influence of gravity
             handleStudentPlatformCollision();                           //Handle student/platform collision
             if (student.velocity.Y == 0 && student.onGround) { student.jumping = false; }   //Reset jump state
             if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }

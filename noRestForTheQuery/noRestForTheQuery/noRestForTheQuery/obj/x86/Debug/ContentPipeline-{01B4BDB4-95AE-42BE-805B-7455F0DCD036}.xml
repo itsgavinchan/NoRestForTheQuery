@@ -8,7 +8,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\final.xnb</Output>
-      <Time>2013-11-08T03:44:08.8735763-05:00</Time>
+      <Time>2013-11-08T16:39:55.2174344-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\homework.png</Source>
@@ -17,7 +17,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\homework.xnb</Output>
-      <Time>2013-11-08T16:19:02.7717986-05:00</Time>
+      <Time>2013-11-08T16:39:55.2194345-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\marker.png</Source>
@@ -26,7 +26,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\marker.xnb</Output>
-      <Time>2013-11-08T03:42:57.8125118-05:00</Time>
+      <Time>2013-11-08T16:39:55.2204346-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\midterm.png</Source>
@@ -35,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\midterm.xnb</Output>
-      <Time>2013-11-08T03:43:39.4718946-05:00</Time>
+      <Time>2013-11-08T16:39:55.2214347-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\notebook.png</Source>
@@ -44,7 +44,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\notebook.xnb</Output>
-      <Time>2013-11-08T16:21:30.7922649-05:00</Time>
+      <Time>2013-11-08T16:39:55.2224347-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\pencil.png</Source>
@@ -53,7 +53,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\pencil.xnb</Output>
-      <Time>2013-11-08T14:37:56.6408358-05:00</Time>
+      <Time>2013-11-08T16:39:55.2234348-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\professor.png</Source>
@@ -62,7 +62,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\professor.xnb</Output>
-      <Time>2013-11-08T03:44:25.6905382-05:00</Time>
+      <Time>2013-11-08T16:39:55.2284351-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\platform.png</Source>
@@ -71,7 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\platform.xnb</Output>
-      <Time>2013-11-08T01:25:27.7056327-05:00</Time>
+      <Time>2013-11-08T16:39:55.2254349-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\player.png</Source>
@@ -80,7 +80,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\player.xnb</Output>
-      <Time>2013-11-08T01:25:27.7066328-05:00</Time>
+      <Time>2013-11-08T16:39:55.226435-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
