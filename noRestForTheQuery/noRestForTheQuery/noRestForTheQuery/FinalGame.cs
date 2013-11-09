@@ -73,11 +73,11 @@ namespace noRestForTheQuery
 
             //One platform in the middle of the screen to test
             for (int i = 100; i < 700; i += defaultBlockSize) {
-                platforms.Add(new Platform(new Vector2(i, 400), Vector2.Zero, 2, 0));
+                platforms.Add(new Platform(new Vector2(i, 400), Vector2.Zero, 0));
             }
-            platforms.Add(new Platform(new Vector2(100, 250), Vector2.Zero, 1, 0));
-            platforms.Add(new Platform(new Vector2(250, 250), Vector2.Zero, 1, 0));
-            platforms.Add(new Platform(new Vector2(400, 350), Vector2.Zero, 1, 0));
+            platforms.Add(new Platform(new Vector2(100, 250), Vector2.Zero, 0));
+            platforms.Add(new Platform(new Vector2(250, 250), Vector2.Zero, 0));
+            platforms.Add(new Platform(new Vector2(400, 350), Vector2.Zero, 0));
 
             
 
@@ -170,7 +170,7 @@ namespace noRestForTheQuery
                 interRight = Math.Min((int)student.position.X + studentSprite.Width, platforms[i].rectangle.Right);
                 interBot = Math.Min((int)student.position.Y + studentSprite.Height, platforms[i].rectangle.Bottom);
                 interWidth = interRight - interLeft;
-                interHeight = interBot - interTop;
+                interHeight = (interBot - interTop);
 
                 if (interWidth >= 0 && interHeight >= 0) {  //If the intersecting rect is valid, they hit!
                
@@ -188,8 +188,8 @@ namespace noRestForTheQuery
                         student.velocity.X = 0;
                     }
 
-                    //Vertical movement collision
-                    if (interWidth > interHeight) {
+                    //Vertical movement collision (Adjustments added compensate for odd corner cases)
+                    if (interWidth > interHeight-Math.Abs(student.velocity.Y) && interWidth > student.speed+1) {
                         //If student is falling, stop them at the top edge of the platform (Make sure it's above the platform)
                         if (student.velocity.Y > 0 && student.position.Y < platforms[i].position.Y) {
                             student.position.Y -= interHeight; 
@@ -210,6 +210,10 @@ namespace noRestForTheQuery
         protected void reset() {
             homeworks.Clear();
             student.reset();
+        }
+        protected void buildLevel()
+        {
+
         }
     }
 }
