@@ -283,7 +283,7 @@ namespace noRestForTheQuery
             while( (line = file.ReadLine()) != null ){
                 char[] levelRow = line.ToCharArray();
                 foreach( char symbol in levelRow ){
-                    if( symbol == '.' ){ x += defaultBlockSize; }
+                    if (symbol == '.' || symbol == ' ') { x += defaultBlockSize; }
                     if( symbol == 's' ){ student.position = new Vector2( x, y ); }
                     if( symbol == 'x' ){ 
                         platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) );
