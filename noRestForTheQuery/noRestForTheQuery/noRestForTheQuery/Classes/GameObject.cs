@@ -29,15 +29,13 @@ namespace noRestForTheQuery {
     }
 
     class Platform : GameObject {
-        public int blockSize;
         public Rectangle rectangle;
-        public Platform(Vector2 position, Vector2 velocity, int blockType, float speed)
+        public Platform(Vector2 position, Vector2 velocity, float speed)
             : base(position, 
-                   new Vector2((FinalGame.defaultBlockSize / 2) * blockType, (FinalGame.defaultBlockSize / 2) * blockType), 
+                   new Vector2((FinalGame.defaultBlockSize / 2), (FinalGame.defaultBlockSize / 2)), 
                    velocity, speed) 
         {
-            blockSize = blockType;
-            rectangle = new Rectangle((int)position.X, (int)position.Y, FinalGame.defaultBlockSize * blockType, FinalGame.defaultBlockSize * blockType);
+            rectangle = new Rectangle((int)position.X, (int)position.Y, FinalGame.defaultBlockSize, FinalGame.defaultBlockSize);
         }
     }
 

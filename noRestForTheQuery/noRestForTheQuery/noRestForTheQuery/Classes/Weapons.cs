@@ -20,9 +20,14 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
             this.attackPower = attackPower;
-
         }
-
+        // Update the Position And/Or Velocity
+        public void update() {
+            position.X += velocity.X;
+            position.Y += velocity.Y;
+            velocity.Y += FinalGame.GRAVITY * .15F;
+            rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+        }
 
     }
     class Pencil : Missile {
@@ -40,30 +45,26 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
         }
-        // Update the Position And/Or Velocity
-        public void update() {
-            position.X += velocity.X;
-            position.Y += velocity.Y;
-            velocity.Y += FinalGame.GRAVITY;
-        }
     } 
-    class Marker : Missile {
-        public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(attackPower, position, origin, velocity, speed) {
-            // Values Already Assigned To: 
-            //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-            //      Missle - attackPower
-            // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
+
+    //class Marker : Missile {
+    //    public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
+    //        base(attackPower, position, origin, velocity, speed) {
+    //        // Values Already Assigned To: 
+    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
+    //        //      Missle - attackPower
+    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
 
 
-            // Assign Values to Local Members
+    //        // Assign Values to Local Members
 
-        }
-        // Update the Position And/Or Velocity
-        public void update() {
+    //    }
+    //    // Update the Position And/Or Velocity
+    //    public void update() {
 
-        }
-    }
+    //    }
+    //}
+
     class PopQuiz : Missile {
         public PopQuiz(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(attackPower, position, origin, velocity, speed) {
@@ -74,10 +75,6 @@ namespace noRestForTheQuery {
 
 
             // Assign Values to Local Members
-
-        }
-        // Update the Position And/Or Velocity
-        public void update() {
 
         }
     }

@@ -19,6 +19,7 @@ namespace noRestForTheQuery
         public const float GRAVITY = 0.95F;
         const float HOMEWORKSPAWNPROB = 0.05F;
         const int MAXHOMEWORK = 5;
+        const int MAXLEVELS = 2;
 
         // Stand-By Map
         public static int PENCILCOST = 5;
@@ -26,8 +27,9 @@ namespace noRestForTheQuery
 
         //Game tools
         public static int defaultBlockSize = 50;
-        public static int gameLevel;
+        public static int gameLevel = 1;
         public static Random rand = new Random();
+        string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
 
         //Student
         Student1 student;
@@ -71,16 +73,9 @@ namespace noRestForTheQuery
                                     new Vector2(studentSprite.Width/2, studentSprite.Height/2),     // Origin
                                     Vector2.Zero, 3.5F);                                               // Velocity, speed
 
-            //One platform in the middle of the screen to test
-            for (int i = 100; i < 700; i += defaultBlockSize) {
-                platforms.Add(new Platform(new Vector2(i, 400), Vector2.Zero, 0));
-            }
-            platforms.Add(new Platform(new Vector2(100, 250), Vector2.Zero, 0));
-            platforms.Add(new Platform(new Vector2(250, 250), Vector2.Zero, 0));
-            platforms.Add(new Platform(new Vector2(400, 350), Vector2.Zero, 0));
 
-            
-
+            //Build the first level
+            buildLevel( ref platforms, ref student );
         }
         protected override void UnloadContent() { }
         protected override void Update(GameTime gameTime) {
@@ -109,6 +104,14 @@ namespace noRestForTheQuery
                     double x = (Mouse.GetState().X - (student.position.X + studentSprite.Width / 2));
                     double y = (Mouse.GetState().Y - (student.position.Y + studentSprite.Height / 2));
                     student.shoot((float)(Math.Atan2(y, x)));
+                }
+
+                //Test the next level
+                if( Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N) ){ 
+                    reset();
+                    if( gameLevel < MAXLEVELS ) gameLevel++; 
+                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                    buildLevel(ref platforms, ref student); 
                 }
             }
 
@@ -210,10 +213,30 @@ namespace noRestForTheQuery
         protected void reset() {
             homeworks.Clear();
             student.reset();
+            gameLevel = 1;
+            currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+            buildLevel(ref platforms, ref student); 
         }
-        protected void buildLevel()
+        private void buildLevel( ref List<Platform> platforms, ref Student1 student )
         {
-
+            platforms.Clear();
+            int x = 0; int y = 0;
+            string line;
+            System.IO.StreamReader file = new System.IO.StreamReader( currentLevelFile );
+            
+            while( (line = file.ReadLine()) != null ){
+                char[] levelRow = line.ToCharArray();
+                foreach( char symbol in levelRow ){
+                    if( symbol == '.' ){ x += defaultBlockSize; }
+                    if( symbol == 's' ){ student.position = new Vector2( x, y ); }
+                    if( symbol == 'x' ){ 
+                        platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) );
+                        x += defaultBlockSize;
+                    }
+                }
+                x = 0;
+                y += defaultBlockSize;
+            }
         }
     }
 }

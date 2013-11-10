@@ -7,13 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\final.xnb</Output>
-      <Time>2013-11-08T16:39:55.2174344-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\final.xnb</Output>
       <Time>2013-11-08T16:42:10.9001976-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\homework.png</Source>
@@ -21,13 +16,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\homework.xnb</Output>
-      <Time>2013-11-08T16:39:55.2194345-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\homework.xnb</Output>
       <Time>2013-11-08T16:42:10.9011977-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\marker.png</Source>
@@ -35,13 +25,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\marker.xnb</Output>
-      <Time>2013-11-08T16:39:55.2204346-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\marker.xnb</Output>
       <Time>2013-11-08T16:42:10.9021978-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\midterm.png</Source>
@@ -49,13 +34,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\midterm.xnb</Output>
-      <Time>2013-11-08T16:39:55.2214347-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\midterm.xnb</Output>
       <Time>2013-11-08T16:42:10.9031978-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\notebook.png</Source>
@@ -63,13 +43,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\notebook.xnb</Output>
-      <Time>2013-11-08T16:39:55.2224347-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\notebook.xnb</Output>
       <Time>2013-11-08T16:42:10.9041979-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\pencil.png</Source>
@@ -77,13 +52,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\pencil.xnb</Output>
-      <Time>2013-11-08T16:39:55.2234348-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\pencil.xnb</Output>
       <Time>2013-11-08T16:42:10.9051979-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\professor.png</Source>
@@ -91,13 +61,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\professor.xnb</Output>
-      <Time>2013-11-08T16:39:55.2284351-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\professor.xnb</Output>
       <Time>2013-11-08T16:42:10.907198-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\platform.png</Source>
@@ -105,13 +70,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\platform.xnb</Output>
-      <Time>2013-11-08T16:39:55.2254349-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\platform.xnb</Output>
       <Time>2013-11-08T16:42:10.906198-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <Item>
       <Source>Sprites\player.png</Source>
@@ -119,13 +79,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-<<<<<<< HEAD
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\player.xnb</Output>
-      <Time>2013-11-08T16:39:55.226435-05:00</Time>
-=======
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\player.xnb</Output>
       <Time>2013-11-08T16:42:10.907198-05:00</Time>
->>>>>>> tonyEdits
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
