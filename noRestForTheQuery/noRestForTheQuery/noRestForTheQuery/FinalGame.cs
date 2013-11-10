@@ -78,7 +78,7 @@ namespace noRestForTheQuery
                                     Vector2.Zero, 3.5F);                                               // Velocity, speed
             for (int i = 0; i < MAXLEVELS; i++) {
                 professors.Add(new Professor(   i * 50,
-                                                new Vector2(WINDOW_WIDTH, (WINDOW_HEIGHT - professorSprite.Height) / 2),
+                                                new Vector2(WINDOW_WIDTH + screenOffset, (WINDOW_HEIGHT - professorSprite.Height) / 2),
                                                 new Vector2(professorSprite.Width / 2, professorSprite.Height / 2),
                                                 Vector2.Zero,
                                                 1));
@@ -93,8 +93,8 @@ namespace noRestForTheQuery
 
             if (IsActive) {
                 // Randomly Spawn Homework For Now
-                if ( homeworks.Count() < MAXHOMEWORK && rand.NextDouble() > HOMEWORKSPAWNPROB ) { 
-                    homeworks.Add(  new Homework(   new Vector2( WINDOW_WIDTH, rand.Next( 0, WINDOW_HEIGHT - homeworkSprite.Height ) ), 
+                if ( homeworks.Count() < MAXHOMEWORK && rand.NextDouble() > HOMEWORKSPAWNPROB ) {
+                    homeworks.Add(new Homework(     new Vector2(WINDOW_WIDTH + +screenOffset, rand.Next(0, WINDOW_HEIGHT - homeworkSprite.Height)), 
                                                     new Vector2( homeworkSprite.Width/2, homeworkSprite.Height/2 ),
                                                     Vector2.Zero) );
                 }
@@ -105,8 +105,8 @@ namespace noRestForTheQuery
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround ) { student.jump(); }
 
                 // Left-Right Movement
-                if (Keyboard.GetState().IsKeyDown(Keys.A)) { student.velocity.X = -student.speed; }
-                if (Keyboard.GetState().IsKeyDown(Keys.D)) { student.velocity.X = student.speed; }
+                if (Keyboard.GetState().IsKeyDown(Keys.A)) { if ( !student.checkBoundaries() ) student.velocity.X = -student.speed; }
+                if (Keyboard.GetState().IsKeyDown(Keys.D)) { if ( !student.checkBoundaries() ) student.velocity.X = student.speed; }
 
                 // Player Shoots
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released) {
@@ -187,7 +187,7 @@ namespace noRestForTheQuery
         }
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, translation );
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, translation);
 
             // Color Coordinating
             // Platform = Black
@@ -200,7 +200,6 @@ namespace noRestForTheQuery
             for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
             for (int i = 0; i < homeworks.Count(); i++) { spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange); }
             for (int i = 0; i < student.pencils.Count(); i++) { spriteBatch.Draw(pencilSprite, student.pencils[i].position, null, Color.White, student.pencils[i].rotation, student.pencils[i].origin, 1.0F, SpriteEffects.None, 0.0F); }
-            if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
             if (professors[gameLevel - 1].isAlive) { 
                 spriteBatch.Draw(homeworkSprite, professors[gameLevel - 1].position, Color.Blue);
                 for (int i = 0; i < professors[gameLevel - 1].markers.Count(); i++) {
@@ -208,6 +207,7 @@ namespace noRestForTheQuery
                 }
             }
             spriteBatch.Draw(studentSprite, student.position, Color.Red);
+            if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
             
             spriteBatch.End();
             base.Draw(gameTime);

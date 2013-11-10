@@ -50,6 +50,15 @@ namespace noRestForTheQuery {
             budget = 200;
         }
 
+        // Override Check Boundaries
+        public bool checkBoundaries() {
+            if (position.X <= FinalGame.screenOffset) { return true; }
+            if (position.X >= (FinalGame.WINDOW_WIDTH + FinalGame.screenOffset)) { return true; }
+            if (position.Y <= FinalGame.screenOffset) { return true; }
+            if (position.Y >= FinalGame.WINDOW_HEIGHT) { return true; }
+            return false;
+        }
+
         // Weekend Option Effects
         public void studyEffect() { attackPower += FinalGame.gameLevel * 10; }
         public void sleepEffect() { fullHealth += FinalGame.SLEEPINCREMENT; }
