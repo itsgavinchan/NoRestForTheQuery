@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace noRestForTheQuery {
     class Student1 : DamagableObject {
         double sanity;
+        int pencilSpeed;
         public int budget, amtPencil;
         public bool onGround, jumping, colliding;
         public List<Pencil> pencils;
@@ -24,7 +25,8 @@ namespace noRestForTheQuery {
             currentHealth = fullHealth;
             attackPower = 10;
 
-            // Assign Values to Local Members: sanity, budget, amtPencil, pencils, notebook
+            // Assign Values to Local Members: sanity, budget, amtPencil, pencils, notebook, pencilSpeed
+            pencilSpeed = 15;
             pencils = new List<Pencil>();
             notebook = new Notebook(position, new Vector2(FinalGame.notebookSprite.Width / 2, FinalGame.notebookSprite.Height / 2), Vector2.Zero, speed);
             amtPencil = 50;
@@ -72,7 +74,7 @@ namespace noRestForTheQuery {
         public void shoot(float rotation) {
             if (amtPencil > 0) {
                 pencils.Add(new Pencil(attackPower, new Vector2(position.X + FinalGame.studentSprite.Width / 2, position.Y + FinalGame.studentSprite.Height / 2),
-                    new Vector2(FinalGame.pencilSprite.Width / 2, FinalGame.pencilSprite.Height / 2), 10, rotation)); // ten is the speed of pencil
+                    new Vector2(FinalGame.pencilSprite.Width / 2, FinalGame.pencilSprite.Height / 2), pencilSpeed, rotation)); // ten is the speed of pencil
                 amtPencil--;
             }
         }

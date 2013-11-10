@@ -21,14 +21,6 @@ namespace noRestForTheQuery {
             // Assign Values to Local Members
             this.attackPower = attackPower;
         }
-        // Update the Position And/Or Velocity
-        public void update() {
-            position.X += velocity.X;
-            position.Y += velocity.Y;
-            velocity.Y += FinalGame.GRAVITY * .15F;
-            rotation = (float)Math.Atan2(velocity.Y, velocity.X);
-        }
-
     }
     class Pencil : Missile {
 
@@ -45,39 +37,39 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
         }
+
+        public void update() {
+            position.X += velocity.X;
+            position.Y += velocity.Y;
+            velocity.Y += FinalGame.GRAVITY * .2F;
+            rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+        }
     } 
-
-    //class Marker : Missile {
-    //    public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-    //        base(attackPower, position, origin, velocity, speed) {
-    //        // Values Already Assigned To: 
-    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-    //        //      Missle - attackPower
-    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-
-
-    //        // Assign Values to Local Members
-
-    //    }
-    //    // Update the Position And/Or Velocity
-    //    public void update() {
-
-    //    }
-    //}
-
-    class PopQuiz : Missile {
-        public PopQuiz(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
+    class Marker : Missile {
+        public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float rotation) :
             base(attackPower, position, origin, velocity, speed) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      Missle - attackPower
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-
+            //this.rotation = rotation;
+            //velocity.X = (float)Math.Cos(rotation) * speed;
+            //velocity.Y = (float)Math.Sin(rotation) * speed;
 
             // Assign Values to Local Members
 
         }
+
+        public void update( float x, float y ) {
+            position.X -= speed;
+            if (position.X + FinalGame.markerSprite.Width > x) {
+                if (position.Y < y) { position.Y += 1.5F; }
+                else { position.Y -= 1.5F; }
+            }
+        }
     }
+
+
     class Notebook : GameObject {
         public int numOfNotebook;
 
@@ -101,4 +93,24 @@ namespace noRestForTheQuery {
             if (numOfNotebook <= 0) { isAlive = false; }
         }
     }
+
+
+
+    //class PopQuizzes : Missile {
+    //    public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
+    //        base(attackPower, position, origin, velocity, speed) {
+    //        // Values Already Assigned To: 
+    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
+    //        //      Missle - attackPower
+    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
+
+
+    //        // Assign Values to Local Members
+
+    //    }
+    //    // Update the Position And/Or Velocity
+    //    public void update() {
+
+    //    }
+    //}
 }
