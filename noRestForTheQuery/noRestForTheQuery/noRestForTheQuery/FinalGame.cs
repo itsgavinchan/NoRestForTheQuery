@@ -78,7 +78,7 @@ namespace noRestForTheQuery
                                     Vector2.Zero, 3.5F);                                               // Velocity, speed
             for (int i = 0; i < MAXLEVELS; i++) {
                 professors.Add(new Professor(   i * 50,
-                                                new Vector2(WINDOW_WIDTH + screenOffset, (WINDOW_HEIGHT - professorSprite.Height) / 2),
+                                                new Vector2(WINDOW_WIDTH + screenOffset + professorSprite.Width, (WINDOW_HEIGHT - professorSprite.Height) / 2),
                                                 new Vector2(professorSprite.Width / 2, professorSprite.Height / 2),
                                                 Vector2.Zero,
                                                 1));
@@ -174,6 +174,8 @@ namespace noRestForTheQuery
                 else { index++; }
             }
 
+            translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+            screenOffset += 1;
 
             //Bookkeeping
             handleStudentPlatformCollision();                           //Handle student/platform collision

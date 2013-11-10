@@ -90,7 +90,9 @@ namespace noRestForTheQuery {
 
         // Update the Position And/Or Velocity
         public void update() {
-            position.X += velocity.X;
+            if (position.X <= FinalGame.screenOffset) { position.X = FinalGame.screenOffset; }
+            else if (position.X + FinalGame.studentSprite.Width >= FinalGame.WINDOW_WIDTH) { position.X = FinalGame.screenOffset; }
+            else { position.X += velocity.X; }
             position.Y += velocity.Y; 
             velocity.Y += FinalGame.GRAVITY;
             notebook.update(position + origin);
