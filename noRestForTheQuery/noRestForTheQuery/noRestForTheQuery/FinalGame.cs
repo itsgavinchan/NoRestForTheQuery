@@ -31,10 +31,12 @@ namespace noRestForTheQuery
         public static Random rand = new Random();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
 
+        //Camera for side scrolling
+        public static int screenOffset = 0;
+        public static Matrix translation = Matrix.Identity;
+
         //Student
         Student1 student;
-        //float studentSpeed = 3.5F;
-
 
         List<Professor> professors = new List<Professor>();
 
@@ -108,7 +110,7 @@ namespace noRestForTheQuery
 
                 // Player Shoots
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released) {
-                    double x = (Mouse.GetState().X - (student.position.X + studentSprite.Width / 2));
+                    double x = ((Mouse.GetState().X + screenOffset) - (student.position.X + studentSprite.Width / 2));
                     double y = (Mouse.GetState().Y - (student.position.Y + studentSprite.Height / 2));
                     student.shoot((float)(Math.Atan2(y, x)));
                 }
@@ -133,6 +135,16 @@ namespace noRestForTheQuery
                     if( gameLevel < MAXLEVELS ) gameLevel++; 
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                     buildLevel(ref platforms, ref student); 
+                }
+
+                //Move the camera (added controls for testing)
+                if( Keyboard.GetState().IsKeyDown( Keys.Left ) ){
+                    translation *= Matrix.CreateTranslation( new Vector3( 1, 0, 0 ) );
+                    screenOffset -= 1;
+                }
+                if( Keyboard.GetState().IsKeyDown(Keys.Right) ){
+                    translation *= Matrix.CreateTranslation( new Vector3( -1, 0, 0 ) );
+                    screenOffset += 1;
                 }
             }
 
@@ -175,7 +187,7 @@ namespace noRestForTheQuery
         }
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, translation );
 
             // Color Coordinating
             // Platform = Black
@@ -196,7 +208,7 @@ namespace noRestForTheQuery
                 }
             }
             spriteBatch.Draw(studentSprite, student.position, Color.Red);
-
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -256,6 +268,8 @@ namespace noRestForTheQuery
             gameLevel = 1;
             currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
             buildLevel(ref platforms, ref student); 
+            screenOffset = 0;
+            translation = Matrix.Identity;
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student )
         {
