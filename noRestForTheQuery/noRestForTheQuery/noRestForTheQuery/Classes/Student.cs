@@ -91,7 +91,7 @@ namespace noRestForTheQuery {
         // Update the Position And/Or Velocity
         public void update() {
             if (position.X <= FinalGame.screenOffset) { position.X = FinalGame.screenOffset; }
-            else if (position.X + FinalGame.studentSprite.Width >= FinalGame.WINDOW_WIDTH) { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset; }
+            else if (position.X + FinalGame.studentSprite.Width >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset) { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - FinalGame.studentSprite.Width; }
             else { position.X += velocity.X; }
             position.Y += velocity.Y; 
             velocity.Y += FinalGame.GRAVITY;
