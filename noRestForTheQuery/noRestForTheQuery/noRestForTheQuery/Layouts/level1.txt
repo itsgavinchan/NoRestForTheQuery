@@ -4,7 +4,7 @@
 .........s
 
 
-
-
+..................xxxxx.........xxxxxxx.....xxxxx..........xxxx
+..........................xxxx..............xxx.......xx...xx
 .......x.....x...................xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 .......xxxxxxx..xxxxxxxxxxxxxxxxx............................xxxxxx
