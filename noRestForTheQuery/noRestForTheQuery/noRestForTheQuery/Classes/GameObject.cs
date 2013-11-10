@@ -22,7 +22,7 @@ namespace noRestForTheQuery {
         public bool checkBoundaries( int width, int height ) {
             if (position.X <= FinalGame.screenOffset - width) { return true; }
             if (position.X >= (FinalGame.WINDOW_WIDTH + FinalGame.screenOffset) + width) { return true; }
-            if (position.Y <= FinalGame.screenOffset - height) { return true; }
+            if (position.Y <= 0) { return true; }
             if (position.Y >= FinalGame.WINDOW_HEIGHT + height) { return true; }
             return false;
         }

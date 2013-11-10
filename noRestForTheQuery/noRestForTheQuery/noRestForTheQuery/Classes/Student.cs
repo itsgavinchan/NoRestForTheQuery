@@ -54,7 +54,7 @@ namespace noRestForTheQuery {
         public bool checkBoundaries() {
             if (position.X <= FinalGame.screenOffset) { return true; }
             if (position.X >= (FinalGame.WINDOW_WIDTH + FinalGame.screenOffset)) { return true; }
-            if (position.Y <= FinalGame.screenOffset) { return true; }
+            if (position.Y <= 0) { return true; }
             if (position.Y >= FinalGame.WINDOW_HEIGHT) { return true; }
             return false;
         }

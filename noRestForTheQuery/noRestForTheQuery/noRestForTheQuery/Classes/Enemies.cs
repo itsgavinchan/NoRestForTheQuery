@@ -24,7 +24,8 @@ namespace noRestForTheQuery {
 
         // Update the Position And/Or Velocity
         public void update() {
-            if (isAlive && position.X > FinalGame.WINDOW_WIDTH - 100) { position.X -= speed; }
+            if (isAlive && position.X > FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
+            if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
         }
 
         public void reset() {
@@ -33,6 +34,7 @@ namespace noRestForTheQuery {
             //markerAmt = 10;
             position = new Vector2(FinalGame.WINDOW_WIDTH, (FinalGame.WINDOW_HEIGHT - FinalGame.professorSprite.Height) / 2);
         }
+
         public void shoot( double studentPosX, double studentPosY) {
             //if (markerAmt > 0) {
                 markers.Add(new Marker(attackPower, new Vector2(position.X + FinalGame.professorSprite.Width / 2, position.Y + FinalGame.professorSprite.Height / 2),
