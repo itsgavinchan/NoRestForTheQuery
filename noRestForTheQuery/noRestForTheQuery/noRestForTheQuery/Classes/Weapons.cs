@@ -57,15 +57,22 @@ namespace noRestForTheQuery {
             //velocity.Y = (float)Math.Sin(rotation) * speed;
 
             // Assign Values to Local Members
-
+            this.rotation = rotation;
         }
 
         public void update( float x, float y ) {
-            position.X -= speed;
-            if (position.X + FinalGame.markerSprite.Width > x) {
-                if (position.Y < y) { position.Y += 1.5F; }
-                else { position.Y -= 1.5F; }
-            }
+            
+            //Recalculate the angle needed to hit the student & update velocities accordingly
+            rotation = (float)Math.Atan2( y - position.Y, x - position.X );
+            velocity.X -= (.05F*speed);
+            velocity.Y += (float)Math.Sin(rotation) * (.05F*speed);
+
+            //Update positions
+            position.X += velocity.X;
+            position.Y += velocity.Y;
+
+            //Recalculate the marker's orientation depending on its velocity
+            rotation = (float)Math.Atan2(velocity.Y, velocity.X);
         }
     }
 

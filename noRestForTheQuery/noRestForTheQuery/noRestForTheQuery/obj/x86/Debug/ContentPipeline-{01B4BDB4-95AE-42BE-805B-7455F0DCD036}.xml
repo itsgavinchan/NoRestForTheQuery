@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\final.xnb</Output>
-      <Time>2013-11-08T16:39:55.2174344-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\final.xnb</Output>
+      <Time>2013-11-08T16:42:10.9001976-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\homework.png</Source>
@@ -16,8 +16,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\homework.xnb</Output>
-      <Time>2013-11-08T16:39:55.2194345-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\homework.xnb</Output>
+      <Time>2013-11-08T16:42:10.9011977-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\marker.png</Source>
@@ -25,8 +25,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\marker.xnb</Output>
-      <Time>2013-11-08T16:39:55.2204346-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\marker.xnb</Output>
+      <Time>2013-11-08T16:42:10.9021978-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\midterm.png</Source>
@@ -34,8 +34,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\midterm.xnb</Output>
-      <Time>2013-11-08T16:39:55.2214347-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\midterm.xnb</Output>
+      <Time>2013-11-08T16:42:10.9031978-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\notebook.png</Source>
@@ -43,8 +43,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\notebook.xnb</Output>
-      <Time>2013-11-08T16:39:55.2224347-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\notebook.xnb</Output>
+      <Time>2013-11-08T16:42:10.9041979-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\pencil.png</Source>
@@ -52,8 +52,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\pencil.xnb</Output>
-      <Time>2013-11-08T16:39:55.2234348-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\pencil.xnb</Output>
+      <Time>2013-11-08T16:42:10.9051979-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\professor.png</Source>
@@ -61,8 +61,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\professor.xnb</Output>
-      <Time>2013-11-08T16:39:55.2284351-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\professor.xnb</Output>
+      <Time>2013-11-08T16:42:10.907198-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\platform.png</Source>
@@ -70,8 +70,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\platform.xnb</Output>
-      <Time>2013-11-08T16:39:55.2254349-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\platform.xnb</Output>
+      <Time>2013-11-08T16:42:10.906198-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\player.png</Source>
@@ -79,8 +79,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\player.xnb</Output>
-      <Time>2013-11-08T16:39:55.226435-05:00</Time>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\player.xnb</Output>
+      <Time>2013-11-08T16:42:10.907198-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\simplePlayerSheet.png</Source>
+      <Name>Sprites\simplePlayerSheet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\simplePlayerSheet.xnb</Output>
+      <Time>2013-11-11T19:11:58.724422-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -89,10 +98,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQueryContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQueryContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -121,7 +130,7 @@
       </Assembly>
       <Assembly>
         <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2013-09-04T12:43:13.4319345-04:00</Value>
+        <Value>2013-09-04T12:01:05.551702-04:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

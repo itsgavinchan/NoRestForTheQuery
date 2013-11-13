@@ -11,7 +11,7 @@ namespace noRestForTheQuery {
         public Vector2 position, origin, velocity;
         public Color[] colorArr;
         public float rotation, rotSpeed, speed;
-        public GameObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed) {
+        public GameObject( Vector2 position, Vector2 origin, Vector2 velocity, float speed) {
             this.position = position;
             this.velocity = velocity;
             this.origin = origin;

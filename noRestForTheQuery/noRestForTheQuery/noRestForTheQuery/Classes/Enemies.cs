@@ -24,8 +24,10 @@ namespace noRestForTheQuery {
 
         // Update the Position And/Or Velocity
         public void update() {
-            if (isAlive && position.X > FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
-            if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
+            
+            if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
+            else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
+            //if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
         }
 
         public void reset() {
@@ -37,8 +39,14 @@ namespace noRestForTheQuery {
 
         public void shoot( double studentPosX, double studentPosY) {
             //if (markerAmt > 0) {
-                markers.Add(new Marker(attackPower, new Vector2(position.X + FinalGame.professorSprite.Width / 2, position.Y + FinalGame.professorSprite.Height / 2),
-                    new Vector2(FinalGame.markerSprite.Width / 2, FinalGame.markerSprite.Height / 2), Vector2.Zero, markerSpeed, (float)(Math.Atan2(studentPosY, studentPosX))));
+                markers.Add(new Marker( attackPower, 
+                                        new Vector2(position.X + FinalGame.professorSprite.Width / 2,   //Position
+                                                    position.Y + FinalGame.professorSprite.Height / 2),
+                                        new Vector2(FinalGame.markerSprite.Width / 2,                   //Origin
+                                                    FinalGame.markerSprite.Height / 2), 
+                                        Vector2.Zero,                                                   //Velocity
+                                        markerSpeed,                                                    //Speed
+                                        (float)(Math.Atan2(studentPosY, studentPosX))));                //Rotation
             //    markerAmt--;
             //}
         }

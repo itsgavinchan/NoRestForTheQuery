@@ -37,6 +37,9 @@ namespace noRestForTheQuery
 
         //Student
         Student1 student;
+        int studentWidth = 50;
+        int studentHeight = 50;
+        AnimatedSprite studentAnimation;
 
         List<Professor> professors = new List<Professor>();
 
@@ -70,12 +73,17 @@ namespace noRestForTheQuery
             finalSprite = Content.Load<Texture2D>(@"Sprites/final");
             notebookSprite = Content.Load<Texture2D>(@"Sprites/notebook");
             professorSprite = Content.Load<Texture2D>(@"Sprites/professor");
-
+            
+            //Animation sheet
+            studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/simplePlayerSheet"), 
+                                                   5, studentWidth, studentHeight );
 
             //Student starts in the top center of the screen for testing
-            student = new Student1( new Vector2(WINDOW_WIDTH / 2 - studentSprite.Width / 2, 200 ),  // Position
-                                    new Vector2(studentSprite.Width/2, studentSprite.Height/2),     // Origin
-                                    Vector2.Zero, 3.5F);                                               // Velocity, speed
+            student = new Student1( ref studentAnimation,
+                                    new Vector2(WINDOW_WIDTH / 2 - studentWidth / 2, 200 ), // Position
+                                    new Vector2(studentWidth / 2, studentHeight / 2),       // Origin
+                                    Vector2.Zero, 3.5F); 
+            // Velocity, speed
             for (int i = 0; i < MAXLEVELS; i++) {
                 professors.Add(new Professor(   i * 50,
                                                 new Vector2(WINDOW_WIDTH + screenOffset + professorSprite.Width, (WINDOW_HEIGHT - professorSprite.Height) / 2),
@@ -83,8 +91,10 @@ namespace noRestForTheQuery
                                                 Vector2.Zero,
                                                 1));
             }
+
             //Build the first level
             buildLevel( ref platforms, ref student );
+
         }
         protected override void UnloadContent() { }
         protected override void Update(GameTime gameTime) {
@@ -104,14 +114,22 @@ namespace noRestForTheQuery
                 // Player Jumps
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround ) { student.jump(); }
 
-                // Left-Right Movement
-                if (Keyboard.GetState().IsKeyDown(Keys.A)) { if ( !student.checkBoundaries() ) student.velocity.X = -student.speed; }
-                if (Keyboard.GetState().IsKeyDown(Keys.D)) { if ( !student.checkBoundaries() ) student.velocity.X = student.speed; }
+                // Left Movement
+                if (Keyboard.GetState().IsKeyDown(Keys.A)) { 
+                    if ( !student.checkBoundaries() ) { student.velocity.X = -student.speed; } 
+                    student.sprite.animateLeft( Keyboard.GetState(), lastKeyState, gameTime ); 
+                }
+
+                // Right Movement
+                if (Keyboard.GetState().IsKeyDown(Keys.D)) { 
+                    if ( !student.checkBoundaries() ) { student.velocity.X = student.speed; }  
+                    student.sprite.animateRight( Keyboard.GetState(), lastKeyState, gameTime ); 
+                }
 
                 // Player Shoots
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released) {
-                    double x = ((Mouse.GetState().X + screenOffset) - (student.position.X + studentSprite.Width / 2));
-                    double y = (Mouse.GetState().Y - (student.position.Y + studentSprite.Height / 2));
+                    double x = ((Mouse.GetState().X + screenOffset) - (student.position.X + student.sprite.width / 2));
+                    double y = (Mouse.GetState().Y - (student.position.Y + student.sprite.height / 2));
                     student.shoot((float)(Math.Atan2(y, x)));
                 }
 
@@ -120,6 +138,7 @@ namespace noRestForTheQuery
                     if (!professors[gameLevel - 1].isAlive) { professors[gameLevel - 1].isAlive = !professors[gameLevel - 1].isAlive; }
                     else { professors[gameLevel - 1].reset(); }
                 }
+
                 // Testing Professor Attack
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     if (professors[gameLevel - 1].isAlive) {
@@ -151,14 +170,14 @@ namespace noRestForTheQuery
             // Update Object Positions
             student.update();
             int index = 0;
-            if (professors[gameLevel - 1].isAlive) { 
+            //if (professors[gameLevel - 1].isAlive) { 
                 professors[gameLevel - 1].update();
                 while (index < professors[gameLevel - 1].markers.Count() ) {
                     professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
                     if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
                     else { index++; }
                 }
-            }
+            //}
 
             index = 0;
             while( index < homeworks.Count() ) {
@@ -178,11 +197,13 @@ namespace noRestForTheQuery
             screenOffset += 1;
 
             //Bookkeeping
-            handleStudentPlatformCollision();                           //Handle student/platform collision
-
-            if (student.velocity.Y == 0 && student.onGround) { student.jumping = false; }   //Reset jump state
+            handleSpriteMovement( ref student.sprite );
+            handleStudentPlatformCollision();                               //Handle student/platform collision
+            if ( student.velocity.Y != 0 ) { student.onGround = false; }    //Check if on ground
+            if (student.onGround) { student.jumping = false; }              //Reset jump state
 
             if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
+            //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
             lastKeyState = Keyboard.GetState();
             lastMouseState = Mouse.GetState();
             base.Update(gameTime);
@@ -208,7 +229,7 @@ namespace noRestForTheQuery
                     spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
                 }
             }
-            spriteBatch.Draw(studentSprite, student.position, Color.Red);
+            spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
             if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
             
             spriteBatch.End();
@@ -292,6 +313,20 @@ namespace noRestForTheQuery
                 }
                 x = 0;
                 y += defaultBlockSize;
+            }
+        }
+        public void handleSpriteMovement( ref AnimatedSprite sprite ) {
+            //Update the current sprite being taken from the sprite sheet
+            sprite.SourceRect = new Rectangle(sprite.currentFrame * sprite.width, 0, sprite.width, sprite.height);
+
+            //Keep the animation loop
+            if (Keyboard.GetState().GetPressedKeys().Length == 0) {
+                if (sprite.currentFrame > 0 && sprite.currentFrame < 4) {
+                    sprite.currentFrame = 0;
+                }
+                if (sprite.currentFrame > 4 && sprite.currentFrame < 8) {
+                    sprite.currentFrame = 4;
+                }
             }
         }
     }

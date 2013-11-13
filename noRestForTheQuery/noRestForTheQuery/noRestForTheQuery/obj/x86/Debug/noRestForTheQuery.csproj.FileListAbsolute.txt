@@ -36,3 +36,4 @@ C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\obj\x86\Debug\noRestForTheQuery.exe
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\obj\x86\Debug\noRestForTheQuery.pdb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\simplePlayerSheet.xnb

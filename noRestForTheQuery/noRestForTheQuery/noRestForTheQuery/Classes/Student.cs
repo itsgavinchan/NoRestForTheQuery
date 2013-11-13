@@ -7,20 +7,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace noRestForTheQuery {
     class Student1 : DamagableObject {
+        public AnimatedSprite sprite;
         double sanity;
         int pencilSpeed;
-        public int budget, amtPencil;
+        public int budget, amtPencil, width, height;
         public bool onGround, jumping, colliding;
         public List<Pencil> pencils;
         public Notebook notebook;
 
-        public Student1(Vector2 position, Vector2 origin, Vector2 velocity, float speed)
+        public Student1( ref AnimatedSprite sprite, Vector2 position, Vector2 origin, Vector2 velocity, float speed)
             : base(position, origin, velocity, speed) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-
+            
+            this.sprite = sprite;
             fullHealth = 100;
             currentHealth = fullHealth;
             attackPower = 10;
@@ -32,7 +34,6 @@ namespace noRestForTheQuery {
             amtPencil = 50;
             sanity = 1.00;
             budget = 200;
-
         }
 
         public void reset() {
@@ -54,8 +55,6 @@ namespace noRestForTheQuery {
         public bool checkBoundaries() {
             if (position.X <= FinalGame.screenOffset) { return true; }
             if (position.X >= (FinalGame.WINDOW_WIDTH + FinalGame.screenOffset)) { return true; }
-            if (position.Y <= 0) { return true; }
-            if (position.Y >= FinalGame.WINDOW_HEIGHT) { return true; }
             return false;
         }
 
@@ -90,8 +89,7 @@ namespace noRestForTheQuery {
 
         // Update the Position And/Or Velocity
         public void update() {
-            if (position.X <= FinalGame.screenOffset) { position.X = FinalGame.screenOffset; }
-            else if (position.X + FinalGame.studentSprite.Width >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset) { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - FinalGame.studentSprite.Width; }
+            if (position.X + FinalGame.studentSprite.Width >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset) { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - FinalGame.studentSprite.Width; }
             else { position.X += velocity.X; }
             position.Y += velocity.Y; 
             velocity.Y += FinalGame.GRAVITY;
