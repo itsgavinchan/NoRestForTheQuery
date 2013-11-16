@@ -37,6 +37,7 @@ namespace noRestForTheQuery {
         }
 
         public void reset() {
+            isAlive = true;
             position.X = FinalGame.WINDOW_WIDTH / 2 - FinalGame.studentSprite.Width / 2;
             position.Y = 200;
             velocity = Vector2.Zero;

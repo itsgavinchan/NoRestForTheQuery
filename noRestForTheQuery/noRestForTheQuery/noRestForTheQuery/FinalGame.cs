@@ -47,6 +47,7 @@ namespace noRestForTheQuery
         List<Platform> platforms = new List<Platform>();
         
         // Stuffs
+        SpriteFont mainFont;
         public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, midtermSprite, finalSprite, notebookSprite, professorSprite;
         List<Homework> homeworks = new List<Homework>();
 
@@ -73,6 +74,7 @@ namespace noRestForTheQuery
             finalSprite = Content.Load<Texture2D>(@"Sprites/final");
             notebookSprite = Content.Load<Texture2D>(@"Sprites/notebook");
             professorSprite = Content.Load<Texture2D>(@"Sprites/professor");
+            mainFont = Content.Load<SpriteFont>(@"Fonts/MainFont");
             
             //Animation sheet
             studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/simplePlayerSheet"), 
@@ -101,16 +103,21 @@ namespace noRestForTheQuery
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            if (IsActive) {
+            // Reset the Game
+            if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
+
+            if (IsActive && student.isAlive ) {
+            
                 // Randomly Spawn Homework For Now
                 if ( homeworks.Count() < MAXHOMEWORK && rand.NextDouble() > HOMEWORKSPAWNPROB ) {
                     homeworks.Add(new Homework(     new Vector2(WINDOW_WIDTH + +screenOffset, rand.Next(0, WINDOW_HEIGHT - homeworkSprite.Height)), 
                                                     new Vector2( homeworkSprite.Width/2, homeworkSprite.Height/2 ),
                                                     Vector2.Zero) );
                 }
-                // Reset the Game
-                if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
                 
+                // Player Dies - Test Game Over
+                if (Keyboard.GetState().IsKeyDown(Keys.Q)) { student.isAlive = false; }
+
                 // Player Jumps
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround ) { student.jump(); }
 
@@ -165,45 +172,50 @@ namespace noRestForTheQuery
                     translation *= Matrix.CreateTranslation( new Vector3( -1, 0, 0 ) );
                     screenOffset += 1;
                 }
-            }
 
-            // Update Object Positions
-            student.update();
-            int index = 0;
-            //if (professors[gameLevel - 1].isAlive) { 
+
+                // Update Object Positions
+                student.update();
+                int index = 0;
+                //if (professors[gameLevel - 1].isAlive) { 
                 professors[gameLevel - 1].update();
-                while (index < professors[gameLevel - 1].markers.Count() ) {
+                while (index < professors[gameLevel - 1].markers.Count())
+                {
                     professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
                     if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
                     else { index++; }
                 }
-            //}
+                //}
 
-            index = 0;
-            while( index < homeworks.Count() ) {
-                homeworks[index].update();
-                if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
-                else { index++; }
+                index = 0;
+                while (index < homeworks.Count())
+                {
+                    homeworks[index].update();
+                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
+                    else { index++; }
+                }
+
+                index = 0;
+                while (index < student.pencils.Count())
+                {
+                    student.pencils[index].update();
+                    if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
+                    else { index++; }
+                }
+
+                translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+                screenOffset += 1;
+
+                //Bookkeeping
+                handleSpriteMovement(ref student.sprite);
+                handleStudentPlatformCollision();                               //Handle student/platform collision
+                if (student.velocity.Y != 0) { student.onGround = false; }    //Check if on ground
+                if (student.onGround) { student.jumping = false; }              //Reset jump state
+
+                if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
+                //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
             }
 
-            index = 0;
-            while (index < student.pencils.Count()) {
-                student.pencils[index].update();
-                if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
-                else { index++; }
-            }
-
-            translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-            screenOffset += 1;
-
-            //Bookkeeping
-            handleSpriteMovement( ref student.sprite );
-            handleStudentPlatformCollision();                               //Handle student/platform collision
-            if ( student.velocity.Y != 0 ) { student.onGround = false; }    //Check if on ground
-            if (student.onGround) { student.jumping = false; }              //Reset jump state
-
-            if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
-            //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
             lastKeyState = Keyboard.GetState();
             lastMouseState = Mouse.GetState();
             base.Update(gameTime);
@@ -211,27 +223,26 @@ namespace noRestForTheQuery
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, translation);
-
-            // Color Coordinating
-            // Platform = Black
-            // Student = Red
-            // Notebook = White
-            // Pencil = Yellow
-            // Homework = Orange
-            // Professor = Blue
-
-            for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
-            for (int i = 0; i < homeworks.Count(); i++) { spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange); }
-            for (int i = 0; i < student.pencils.Count(); i++) { spriteBatch.Draw(pencilSprite, student.pencils[i].position, null, Color.White, student.pencils[i].rotation, student.pencils[i].origin, 1.0F, SpriteEffects.None, 0.0F); }
-            if (professors[gameLevel - 1].isAlive) { 
-                spriteBatch.Draw(homeworkSprite, professors[gameLevel - 1].position, Color.Blue);
-                for (int i = 0; i < professors[gameLevel - 1].markers.Count(); i++) {
-                    spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
-                }
-            }
-            spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
-            if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
             
+            if (student.isAlive)
+            {
+                for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
+                for (int i = 0; i < homeworks.Count(); i++) { spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange); }
+                for (int i = 0; i < student.pencils.Count(); i++) { spriteBatch.Draw(pencilSprite, student.pencils[i].position, null, Color.White, student.pencils[i].rotation, student.pencils[i].origin, 1.0F, SpriteEffects.None, 0.0F); }
+                if (professors[gameLevel - 1].isAlive)
+                {
+                    spriteBatch.Draw(homeworkSprite, professors[gameLevel - 1].position, Color.Blue);
+                    for (int i = 0; i < professors[gameLevel - 1].markers.Count(); i++)
+                    {
+                        spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
+                    }
+                }
+                spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
+                if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
+            }
+            else {
+                spriteBatch.DrawString(mainFont, "Game Over", new Vector2(WINDOW_WIDTH / 2 + mainFont.MeasureString("Game Over").X / 2, WINDOW_HEIGHT / 2 + mainFont.MeasureString("Game Over").Y / 2), Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
