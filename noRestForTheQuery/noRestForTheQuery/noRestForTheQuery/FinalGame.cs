@@ -172,45 +172,50 @@ namespace noRestForTheQuery
                     translation *= Matrix.CreateTranslation( new Vector3( -1, 0, 0 ) );
                     screenOffset += 1;
                 }
-            }
 
-            // Update Object Positions
-            student.update();
-            int index = 0;
-            //if (professors[gameLevel - 1].isAlive) { 
+
+                // Update Object Positions
+                student.update();
+                int index = 0;
+                //if (professors[gameLevel - 1].isAlive) { 
                 professors[gameLevel - 1].update();
-                while (index < professors[gameLevel - 1].markers.Count() ) {
+                while (index < professors[gameLevel - 1].markers.Count())
+                {
                     professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
                     if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
                     else { index++; }
                 }
-            //}
+                //}
 
-            index = 0;
-            while( index < homeworks.Count() ) {
-                homeworks[index].update();
-                if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
-                else { index++; }
+                index = 0;
+                while (index < homeworks.Count())
+                {
+                    homeworks[index].update();
+                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
+                    else { index++; }
+                }
+
+                index = 0;
+                while (index < student.pencils.Count())
+                {
+                    student.pencils[index].update();
+                    if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
+                    else { index++; }
+                }
+
+                translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+                screenOffset += 1;
+
+                //Bookkeeping
+                handleSpriteMovement(ref student.sprite);
+                handleStudentPlatformCollision();                               //Handle student/platform collision
+                if (student.velocity.Y != 0) { student.onGround = false; }    //Check if on ground
+                if (student.onGround) { student.jumping = false; }              //Reset jump state
+
+                if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
+                //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
             }
 
-            index = 0;
-            while (index < student.pencils.Count()) {
-                student.pencils[index].update();
-                if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
-                else { index++; }
-            }
-
-            translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-            screenOffset += 1;
-
-            //Bookkeeping
-            handleSpriteMovement( ref student.sprite );
-            handleStudentPlatformCollision();                               //Handle student/platform collision
-            if ( student.velocity.Y != 0 ) { student.onGround = false; }    //Check if on ground
-            if (student.onGround) { student.jumping = false; }              //Reset jump state
-
-            if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
-            //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
             lastKeyState = Keyboard.GetState();
             lastMouseState = Mouse.GetState();
             base.Update(gameTime);
