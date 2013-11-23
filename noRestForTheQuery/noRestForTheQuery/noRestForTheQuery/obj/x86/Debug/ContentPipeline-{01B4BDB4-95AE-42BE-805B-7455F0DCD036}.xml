@@ -98,7 +98,16 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\MainFont.xnb</Output>
-      <Time>2013-11-15T14:01:33.7711397-05:00</Time>
+      <Time>2013-11-16T14:48:32.7001172-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\menuItem01.png</Source>
+      <Name>Sprites\menuItem01</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\menuItem01.xnb</Output>
+      <Time>2013-11-22T15:13:03.6259765-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
