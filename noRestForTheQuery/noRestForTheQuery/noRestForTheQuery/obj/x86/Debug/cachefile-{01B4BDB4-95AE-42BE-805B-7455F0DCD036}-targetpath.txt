@@ -9,3 +9,4 @@ Content\Sprites\platform.xnb
 Content\Sprites\player.xnb
 Content\Sprites\simplePlayerSheet.xnb
 Content\Fonts\MainFont.xnb
+Content\Sprites\menuItem01.xnb

@@ -10,7 +10,7 @@ namespace noRestForTheQuery {
         public AnimatedSprite sprite;
         double sanity;
         int pencilSpeed;
-        public int budget, amtPencil, width, height;
+        public int budget, amtPencil;
         public bool onGround, jumping, colliding;
         public List<Pencil> pencils;
         public Notebook notebook;
