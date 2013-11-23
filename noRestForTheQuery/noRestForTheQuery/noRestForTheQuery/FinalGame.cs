@@ -235,7 +235,7 @@ namespace noRestForTheQuery
                 }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
-                if (Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT))) {
+                if (Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
                     gameOverPos = new Vector2(gameOverPos.X + screenOffset, gameOverPos.Y);
                     gameOverContPos = new Vector2(gameOverContPos.X + screenOffset, gameOverContPos.Y); 
                     student.isAlive = false; 
