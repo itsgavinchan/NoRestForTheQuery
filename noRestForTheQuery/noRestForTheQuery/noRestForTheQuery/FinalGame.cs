@@ -234,8 +234,13 @@ namespace noRestForTheQuery
                                                     Vector2.Zero));
                 }
 
-                // TEST - Initiate GAMEOVER Stage
-                if (Keyboard.GetState().IsKeyDown(Keys.Q)) { student.isAlive = false; currentStatus = (int)ScreenStatus.GAMEOVER; }
+                // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
+                if (Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT))) {
+                    gameOverPos = new Vector2(gameOverPos.X + screenOffset, gameOverPos.Y);
+                    gameOverContPos = new Vector2(gameOverContPos.X + screenOffset, gameOverContPos.Y); 
+                    student.isAlive = false; 
+                    currentStatus = (int)ScreenStatus.GAMEOVER; 
+                }
 
                 // TEST - Initiate WEEKEND Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) {
@@ -258,8 +263,7 @@ namespace noRestForTheQuery
                 }
 
                 // PLAYER CONTROL - Move Right
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                {
+                if (Keyboard.GetState().IsKeyDown(Keys.D)) {
                     if (!student.checkBoundaries()) { student.velocity.X = student.speed; }
                     student.sprite.animateRight(Keyboard.GetState(), lastKeyState, gameTime);
                 }
@@ -482,14 +486,24 @@ namespace noRestForTheQuery
             }
         }
         protected void reset() {
+            // Reset The Objects (Or Clear the Lists)
             homeworks.Clear();
             professors[gameLevel - 1].reset();
             student.reset();
+
+            // Reset The Game Mechaics
             gameLevel = 1;
             currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
             buildLevel(ref platforms, ref student); 
             screenOffset = 0;
             translation = Matrix.Identity;
+
+            // Reset the Positions
+            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
+            continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
+            
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student )
         {
