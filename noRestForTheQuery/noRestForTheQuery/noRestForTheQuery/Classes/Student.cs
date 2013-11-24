@@ -10,7 +10,7 @@ namespace noRestForTheQuery {
         public AnimatedSprite sprite;
         double sanity;
         int pencilSpeed;
-        public int budget, amtPencil, width, height;
+        public int budget, amtPencil;
         public bool onGround, jumping, colliding;
         public List<Pencil> pencils;
         public Notebook notebook;
@@ -37,6 +37,7 @@ namespace noRestForTheQuery {
         }
 
         public void reset() {
+            isAlive = true;
             position.X = FinalGame.WINDOW_WIDTH / 2 - FinalGame.studentSprite.Width / 2;
             position.Y = 200;
             velocity = Vector2.Zero;
