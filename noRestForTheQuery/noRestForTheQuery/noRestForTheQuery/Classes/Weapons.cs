@@ -9,7 +9,6 @@ namespace noRestForTheQuery {
 
     class Missile : GameObject {
         protected int attackPower;
-
         public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(position, origin, velocity, speed) {
             // Assign Values To: attackPower
@@ -43,6 +42,11 @@ namespace noRestForTheQuery {
             position.Y += velocity.Y;
             velocity.Y += FinalGame.GRAVITY * .2F;
             rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+            //Update transform
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position, 0.0f));
         }
     } 
     class Marker : Missile {
@@ -73,6 +77,12 @@ namespace noRestForTheQuery {
 
             //Recalculate the marker's orientation depending on its velocity
             rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+
+            //Update transform
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position, 0.0f));
         }
     }
 

@@ -8,7 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace noRestForTheQuery {
 
     class Professor : GameObject {
-        int /*markerAmt,*/ markerSpeed, attackPower;
+        int /*markerAmt,*/ markerSpeed;
+        public int attackPower;
         public List<Marker> markers = new List<Marker>();
         public Professor(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(position, origin, velocity, speed) {
@@ -28,6 +29,10 @@ namespace noRestForTheQuery {
             if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
             else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
             //if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
         }
 
         public void reset() {
@@ -47,6 +52,8 @@ namespace noRestForTheQuery {
                                         Vector2.Zero,                                                   //Velocity
                                         markerSpeed,                                                    //Speed
                                         (float)(Math.Atan2(studentPosY, studentPosX))));                //Rotation
+                markers.Last().colorArr = new Color[ FinalGame.markerSprite.Width*FinalGame.markerSprite.Height ];
+                FinalGame.markerSprite.GetData<Color>( markers.Last().colorArr );
             //    markerAmt--;
             //}
         }

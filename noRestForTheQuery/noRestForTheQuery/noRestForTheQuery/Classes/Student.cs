@@ -95,6 +95,17 @@ namespace noRestForTheQuery {
             position.Y += velocity.Y; 
             velocity.Y += FinalGame.GRAVITY;
             notebook.update(position + origin);
+
+            //Note: The last translation MUST add their origin again since they are drawn at their origin point.
+            //Without this addition, collisions will be wrong
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position + this.origin, 0.0f));
+            sprite.Texture.GetData<Color>( 0, sprite.SourceRect, colorArr,
+                                           sprite.currentFrame*sprite.width, 
+                                           sprite.width * sprite.height );
+            
         }
 
 
