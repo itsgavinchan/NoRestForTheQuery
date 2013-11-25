@@ -10,6 +10,7 @@ namespace noRestForTheQuery {
         public bool isAlive = true;
         public Vector2 position, origin, velocity;
         public Color[] colorArr;
+        public Matrix transform;
         public float rotation, rotSpeed, speed;
         public GameObject( Vector2 position, Vector2 origin, Vector2 velocity, float speed) {
             this.position = position;
@@ -40,7 +41,8 @@ namespace noRestForTheQuery {
     }
 
     class DamagableObject : GameObject {
-        protected int currentHealth, fullHealth, attackPower;
+        public bool hit;
+        public int currentHealth, fullHealth, attackPower;
         public DamagableObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed)
             : base(position, origin, velocity, speed) { }
 
@@ -53,6 +55,93 @@ namespace noRestForTheQuery {
         public void decrementHealth(int damage) { if (isAlive) currentHealth -= damage; checkDeath(); }
         public void incrementAttack(int boost) { if (isAlive) attackPower += boost; }
 
+        protected Rectangle boundingRectangle(Rectangle rectangle, Matrix transform)
+        {
+            //Rectangle's four corners
+            Vector2 topLeft  = new Vector2(rectangle.Left, rectangle.Top);
+            Vector2 topRight = new Vector2(rectangle.Right, rectangle.Top);
+            Vector2 botLeft  = new Vector2(rectangle.Left, rectangle.Bottom);
+            Vector2 botRight = new Vector2(rectangle.Right, rectangle.Bottom);
+
+            //Transform corners into world coordinates
+            Vector2.Transform(ref topLeft, ref transform, out topLeft);
+            Vector2.Transform(ref topRight, ref transform, out topRight);
+            Vector2.Transform(ref botLeft, ref transform, out botLeft);
+            Vector2.Transform(ref botRight, ref transform, out botRight);
+
+            //Find the coordinates of the boundary rectangle's topLeft (min) and botRight (max)
+            Vector2 boundaryTopLeft = Vector2.Min(Vector2.Min(topLeft, topRight), Vector2.Min(botLeft, botRight));
+            Vector2 boundaryBotRight = Vector2.Max(Vector2.Max(topLeft, topRight), Vector2.Max(botLeft, botRight));
+
+            // Return that as a rectangle
+            return new Rectangle((int)boundaryTopLeft.X,                         //Boundary start X
+                                 (int)boundaryTopLeft.Y,                         //Boundary start Y
+                                 (int)(boundaryBotRight.X - boundaryTopLeft.X),  //Boundary width
+                                 (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
+        }
+        public void handleCollision( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
+            Rectangle missileBoundary, objBoundary;
+            
+            objBoundary = boundingRectangle( new Rectangle( 0, 0, objWidth, objHeight ), this.transform );
+            missileBoundary = boundingRectangle( new Rectangle( 0, 0, misWidth, misHeight ), missile.transform );
+
+            if( missileBoundary.Intersects( objBoundary ) ){
+                if( isHit( missile, misWidth, misHeight, objWidth, objHeight ) ){
+                    hit = true;
+                    return;
+                }
+                else{
+                    hit = false;
+                }
+            }
+            
+        }
+        public bool isHit( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
+            //A = Missile    B = Damageable Object
+
+            //Map pixels of the missile relative to the damageable object
+            Matrix transformAtoB = missile.transform * Matrix.Invert( this.transform );
+
+            //Increments in missile in terms of the object
+            Vector2 stepX = Vector2.TransformNormal(Vector2.UnitX, transformAtoB);
+            Vector2 stepY = Vector2.TransformNormal(Vector2.UnitY, transformAtoB);
+
+            //Top left corner of the object
+            Vector2 rowStartInB = Vector2.Transform(Vector2.Zero, transformAtoB);
+            
+            //Temp storage for traversals in the row
+            Vector2 posInB;
+
+            //For every row in missile
+            for (int yA = 0; yA < misHeight; ++yA)
+            {
+                posInB = rowStartInB;
+
+                //Check each pixel
+                for (int xA = 0; xA < misWidth; ++xA)
+                {
+                    //Attempt to get the corresponding point in the object
+                    int yB = (int)Math.Round(posInB.Y);
+                    int xB = (int)Math.Round(posInB.X);
+
+                    //If the points are in the constraints of the object
+                    if (0 <= yB && yB < objHeight && 0 <= xB && xB < objWidth)
+                    {
+                        //Compare the colors. If both are not transparent, they've hit each other!
+                        if (missile.colorArr[xA + yA * misWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0)
+                        {
+                            return true;
+                        }
+                    }
+                    //As we advance to the next pixel in A, advance to the next pixel in B
+                    posInB += stepX;
+                }
+                //Next row 
+                rowStartInB += stepY;
+            }
+            //No collision
+            return false;
+        }
     }
 
     
