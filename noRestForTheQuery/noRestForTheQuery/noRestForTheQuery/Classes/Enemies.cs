@@ -45,8 +45,8 @@ namespace noRestForTheQuery {
         public void shoot( double studentPosX, double studentPosY) {
             //if (markerAmt > 0) {
                 markers.Add(new Marker( attackPower, 
-                                        new Vector2(position.X + FinalGame.professorSprite.Width / 2,   //Position
-                                                    position.Y + FinalGame.professorSprite.Height / 2),
+                                        new Vector2(position.X + FinalGame.professorSprite.Width / 2 - FinalGame.markerSprite.Width / 2,   //Position
+                                                    position.Y + FinalGame.professorSprite.Height / 2 - FinalGame.markerSprite.Height),
                                         new Vector2(FinalGame.markerSprite.Width / 2,                   //Origin
                                                     FinalGame.markerSprite.Height / 2), 
                                         Vector2.Zero,                                                   //Velocity
