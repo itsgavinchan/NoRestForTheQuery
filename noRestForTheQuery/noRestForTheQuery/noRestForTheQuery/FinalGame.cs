@@ -20,6 +20,8 @@ namespace noRestForTheQuery
         const double HOMEWORKSPAWNPROB = 0.10 / 6000 / 6000;
         const int MAXHOMEWORK = 5;
         const int MAXLEVELS = 2;
+        const int INVUL_TIME = 1500;
+        const int BLINK_TIME = 100;
         int mouseX, mouseY;
 
         enum ScreenStatus { START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY };
@@ -73,6 +75,9 @@ namespace noRestForTheQuery
         int studentWidth = 50;
         int studentHeight = 50;
         AnimatedSprite studentAnimation;
+        int hitRecoilTime = INVUL_TIME;
+        int blinkDuration = BLINK_TIME;
+        bool lostHealth = false; //Needed in order to decrement health only once after being hit.
 
         // PROFESSORS
         List<Professor> professors = new List<Professor>();
@@ -137,19 +142,26 @@ namespace noRestForTheQuery
             studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/simplePlayerSheet"), 
                                                    5, studentWidth, studentHeight );
 
-            // Student starts in the top center of the screen for testing
+            // Student starts in the top center of the screen for testing. Otherwise, it follows the level plan
             student = new Student1( ref studentAnimation,
                                     new Vector2(WINDOW_WIDTH / 2 - studentWidth / 2, 200 ), // Position
                                     new Vector2(studentWidth / 2, studentHeight / 2),       // Origin
                                     Vector2.Zero, 3.5F); 
+            student.colorArr = new Color[ studentAnimation.Texture.Width * studentAnimation.Texture.Height ];
+            studentAnimation.Texture.GetData<Color>( 0, studentAnimation.SourceRect, student.colorArr,
+                                                     student.sprite.currentFrame*studentWidth, 
+                                                     studentWidth * studentHeight );
+            
 
             // INITIATE - Professors of All Levels; Temporary Implentation For Testing
             for (int i = 0; i < MAXLEVELS; i++) {
-                professors.Add(new Professor(   i * 50,
+                professors.Add(new Professor(   (i+1) * 50,
                                                 new Vector2(WINDOW_WIDTH + screenOffset + professorSprite.Width, (WINDOW_HEIGHT - professorSprite.Height) / 2),
                                                 new Vector2(professorSprite.Width / 2, professorSprite.Height / 2),
                                                 Vector2.Zero,
                                                 1));
+                professors[i].colorArr = new Color[ professorSprite.Width * professorSprite.Height ];
+                professorSprite.GetData<Color>(professors[i].colorArr);
             }
 
             //Build the first level
@@ -234,8 +246,13 @@ namespace noRestForTheQuery
                                                     Vector2.Zero));
                 }
 
-                // TEST - Initiate GAMEOVER Stage
-                if (Keyboard.GetState().IsKeyDown(Keys.Q)) { student.isAlive = false; currentStatus = (int)ScreenStatus.GAMEOVER; }
+                // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
+                if (Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
+                    gameOverPos = new Vector2(gameOverPos.X + screenOffset, gameOverPos.Y);
+                    gameOverContPos = new Vector2(gameOverContPos.X + screenOffset, gameOverContPos.Y); 
+                    student.isAlive = false; 
+                    currentStatus = (int)ScreenStatus.GAMEOVER; 
+                }
 
                 // TEST - Initiate WEEKEND Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) {
@@ -258,8 +275,7 @@ namespace noRestForTheQuery
                 }
 
                 // PLAYER CONTROL - Move Right
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                {
+                if (Keyboard.GetState().IsKeyDown(Keys.D)) {
                     if (!student.checkBoundaries()) { student.velocity.X = student.speed; }
                     student.sprite.animateRight(Keyboard.GetState(), lastKeyState, gameTime);
                 }
@@ -318,6 +334,7 @@ namespace noRestForTheQuery
 
                 // POSITION UPDATE - Professor and Their Ammo (Markers)
                 //if (professors[gameLevel - 1].isAlive) { 
+                index = 0;
                 professors[gameLevel - 1].update();
                 while (index < professors[gameLevel - 1].markers.Count()) {
                     professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
@@ -337,6 +354,25 @@ namespace noRestForTheQuery
                 // POSITION UPDATE - Camera
                 translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
                 screenOffset += 1;
+                
+                //COLLISION UPDATE - Check if student hit by marker
+                index = 0;
+                while( index < professors[gameLevel-1].markers.Count() ){
+                    student.handleCollision( professors[gameLevel-1].markers[index], markerSprite.Width, markerSprite.Height, 
+                                             studentSprite.Width, studentSprite.Height );
+                    if( student.hit ){ break; }
+                    index++;
+                }
+                if( student.hit ){
+                    hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
+                    if( !lostHealth ){ student.decrementHealth( professors[gameLevel-1].attackPower ); lostHealth = true; }
+                    if( hitRecoilTime < 0 ){
+                        hitRecoilTime = INVUL_TIME;
+                        student.hit = false;
+                        lostHealth = false;
+                    }
+                }
+
 
                 // BOOKEEPING
                 handleSpriteMovement(ref student.sprite);
@@ -408,7 +444,7 @@ namespace noRestForTheQuery
                 for (int i = 0; i < homeworks.Count(); i++) { spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange); }
                 
                 // Student Display
-                spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
+                //spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
 
                 // Notebook Shield Display
                 if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
@@ -423,11 +459,26 @@ namespace noRestForTheQuery
                         spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
                     }
                 }
+                //Draw the student
+                if (!student.hit)
+                    spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
+                else
+                {
+                    blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
+                    if (blinkDuration < 0)
+                    {
+                        spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
+                        blinkDuration = BLINK_TIME;
+                    }
+                }
+                Vector2 healthPos = new Vector2( screenOffset, 0 );
+                spriteBatch.DrawString( mainFont, "Health: "+ student.currentHealth, healthPos, Color.White);
             }
             
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
         public bool checkMouseOverlap(Vector2 position, ref Texture2D sprite) {
             if (mouseX > position.X && mouseX < position.X + sprite.Width && mouseY > position.Y && mouseY < position.Y + sprite.Height) return true;
             else { return false; }
@@ -482,14 +533,24 @@ namespace noRestForTheQuery
             }
         }
         protected void reset() {
+            // Reset The Objects (Or Clear the Lists)
             homeworks.Clear();
             professors[gameLevel - 1].reset();
             student.reset();
+
+            // Reset The Game Mechaics
             gameLevel = 1;
             currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
             buildLevel(ref platforms, ref student); 
             screenOffset = 0;
             translation = Matrix.Identity;
+
+            // Reset the Positions
+            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
+            continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
+            
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student )
         {

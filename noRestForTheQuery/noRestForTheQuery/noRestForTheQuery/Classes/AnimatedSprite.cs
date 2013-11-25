@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace noRestForTheQuery {
     public class AnimatedSprite {
-        Texture2D spriteTexture;
+        public Texture2D spriteTexture;
         float timer, interval;
         public int previousFrame, currentFrame, width, height;
         Rectangle sourceRectangle;
@@ -29,6 +29,12 @@ namespace noRestForTheQuery {
         public Texture2D Texture    { get { return spriteTexture; }     set { spriteTexture = value; } }
         public Rectangle SourceRect { get { return sourceRectangle; }   set { sourceRectangle = value; } }
         
+        //NOTE: For all sprite sheets
+        //    0 is facing left
+        //  1-3 is moving left
+        //    4 is facing right
+        //  5-7 is moving right
+
         public void animateLeft( KeyboardState keyState, KeyboardState oldKeyState, GameTime gameTime ){
             if( keyState != oldKeyState ){ currentFrame = 0; }
 
