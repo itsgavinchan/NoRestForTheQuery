@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace noRestForTheQuery {
     class Student1 : DamagableObject {
         public AnimatedSprite sprite;
-        double sanity;
+        public double sanity;
         int pencilSpeed;
         public int budget, amtPencil;
         public bool onGround, jumping, colliding;
