@@ -78,7 +78,6 @@ namespace noRestForTheQuery {
                                  (int)(boundaryBotRight.X - boundaryTopLeft.X),  //Boundary width
                                  (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
         }
-
         public void handleCollision( GameObject other, int otherWidth, int otherHeight, int objWidth, int objHeight ){
             Rectangle otherBoundary, objBoundary;
             
@@ -97,33 +96,32 @@ namespace noRestForTheQuery {
             
         }
         public bool isHit(GameObject other, int otherWidth, int otherHeight, int objWidth, int objHeight) {
-            //A = Missile    B = Damageable Object
-
-            //Map pixels of the missile relative to the damageable object
+    
+            //Map pixels of the other object to this object
             Matrix transformAtoB = other.transform * Matrix.Invert( this.transform );
 
-            //Increments in missile in terms of the object
+            //Increments in the other object in terms of this object
             Vector2 stepX = Vector2.TransformNormal(Vector2.UnitX, transformAtoB);
             Vector2 stepY = Vector2.TransformNormal(Vector2.UnitY, transformAtoB);
 
-            //Top left corner of the object
+            //Top left corner of the other object
             Vector2 rowStartInB = Vector2.Transform(Vector2.Zero, transformAtoB);
             
             //Temp storage for traversals in the row
             Vector2 posInB;
 
-            //For every row in missile
+            //For every row in the other object
             for (int yA = 0; yA < otherHeight; ++yA) {
                 posInB = rowStartInB;
 
                 //Check each pixel
                 for (int xA = 0; xA < otherWidth; ++xA) {
 
-                    //Attempt to get the corresponding point in the object
+                    //Attempt to get the corresponding point in this object
                     int yB = (int)Math.Round(posInB.Y);
                     int xB = (int)Math.Round(posInB.X);
 
-                    //If the points are in the constraints of the object
+                    //If the points are in the constraints of this object
                     if (0 <= yB && yB < objHeight && 0 <= xB && xB < objWidth) {
 
                         //Compare the colors. If both are not transparent, they've hit each other!
