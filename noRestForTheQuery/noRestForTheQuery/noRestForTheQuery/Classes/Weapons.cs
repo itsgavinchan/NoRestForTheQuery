@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace noRestForTheQuery {
 
     class Missile : GameObject {
-        protected int attackPower;
+        public int attackPower;
         public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(position, origin, velocity, speed) {
             // Assign Values To: attackPower

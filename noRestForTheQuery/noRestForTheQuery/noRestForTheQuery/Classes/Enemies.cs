@@ -78,6 +78,10 @@ namespace noRestForTheQuery {
         // Update the Position And/Or Velocity
         public void update() {
             position.X -= speed;
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
         }
     }
     class Midterm : DamagableObject {
