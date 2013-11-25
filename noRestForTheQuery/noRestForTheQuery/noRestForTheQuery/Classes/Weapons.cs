@@ -105,7 +105,7 @@ namespace noRestForTheQuery {
             position = studentOrigin;
             rotation += rotSpeed;
         }
-        void isDamaged() {
+        public void isDamaged() {
             numOfNotebook--;
             if (numOfNotebook <= 0) { isAlive = false; }
         }

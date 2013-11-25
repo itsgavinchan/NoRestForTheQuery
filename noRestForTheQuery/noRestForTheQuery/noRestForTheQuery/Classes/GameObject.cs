@@ -79,7 +79,8 @@ namespace noRestForTheQuery {
                                  (int)(boundaryBotRight.X - boundaryTopLeft.X),  //Boundary width
                                  (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
         }
-        public void handleCollision( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
+
+        public void handleMissileCollision( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
             Rectangle missileBoundary, objBoundary;
             
             objBoundary = boundingRectangle( new Rectangle( 0, 0, objWidth, objHeight ), this.transform );
@@ -113,23 +114,21 @@ namespace noRestForTheQuery {
             Vector2 posInB;
 
             //For every row in missile
-            for (int yA = 0; yA < misHeight; ++yA)
-            {
+            for (int yA = 0; yA < misHeight; ++yA) {
                 posInB = rowStartInB;
 
                 //Check each pixel
-                for (int xA = 0; xA < misWidth; ++xA)
-                {
+                for (int xA = 0; xA < misWidth; ++xA) {
+
                     //Attempt to get the corresponding point in the object
                     int yB = (int)Math.Round(posInB.Y);
                     int xB = (int)Math.Round(posInB.X);
 
                     //If the points are in the constraints of the object
-                    if (0 <= yB && yB < objHeight && 0 <= xB && xB < objWidth)
-                    {
+                    if (0 <= yB && yB < objHeight && 0 <= xB && xB < objWidth) {
+
                         //Compare the colors. If both are not transparent, they've hit each other!
-                        if (missile.colorArr[xA + yA * misWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0)
-                        {
+                        if (missile.colorArr[xA + yA * misWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0) {
                             return true;
                         }
                     }
