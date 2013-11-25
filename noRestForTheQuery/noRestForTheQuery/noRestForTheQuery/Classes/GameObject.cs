@@ -41,7 +41,7 @@ namespace noRestForTheQuery {
     }
 
     class DamagableObject : GameObject {
-        public bool hit;
+        public bool hit, test = false;
         public int currentHealth, fullHealth, attackPower;
         public DamagableObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed)
             : base(position, origin, velocity, speed) { }
@@ -55,8 +55,7 @@ namespace noRestForTheQuery {
         public void decrementHealth(int damage) { if (isAlive) currentHealth -= damage; checkDeath(); }
         public void incrementAttack(int boost) { if (isAlive) attackPower += boost; }
 
-        protected Rectangle boundingRectangle(Rectangle rectangle, Matrix transform)
-        {
+        protected Rectangle boundingRectangle(Rectangle rectangle, Matrix transform) {
             //Rectangle's four corners
             Vector2 topLeft  = new Vector2(rectangle.Left, rectangle.Top);
             Vector2 topRight = new Vector2(rectangle.Right, rectangle.Top);
@@ -80,14 +79,14 @@ namespace noRestForTheQuery {
                                  (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
         }
 
-        public void handleMissileCollision( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
-            Rectangle missileBoundary, objBoundary;
+        public void handleCollision( GameObject other, int otherWidth, int otherHeight, int objWidth, int objHeight ){
+            Rectangle otherBoundary, objBoundary;
             
             objBoundary = boundingRectangle( new Rectangle( 0, 0, objWidth, objHeight ), this.transform );
-            missileBoundary = boundingRectangle( new Rectangle( 0, 0, misWidth, misHeight ), missile.transform );
+            otherBoundary = boundingRectangle( new Rectangle( 0, 0, otherWidth, otherHeight ), other.transform );
 
-            if( missileBoundary.Intersects( objBoundary ) ){
-                if( isHit( missile, misWidth, misHeight, objWidth, objHeight ) ){
+            if( otherBoundary.Intersects( objBoundary ) ){
+                if( isHit( other, otherWidth, otherHeight, objWidth, objHeight ) ){
                     hit = true;
                     return;
                 }
@@ -97,11 +96,11 @@ namespace noRestForTheQuery {
             }
             
         }
-        public bool isHit( Missile missile, int misWidth, int misHeight, int objWidth, int objHeight ){
+        public bool isHit(GameObject other, int otherWidth, int otherHeight, int objWidth, int objHeight) {
             //A = Missile    B = Damageable Object
 
             //Map pixels of the missile relative to the damageable object
-            Matrix transformAtoB = missile.transform * Matrix.Invert( this.transform );
+            Matrix transformAtoB = other.transform * Matrix.Invert( this.transform );
 
             //Increments in missile in terms of the object
             Vector2 stepX = Vector2.TransformNormal(Vector2.UnitX, transformAtoB);
@@ -114,11 +113,11 @@ namespace noRestForTheQuery {
             Vector2 posInB;
 
             //For every row in missile
-            for (int yA = 0; yA < misHeight; ++yA) {
+            for (int yA = 0; yA < otherHeight; ++yA) {
                 posInB = rowStartInB;
 
                 //Check each pixel
-                for (int xA = 0; xA < misWidth; ++xA) {
+                for (int xA = 0; xA < otherWidth; ++xA) {
 
                     //Attempt to get the corresponding point in the object
                     int yB = (int)Math.Round(posInB.Y);
@@ -128,8 +127,9 @@ namespace noRestForTheQuery {
                     if (0 <= yB && yB < objHeight && 0 <= xB && xB < objWidth) {
 
                         //Compare the colors. If both are not transparent, they've hit each other!
-                        if (missile.colorArr[xA + yA * misWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0) {
+                        if (other.colorArr[xA + yA * otherWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0) {
                             return true;
+                            test = true;
                         }
                     }
                     //As we advance to the next pixel in A, advance to the next pixel in B

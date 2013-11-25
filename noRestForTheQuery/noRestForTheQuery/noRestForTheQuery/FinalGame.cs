@@ -352,7 +352,21 @@ namespace noRestForTheQuery
                 index = 0;
                 while (index < homeworks.Count()) {
                     homeworks[index].update();
-                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
+
+                    int i = 0;
+                    while (i < student.pencils.Count() ) {
+                        homeworks[index].handleCollision(student.pencils[i], pencilSprite.Width, pencilSprite.Height,
+                                                homeworkSprite.Width, homeworkSprite.Height);
+                        if (homeworks[index].hit) { break; }
+                        i++;
+                    }
+
+                    if (homeworks[index].hit) { 
+                        homeworks[index].decrementHealth( student.attackPower );
+                        student.pencils.RemoveAt(i);
+                    }
+
+                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) || !homeworks[index].isAlive) { homeworks.RemoveAt(index); }
                     else { index++; }
                 }
 
@@ -365,7 +379,7 @@ namespace noRestForTheQuery
                     index = 0;
 
                     while ( index < professors[gameLevel - 1].markers.Count()) {
-                        student.handleMissileCollision( professors[gameLevel-1].markers[index], markerSprite.Width, markerSprite.Height, 
+                        student.handleCollision( professors[gameLevel-1].markers[index], markerSprite.Width, markerSprite.Height, 
                                                  studentSprite.Width, studentSprite.Height );
                         if( student.hit ){ break; }
                         index++;
@@ -455,7 +469,10 @@ namespace noRestForTheQuery
                 for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
                 
                 // Spawned Homework Display
-                for (int i = 0; i < homeworks.Count(); i++) { spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange); }
+                for (int i = 0; i < homeworks.Count(); i++) { 
+                    spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange);
+                    spriteBatch.DrawString(mainFont, "" + homeworks[i].currentHealth, homeworks[i].position, Color.Black);
+                }
                 
                 // Student Display
                 //spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
@@ -503,7 +520,8 @@ namespace noRestForTheQuery
                 // Display stats
                 spriteBatch.DrawString(mainFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "Ammo: " + student.amtPencil, new Vector2(screenOffset, (ypos++) * 25), Color.White);
+                spriteBatch.DrawString(mainFont, "Ammo Held: " + student.amtPencil, new Vector2(screenOffset, (ypos++) * 25), Color.White);
+                spriteBatch.DrawString(mainFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "AttPow: " + student.attackPower, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Budget: " + student.budget, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Sanity: " + student.sanity, new Vector2(screenOffset, (ypos++) * 25), Color.White);
