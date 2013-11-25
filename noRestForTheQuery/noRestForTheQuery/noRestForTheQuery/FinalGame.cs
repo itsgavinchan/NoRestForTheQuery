@@ -22,7 +22,7 @@ namespace noRestForTheQuery
         const int MAXLEVELS = 2;
         const int INVUL_TIME = 1500;
         const int BLINK_TIME = 100;
-        int mouseX, mouseY;
+        int mouseX, mouseY, hwKilled;
 
         enum ScreenStatus { START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY };
         int currentStatus = (int) ScreenStatus.START;
@@ -350,7 +350,7 @@ namespace noRestForTheQuery
                 }
                 //}
 
-                // POSITION UPDATE - Homeworks
+                // POSITION AND COLLISION UPDATE - Homeworks
                 index = 0;
                 while (index < homeworks.Count()) {
                     homeworks[index].update();
@@ -369,7 +369,16 @@ namespace noRestForTheQuery
                         homeworks[index].hit = false;
                     }
 
-                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) || !homeworks[index].isAlive) { homeworks.RemoveAt(index); }
+                    homeworks[index].handleCollision(student, studentSprite.Width, studentSprite.Height,
+                                                homeworkSprite.Width, homeworkSprite.Height);
+
+                    if (homeworks[index].hit) {
+                        student.decrementHealth(homeworks[index].attackPower);
+                        homeworks[index].isAlive = false;
+                    }
+
+                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
+                    else if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
                     else { index++; }
                 }
 
@@ -525,12 +534,14 @@ namespace noRestForTheQuery
                 spriteBatch.DrawString(mainFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Ammo Held: " + student.amtPencil, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(screenOffset, (ypos++) * 25), Color.White);
+                spriteBatch.DrawString(mainFont, "hwKilled: " + hwKilled, new Vector2(screenOffset, (ypos++) * 25), Color.White);
+                spriteBatch.DrawString(mainFont, "exp: " + student.experience, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "AttPow: " + student.attackPower, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Budget: " + student.budget, new Vector2(screenOffset, (ypos++) * 25), Color.White);
                 spriteBatch.DrawString(mainFont, "Sanity: " + student.sanity, new Vector2(screenOffset, (ypos++) * 25), Color.White);
 
                 ypos = 0;
-                spriteBatch.DrawString(mainFont, "AtkPow: " + professors[gameLevel - 1].attackPower, new Vector2(screenOffset + WINDOW_WIDTH - 300, (ypos++) * 25), Color.White);
+                spriteBatch.DrawString(mainFont, "Prof's AtkPow: " + professors[gameLevel - 1].attackPower, new Vector2(screenOffset + WINDOW_WIDTH - 300, (ypos++) * 25), Color.White);
             }
             
             spriteBatch.End();

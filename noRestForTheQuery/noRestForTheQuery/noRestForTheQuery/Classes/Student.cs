@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace noRestForTheQuery {
     class Student1 : DamagableObject {
         public AnimatedSprite sprite;
-        public double sanity;
+        public double sanity, experience = 0;
         int pencilSpeed;
         public int budget, amtPencil;
         public bool onGround, jumping, colliding;
@@ -31,9 +31,17 @@ namespace noRestForTheQuery {
             pencilSpeed = 15;
             pencils = new List<Pencil>();
             notebook = new Notebook(position, new Vector2(FinalGame.notebookSprite.Width / 2, FinalGame.notebookSprite.Height / 2), Vector2.Zero, speed);
-            amtPencil = 50;
+            amtPencil = 150;
             sanity = 1.00;
             budget = 200;
+        }
+
+        public void gainExperience() { 
+            experience += 1.0 / ( FinalGame.gameLevel * 10.0 );
+            if (experience > 1.0) {
+                attackPower += FinalGame.gameLevel;
+                experience = 0;
+            }
         }
 
         public void reset() {
@@ -54,7 +62,7 @@ namespace noRestForTheQuery {
 
         // Override Check Boundaries
         public bool checkBoundaries() {
-            if (position.X <= FinalGame.screenOffset) { return true; }
+            if (position.X <= FinalGame.screenOffset - FinalGame.studentSprite.Width) { return true; }
             if (position.X >= (FinalGame.WINDOW_WIDTH + FinalGame.screenOffset)) { return true; }
             return false;
         }
