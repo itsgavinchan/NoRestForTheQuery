@@ -244,6 +244,8 @@ namespace noRestForTheQuery
                     homeworks.Add(new Homework(new Vector2(WINDOW_WIDTH + screenOffset, rand.Next(0, WINDOW_HEIGHT - homeworkSprite.Height)),
                                                     new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2),
                                                     Vector2.Zero));
+                    homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
+                    homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
                 }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
@@ -364,6 +366,7 @@ namespace noRestForTheQuery
                     if (homeworks[index].hit) { 
                         homeworks[index].decrementHealth( student.attackPower );
                         student.pencils.RemoveAt(i);
+                        homeworks[index].hit = false;
                     }
 
                     if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) || !homeworks[index].isAlive) { homeworks.RemoveAt(index); }

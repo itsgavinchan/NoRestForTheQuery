@@ -84,6 +84,8 @@ namespace noRestForTheQuery {
             if (amtPencil > 0) {
                 pencils.Add(new Pencil(attackPower, new Vector2(position.X + FinalGame.studentSprite.Width / 2, position.Y + FinalGame.studentSprite.Height / 2),
                     new Vector2(FinalGame.pencilSprite.Width / 2, FinalGame.pencilSprite.Height / 2), pencilSpeed, rotation)); // ten is the speed of pencil
+                pencils.Last().colorArr = new Color[ FinalGame.pencilSprite.Width * FinalGame.pencilSprite.Height ];
+                FinalGame.pencilSprite.GetData<Color>( pencils.Last().colorArr );
                 amtPencil--;
             }
         }
