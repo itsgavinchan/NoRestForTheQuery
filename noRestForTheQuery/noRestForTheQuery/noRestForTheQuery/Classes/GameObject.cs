@@ -41,7 +41,7 @@ namespace noRestForTheQuery {
     }
 
     class DamagableObject : GameObject {
-        public bool hit, test = false;
+        public bool hit;
         public int currentHealth, fullHealth, attackPower;
         public DamagableObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed)
             : base(position, origin, velocity, speed) { }
@@ -127,7 +127,6 @@ namespace noRestForTheQuery {
                         //Compare the colors. If both are not transparent, they've hit each other!
                         if (other.colorArr[xA + yA * otherWidth].A != 0 && this.colorArr[xB + yB * objWidth].A != 0) {
                             return true;
-                            test = true;
                         }
                     }
                     //As we advance to the next pixel in A, advance to the next pixel in B
