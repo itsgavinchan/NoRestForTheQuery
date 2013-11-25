@@ -369,12 +369,25 @@ namespace noRestForTheQuery
                         homeworks[index].hit = false;
                     }
 
-                    homeworks[index].handleCollision(student, studentSprite.Width, studentSprite.Height,
-                                                homeworkSprite.Width, homeworkSprite.Height);
+                    student.handleCollision(homeworks[index], homeworkSprite.Width, homeworkSprite.Height,
+                                                studentSprite.Width, studentSprite.Height);
 
-                    if (homeworks[index].hit) {
-                        student.decrementHealth(homeworks[index].attackPower);
-                        homeworks[index].isAlive = false;
+                    //This if block could be put into a function, but homeworks[index].isAlive = false needs to be accomadated
+                    //for. It must only occur once, otherwise all the homeworks will die :(
+                    if (student.hit) {
+                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
+                        if (!lostHealth) {
+                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                            else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
+                            homeworks[index].isAlive = false;
+                            lostHealth = true;
+                        }
+
+                        if( hitRecoilTime < 0 ){
+                            hitRecoilTime = INVUL_TIME;
+                            student.hit = false;
+                            lostHealth = false;
+                        }
                     }
 
                     if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
