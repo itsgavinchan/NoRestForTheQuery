@@ -50,8 +50,7 @@ namespace noRestForTheQuery {
             position.Y = 200;
             velocity = Vector2.Zero;
             pencils.Clear();
-            notebook.isAlive = true;
-            notebook.numOfNotebook = 3;
+            notebook.reset();
             fullHealth = 100;
             currentHealth = fullHealth;
             attackPower = 10;
@@ -72,7 +71,6 @@ namespace noRestForTheQuery {
         public void studyEffect() { attackPower += FinalGame.gameLevel * 10; }
         public void sleepEffect() { fullHealth += FinalGame.SLEEPINCREMENT; }
         public void foodEffect() { currentHealth = fullHealth; }
-        public void allowanceEffect() { budget += FinalGame.rand.Next(50, 70); }
         public void socialEffect() {
             double increaseAmt = FinalGame.rand.NextDouble() * 0.5;
             if (increaseAmt <= 0.2) { increaseAmt = 0.2; }

@@ -88,7 +88,7 @@ namespace noRestForTheQuery {
 
 
     class Notebook : GameObject {
-        public int numOfNotebook;
+        public int numOfNotebook, maxBooks;
 
         public Notebook(Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(position, origin, velocity, speed, FinalGame.notebookSprite.Width, FinalGame.notebookSprite.Height) {
@@ -99,6 +99,7 @@ namespace noRestForTheQuery {
             this.rotSpeed = 0.04F;
             // Assign Values to Local Members
             numOfNotebook = 3;
+            maxBooks = 3;
         }
         // Update the Position And/Or Velocity
         public void update(Vector2 studentOrigin) {
@@ -108,6 +109,11 @@ namespace noRestForTheQuery {
         public void isDamaged() {
             numOfNotebook--;
             if (numOfNotebook <= 0) { isAlive = false; }
+        }
+
+        public void reset() {
+            numOfNotebook = 3;
+            isAlive = true;
         }
     }
 
