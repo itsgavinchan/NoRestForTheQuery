@@ -1,10 +1,12 @@
-﻿
+﻿                                                                x                  x
+                                                                x                  x
+                                                                x            h     x 
+                                                                x    xxxxxxxxxx    xxxxxxx    xx
+                                                                x  xxxxxxxxxxxx    x       h  xx
+                                                                x   xxxxxxxxxxx    x    xxxxxxxx
+                                             h         x        xx  xxxxxxxxxxx         xxxxxxxx      
+                                             xx  x  x  x          h xxxxxxxxxxxxxxxxxxxxxxxxxxxx    xxxxx
+                  h xxx  xxx  h              xx  x  x  x   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      s          xxxxxx  xxxxxx        xxxxxxxx  x  x  x   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxx  xxxxxxxxx  xxxxxxxxxx  xxxxxxxxxx  x  x  x   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-
-.........s..............................xxx....xxxxxxx
-.......................xxxxx........xxxxxxxx............xxxxxx
-.................xxxx............xxxx........................x.....x
-....................xxx.........xxxxxxxxxxxx..x.....xx.......xx....xxx
-..........................xxxx..............xxxx.............xx...xx
-.......x.....x...................xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-.......xxxxxxx..xxxxxxxxxxxxxxxxx............................xxxxxx

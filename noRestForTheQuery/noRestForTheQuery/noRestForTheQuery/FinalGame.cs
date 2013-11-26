@@ -72,8 +72,8 @@ namespace noRestForTheQuery
 
         // STUDENT
         Student1 student;
-        int studentWidth = 50;
-        int studentHeight = 50;
+        public static int studentWidth = 50;
+        public static int studentHeight = 50;
         AnimatedSprite studentAnimation;
         int hitRecoilTime = INVUL_TIME;
         int blinkDuration = BLINK_TIME;
@@ -165,7 +165,7 @@ namespace noRestForTheQuery
             }
 
             //Build the first level
-            buildLevel( ref platforms, ref student );
+            buildLevel( ref platforms, ref student, ref homeworks );
 
         }
         protected override void UnloadContent() { }
@@ -239,14 +239,14 @@ namespace noRestForTheQuery
 
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
 
-                // Randomly Spawns Homework - Temporary Implementation
-                if (homeworks.Count() < MAXHOMEWORK && rand.NextDouble() > HOMEWORKSPAWNPROB) {
-                    homeworks.Add(new Homework(new Vector2(WINDOW_WIDTH + screenOffset, rand.Next(0, WINDOW_HEIGHT - homeworkSprite.Height)),
-                                                    new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2),
-                                                    Vector2.Zero));
-                    homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
-                    homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
-                }
+                //// Randomly Spawns Homework - Temporary Implementation
+                //if (homeworks.Count() < MAXHOMEWORK && rand.NextDouble() > HOMEWORKSPAWNPROB) {
+                //    homeworks.Add(new Homework(new Vector2(WINDOW_WIDTH + screenOffset, rand.Next(0, WINDOW_HEIGHT - homeworkSprite.Height)),
+                //                                    new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2),
+                //                                    Vector2.Zero));
+                //    homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
+                //    homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
+                //}
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
                 if ( student.currentHealth <= 0 || Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
@@ -314,7 +314,7 @@ namespace noRestForTheQuery
                     reset();
                     if (gameLevel < MAXLEVELS) gameLevel++;
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                    buildLevel(ref platforms, ref student);
+                    buildLevel(ref platforms, ref student, ref homeworks);
                 }
 
                 // TEST - Controls for Camera Movement
@@ -353,7 +353,7 @@ namespace noRestForTheQuery
                 // POSITION AND COLLISION UPDATE - Homeworks
                 index = 0;
                 while (index < homeworks.Count()) {
-                    homeworks[index].update();
+                    homeworks[index].update( student.position.X+student.origin.X, student.position.Y+student.origin.Y );
 
                     int i = 0;
                     while (i < student.pencils.Count() ) {
@@ -369,16 +369,27 @@ namespace noRestForTheQuery
                         homeworks[index].hit = false;
                     }
 
-                    homeworks[index].handleCollision(student, studentSprite.Width, studentSprite.Height,
-                                                homeworkSprite.Width, homeworkSprite.Height);
+                    student.handleCollision(homeworks[index], homeworkSprite.Width, homeworkSprite.Height,
+                                                studentSprite.Width, studentSprite.Height);
 
-                    if (homeworks[index].hit) {
-                        student.decrementHealth(homeworks[index].attackPower);
-                        homeworks[index].isAlive = false;
+                    if (student.hit) {
+                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
+                        if (!lostHealth) {
+                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                            else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
+                            homeworks[index].isAlive = false;
+                            lostHealth = true;
+                        }
+
+                        if( hitRecoilTime < 0 ){
+                            hitRecoilTime = INVUL_TIME;
+                            student.hit = false;
+                            lostHealth = false;
+                        }
                     }
 
-                    if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height)) { homeworks.RemoveAt(index); }
-                    else if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
+                    //if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) ) { homeworks.RemoveAt(index); }
+                    if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
                     else { index++; }
                 }
 
@@ -547,6 +558,7 @@ namespace noRestForTheQuery
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
         public bool checkMouseOverlap(Vector2 position, ref Texture2D sprite) {
             if (mouseX > position.X && mouseX < position.X + sprite.Width && mouseY > position.Y && mouseY < position.Y + sprite.Height) { return true; }
             else { return false; }
@@ -554,6 +566,26 @@ namespace noRestForTheQuery
         public bool purchasePencils(int quantity) {
             if (quantity * PENCILCOST > student.budget) { return false; }
             else { student.amtPencil += quantity; student.budget -= quantity * PENCILCOST; return true; }
+        }
+        protected void reset() {
+            // Reset The Objects (Or Clear the Lists)
+            homeworks.Clear();
+            professors[gameLevel - 1].reset();
+            student.reset();
+
+            // Reset The Game Mechaics
+            gameLevel = 1;
+            currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+            buildLevel(ref platforms, ref student, ref homeworks); 
+            screenOffset = 0;
+            translation = Matrix.Identity;
+
+            // Reset the Positions
+            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
+            continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
+            
         }
         protected void handleStudentPlatformCollision() {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
@@ -600,47 +632,7 @@ namespace noRestForTheQuery
                 else { student.colliding = false; }
             }
         }
-        protected void reset() {
-            // Reset The Objects (Or Clear the Lists)
-            homeworks.Clear();
-            professors[gameLevel - 1].reset();
-            student.reset();
-
-            // Reset The Game Mechaics
-            gameLevel = 1;
-            currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-            buildLevel(ref platforms, ref student); 
-            screenOffset = 0;
-            translation = Matrix.Identity;
-
-            // Reset the Positions
-            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
-            continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
-            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
-            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
-            
-        }
-        private void buildLevel( ref List<Platform> platforms, ref Student1 student ) {
-            platforms.Clear();
-            int x = 0; int y = 0;
-            string line;
-            System.IO.StreamReader file = new System.IO.StreamReader( currentLevelFile );
-            
-            while( (line = file.ReadLine()) != null ){
-                char[] levelRow = line.ToCharArray();
-                foreach( char symbol in levelRow ){
-                    if (symbol == '.' || symbol == ' ') { x += defaultBlockSize; }
-                    if( symbol == 's' ){ student.position = new Vector2( x, y ); }
-                    if( symbol == 'x' ){ 
-                        platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) );
-                        x += defaultBlockSize;
-                    }
-                }
-                x = 0;
-                y += defaultBlockSize;
-            }
-        }
-        public void handleSpriteMovement( ref AnimatedSprite sprite ) {
+        protected void handleSpriteMovement( ref AnimatedSprite sprite ) {
             //Update the current sprite being taken from the sprite sheet
             sprite.SourceRect = new Rectangle(sprite.currentFrame * sprite.width, 0, sprite.width, sprite.height);
 
@@ -652,6 +644,29 @@ namespace noRestForTheQuery
                 if (sprite.currentFrame > 4 && sprite.currentFrame < 8) {
                     sprite.currentFrame = 4;
                 }
+            }
+        }
+        private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
+            platforms.Clear();
+            int x = 0; int y = 0;
+            string line;
+            System.IO.StreamReader file = new System.IO.StreamReader( currentLevelFile );
+            
+            while( (line = file.ReadLine()) != null ){
+                char[] levelRow = line.ToCharArray();
+                foreach( char symbol in levelRow ){
+                    //if( symbol == '.' || symbol == ' ') {  }
+                    if( symbol == 's' ){ student.position = new Vector2( x, y ); }
+                    if( symbol == 'x' ){ platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) ); }
+                    if( symbol == 'h' ){ 
+                        homeworks.Add( new Homework( new Vector2( x, y ), new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2), Vector2.Zero ) ); 
+                        homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
+                        homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
+                    }
+                    x += defaultBlockSize;
+                }
+                x = 0;
+                y += defaultBlockSize;
             }
         }
     }
