@@ -9,8 +9,8 @@ namespace noRestForTheQuery {
 
     class Missile : GameObject {
         public int attackPower;
-        public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(position, origin, velocity, speed) {
+        public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height) :
+            base(position, origin, velocity, speed, width, height) {
             // Assign Values To: attackPower
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
@@ -23,8 +23,8 @@ namespace noRestForTheQuery {
     }
     class Pencil : Missile {
 
-        public Pencil(int attackPower, Vector2 position, Vector2 origin, float speed, float rotation) :
-            base(attackPower, position, origin, Vector2.Zero, speed) {
+        public Pencil(int attackPower, Vector2 position, Vector2 origin, float speed, float rotation ) :
+            base(attackPower, position, origin, Vector2.Zero, speed, FinalGame.pencilSprite.Width, FinalGame.pencilSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      Missle - attackPower
@@ -50,8 +50,8 @@ namespace noRestForTheQuery {
         }
     } 
     class Marker : Missile {
-        public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float rotation) :
-            base(attackPower, position, origin, velocity, speed) {
+        public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float rotation ) :
+            base(attackPower, position, origin, velocity, speed, FinalGame.markerSprite.Width, FinalGame.markerSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      Missle - attackPower
@@ -91,7 +91,7 @@ namespace noRestForTheQuery {
         public int numOfNotebook;
 
         public Notebook(Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(position, origin, velocity, speed) {
+            base(position, origin, velocity, speed, FinalGame.notebookSprite.Width, FinalGame.notebookSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed

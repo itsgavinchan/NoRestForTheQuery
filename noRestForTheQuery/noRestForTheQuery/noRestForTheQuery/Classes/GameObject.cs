@@ -11,13 +11,15 @@ namespace noRestForTheQuery {
         public Vector2 position, origin, velocity;
         public Color[] colorArr;
         public Matrix transform;
-        public float rotation, rotSpeed, speed;
-        public GameObject( Vector2 position, Vector2 origin, Vector2 velocity, float speed) {
+        public float rotation, rotSpeed, speed, width, height;
+        public GameObject( Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height ) {
             this.position = position;
             this.velocity = velocity;
             this.origin = origin;
             this.speed = speed;
             this.rotation = 0;
+            this.width = width;
+            this.height = height;
         }
 
         public bool checkBoundaries( int width, int height ) {
@@ -27,6 +29,12 @@ namespace noRestForTheQuery {
             if (position.Y >= FinalGame.WINDOW_HEIGHT + height) { return true; }
             return false;
         }
+
+        protected bool isOtherObjectClose( float playerX, float playerY, float radius ){
+            float distance = (float)Math.Sqrt( Math.Pow(position.X-playerX, 2) - Math.Pow(position.Y-playerY, 2) );
+            if( distance < radius ){ return true; }
+            return false;
+        }
     }
 
     class Platform : GameObject {
@@ -34,7 +42,7 @@ namespace noRestForTheQuery {
         public Platform(Vector2 position, Vector2 velocity, float speed)
             : base(position, 
                    new Vector2((FinalGame.defaultBlockSize / 2), (FinalGame.defaultBlockSize / 2)), 
-                   velocity, speed) 
+                   velocity, speed, FinalGame.defaultBlockSize, FinalGame.defaultBlockSize) 
         {
             rectangle = new Rectangle((int)position.X, (int)position.Y, FinalGame.defaultBlockSize, FinalGame.defaultBlockSize);
         }
@@ -43,8 +51,8 @@ namespace noRestForTheQuery {
     class DamagableObject : GameObject {
         public bool hit;
         public int currentHealth, fullHealth, attackPower;
-        public DamagableObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed)
-            : base(position, origin, velocity, speed) { }
+        public DamagableObject(Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height)
+            : base(position, origin, velocity, speed, width, height) { }
 
         public bool checkDeath() {
             if (currentHealth <= 0) { isAlive = false; }
