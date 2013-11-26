@@ -16,7 +16,7 @@ namespace noRestForTheQuery {
         public Notebook notebook;
 
         public Student1( ref AnimatedSprite sprite, Vector2 position, Vector2 origin, Vector2 velocity, float speed)
-            : base(position, origin, velocity, speed) {
+            : base(position, origin, velocity, speed, FinalGame.studentWidth, FinalGame.studentHeight) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -55,9 +55,10 @@ namespace noRestForTheQuery {
             fullHealth = 100;
             currentHealth = fullHealth;
             attackPower = 10;
-            amtPencil = 50;
+            amtPencil = 150;
             sanity = 1.00;
             budget = 200;
+            experience = 0;
         }
 
         // Override Check Boundaries

@@ -12,7 +12,7 @@ namespace noRestForTheQuery {
         public int attackPower;
         public List<Marker> markers = new List<Marker>();
         public Professor(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(position, origin, velocity, speed) {
+            base(position, origin, velocity, speed, FinalGame.professorSprite.Width, FinalGame.professorSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -60,8 +60,11 @@ namespace noRestForTheQuery {
     }
 
     class Homework : DamagableObject {
-        public Homework(Vector2 position, Vector2 origin, Vector2 velocity) :
-            base(position, origin, velocity, 0) {
+        bool chasing = false;
+        float hover = 0.0F;
+        float searchRadius = 400;
+        public Homework(Vector2 position, Vector2 origin, Vector2 velocity ) :
+            base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -75,9 +78,22 @@ namespace noRestForTheQuery {
             speed = (float)(FinalGame.rand.Next(2, 3) + FinalGame.rand.NextDouble());
 
         }
+
         // Update the Position And/Or Velocity
-        public void update() {
-            position.X -= speed;
+        public void update( float x, float y ) {
+            if( !chasing ){ 
+                velocity.Y = (float)Math.Sin( hover-=.05F );
+                if( hover < -2*Math.PI ){ hover = 0; } //To prevent the hover value from getting too large
+                if( base.isOtherObjectClose( x, y, searchRadius ) ){ chasing = true; }
+            }
+            else{
+                rotation = (float)Math.Atan2( y - (position.Y+origin.Y), x - (position.X+origin.X) );
+                velocity.X += (float)Math.Cos(rotation) * (.02F*speed);
+                velocity.Y += (float)Math.Sin(rotation) * (.02F*speed);
+            }
+            
+            position.X += velocity.X;
+            position.Y += velocity.Y;
             this.transform = 
                 Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
                 Matrix.CreateRotationZ(this.rotation) *
@@ -85,8 +101,8 @@ namespace noRestForTheQuery {
         }
     }
     class Midterm : DamagableObject {
-        public Midterm(Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(position, origin, velocity, speed) {
+        public Midterm(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+            base(position, origin, velocity, speed, FinalGame.midtermSprite.Width, FinalGame.midtermSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -106,8 +122,8 @@ namespace noRestForTheQuery {
 
     }
     class Final : DamagableObject {
-        public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-            base(position, origin, velocity, speed) {
+        public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+            base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
