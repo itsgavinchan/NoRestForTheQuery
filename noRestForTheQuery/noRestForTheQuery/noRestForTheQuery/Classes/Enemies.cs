@@ -107,8 +107,8 @@ namespace noRestForTheQuery {
                 Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
         }
     }
-    class Midterm : Assignment {
-        public Midterm(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+    class Exam : Assignment {
+        public Exam(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
             base(position, origin, velocity, speed, FinalGame.midtermSprite.Width, FinalGame.midtermSprite.Height, false, 550) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
@@ -123,21 +123,21 @@ namespace noRestForTheQuery {
         }
         public void update( float x, float y ) { }
     }
-    class Final : DamagableObject {
-        public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
-            base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
-            // Values Already Assigned To: 
-            //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-            //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
-            // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
+    //class Final : DamagableObject {
+    //    public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+    //        base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
+    //        // Values Already Assigned To: 
+    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
+    //        //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
+    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
 
-            fullHealth = 200 * FinalGame.gameLevel;
-            currentHealth = fullHealth;
-            attackPower = 50 * FinalGame.gameLevel;
+    //        fullHealth = 200 * FinalGame.gameLevel;
+    //        currentHealth = fullHealth;
+    //        attackPower = 50 * FinalGame.gameLevel;
 
-            // Assign Values to Local Members
+    //        // Assign Values to Local Members
 
-        }
-        public void update( float x, float y ) { }
-    }
+    //    }
+    //    public void update( float x, float y ) { }
+    //}
 }
