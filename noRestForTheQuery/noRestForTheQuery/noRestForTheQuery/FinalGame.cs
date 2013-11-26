@@ -445,18 +445,11 @@ namespace noRestForTheQuery
                                                 studentSprite.Width, studentSprite.Height);
 
                     if (student.hit) {
-                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
                             else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
                             homeworks[index].isAlive = false;
-                            lostHealth = true;
-                        }
-
-                        if( hitRecoilTime < 0 ){
-                            hitRecoilTime = INVUL_TIME;
-                            student.hit = false;
-                            lostHealth = false;
+                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
                     }
 
@@ -481,18 +474,10 @@ namespace noRestForTheQuery
                     }
 
                     if( student.hit ){
-
-                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
                             else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
-                            lostHealth = true;
-                        }
-
-                        if( hitRecoilTime < 0 ){
-                            hitRecoilTime = INVUL_TIME;
-                            student.hit = false;
-                            lostHealth = false;
+                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
                     }
                 }
@@ -503,6 +488,7 @@ namespace noRestForTheQuery
 
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
+                if (student.hit){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
                 //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
@@ -600,10 +586,10 @@ namespace noRestForTheQuery
                     if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
                 }
                 else {
-                    blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
 
                     // If the notebook shield still holds, blink the notebook shield
                     if (student.notebook.isAlive) {
+                        blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F);
                             blinkDuration = BLINK_TIME;
@@ -613,6 +599,7 @@ namespace noRestForTheQuery
 
                     // Otherwise, if the shield is destroyed, blink the student instead
                     else {
+                        blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red); 
                             blinkDuration = BLINK_TIME;
@@ -626,7 +613,7 @@ namespace noRestForTheQuery
                 //}
                 
                 // Display stats
-                spriteBatch.Draw(statSprite, new Vector2( screenOffset, 0), Color.White);
+                spriteBatch.Draw(statSprite, new Vector2(screenOffset, 0), Color.White);
                 spriteBatch.Draw(filler, new Rectangle((int)healthPos.X + screenOffset, (int)healthPos.Y, (int)(((float)student.currentHealth / student.fullHealth) * 450), 17), healthColor);
                 spriteBatch.Draw(filler, new Rectangle((int)sanityPos.X + screenOffset, (int)sanityPos.Y, (int)(student.sanity * 450), 17), sanityColor);
                 spriteBatch.Draw(filler, new Rectangle((int)expPos.X + screenOffset, (int)expPos.Y, (int)(student.experience * 450), 17), expColor);
@@ -755,6 +742,14 @@ namespace noRestForTheQuery
                 if (sprite.currentFrame > 4 && sprite.currentFrame < 8) {
                     sprite.currentFrame = 4;
                 }
+            }
+        }
+        protected void handleInvulTime( GameTime gameTime ){
+            hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
+            if( hitRecoilTime < 0 ){
+                hitRecoilTime = INVUL_TIME;
+                student.hit = false;
+                lostHealth = false;
             }
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {

@@ -48,3 +48,9 @@ C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQu
 C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\blockade.xnb
 C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\weekend.xnb
 C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\filled.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\identification.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\statsbar.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\filler.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\blockade.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\weekend.xnb
+C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\filled.xnb
