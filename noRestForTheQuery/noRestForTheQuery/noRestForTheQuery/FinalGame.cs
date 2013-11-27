@@ -91,6 +91,7 @@ namespace noRestForTheQuery
         public static int defaultBlockHeight = studentHeight;   //Student assured to fit in spaces
         public static int gameLevel = 1;
         public static Random rand = new Random();
+        public Rectangle goal = new Rectangle();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
 
         // CAMERA
@@ -492,6 +493,7 @@ namespace noRestForTheQuery
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
                 if (student.hit){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
+                checkForVictory();
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
                 //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
@@ -561,18 +563,15 @@ namespace noRestForTheQuery
                 // Platform Display
                 for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
                 
+                //Goal Display
+                spriteBatch.Draw( platformSprite, goal, Color.White );
+
                 // Spawned Homework Display
                 for (int i = 0; i < homeworks.Count(); i++) { 
                     spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange);
                     spriteBatch.DrawString(mainFont, "" + homeworks[i].currentHealth, homeworks[i].position, Color.Black);
                 }
-                
-                // Student Display
-                //spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
 
-                // Notebook Shield Display
-                // if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
-            
                 // Ammo (Pencil) Display
                 for (int i = 0; i < student.pencils.Count(); i++) { spriteBatch.Draw(pencilSprite, student.pencils[i].position, null, Color.White, student.pencils[i].rotation, student.pencils[i].origin, 1.0F, SpriteEffects.None, 0.0F); }
                 
@@ -755,6 +754,19 @@ namespace noRestForTheQuery
                 lostHealth = false;
             }
         }
+        protected void checkForVictory(){
+
+            //If the student falls into the 
+            if( goal.Left < student.origin.X && student.origin.X <= goal.Right &&
+                goal.Top  < student.origin.Y && student.origin.Y <= goal.Bottom ){
+                
+                gameLevel++;
+                currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                screenOffset = 0;
+                currentStatus = (int)ScreenStatus.WEEKEND;
+
+            }
+        }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
             platforms.Clear();
             int x = 0; int y = 0;
@@ -771,6 +783,9 @@ namespace noRestForTheQuery
                         homeworks.Add( new Homework( new Vector2( x, y ), new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2), Vector2.Zero ) ); 
                         homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
                         homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
+                    }
+                    if( symbol == 'g' ){
+                        goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight );
                     }
                     x += defaultBlockWidth;
                 }
