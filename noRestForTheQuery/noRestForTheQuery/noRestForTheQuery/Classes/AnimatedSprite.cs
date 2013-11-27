@@ -30,12 +30,12 @@ namespace noRestForTheQuery {
         public Rectangle SourceRect { get { return sourceRectangle; }   set { sourceRectangle = value; } }
         
         //NOTE: For all sprite sheets
-        //    0 is facing left
-        //  1-3 is moving left
-        //    4 is facing right
-        //  5-7 is moving right
+        //    0 is facing right
+        //  1-3 is moving right
+        //    4 is facing left
+        //  5-7 is moving left
 
-        public void animateLeft( KeyboardState keyState, KeyboardState oldKeyState, GameTime gameTime ){
+        public void animateRight( KeyboardState keyState, KeyboardState oldKeyState, GameTime gameTime ){
             if( keyState != oldKeyState ){ currentFrame = 0; }
 
             timer += (float) gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -48,7 +48,7 @@ namespace noRestForTheQuery {
             }
         }
 
-        public void animateRight( KeyboardState keyState, KeyboardState oldKeyState, GameTime gameTime ){
+        public void animateLeft( KeyboardState keyState, KeyboardState oldKeyState, GameTime gameTime ){
             if( keyState != oldKeyState ){ currentFrame = 4; }
             
             timer += (float) gameTime.ElapsedGameTime.TotalMilliseconds;

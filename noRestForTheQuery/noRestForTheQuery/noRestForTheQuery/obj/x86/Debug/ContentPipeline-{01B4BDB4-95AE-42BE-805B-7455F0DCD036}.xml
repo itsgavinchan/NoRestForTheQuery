@@ -163,6 +163,15 @@
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\MainFont.xnb</Output>
       <Time>2013-11-24T12:11:33.9812735-05:00</Time>
     </Item>
+    <Item>
+      <Source>Sprites\playerSheet.png</Source>
+      <Name>Sprites\playerSheet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\playerSheet.xnb</Output>
+      <Time>2013-11-26T16:02:56.5029297-05:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{01B4BDB4-95AE-42BE-805B-7455F0DCD036}</ContentProjectGUID>
