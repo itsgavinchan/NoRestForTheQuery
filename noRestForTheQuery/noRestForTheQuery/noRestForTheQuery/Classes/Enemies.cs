@@ -59,12 +59,21 @@ namespace noRestForTheQuery {
         }
     }
 
-    class Homework : DamagableObject {
-        bool chasing = false;
-        float hover = 0.0F;
-        float searchRadius = 400;
-        public Homework(Vector2 position, Vector2 origin, Vector2 velocity ) :
+    class Assignment : DamagableObject {
+        protected bool chasing;
+        protected float hover, searchRadius;
+
+        public Assignment(Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height, bool chaseState, float searchRadius):
             base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height) {
+                this.chasing = chaseState;
+                this.searchRadius = searchRadius;
+                this.hover = 0.0F;
+        }
+    }
+
+    class Homework : Assignment {
+        public Homework(Vector2 position, Vector2 origin, Vector2 velocity ) :
+            base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height, false, 400) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -76,20 +85,18 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
             speed = (float)(FinalGame.rand.Next(2, 3) + FinalGame.rand.NextDouble());
-
         }
-
-        // Update the Position And/Or Velocity
         public void update( float x, float y ) {
             if( !chasing ){ 
                 velocity.Y = (float)Math.Sin( hover-=.05F );
                 if( hover < -2*Math.PI ){ hover = 0; } //To prevent the hover value from getting too large
-                if( base.isOtherObjectClose( x, y, searchRadius ) ){ chasing = true; }
+                if( isOtherObjectClose( x, y, searchRadius ) ){ chasing = true; }
             }
             else{
                 rotation = (float)Math.Atan2( y - (position.Y+origin.Y), x - (position.X+origin.X) );
-                velocity.X += (float)Math.Cos(rotation) * (.02F*speed);
-                velocity.Y += (float)Math.Sin(rotation) * (.02F*speed);
+                velocity.X += (float)Math.Cos(rotation) * (.05F*speed);
+                velocity.Y += (float)Math.Sin(rotation) * (.06F*speed);
+                rotation = (float)Math.Atan2( velocity.Y, velocity.X );
             }
             
             position.X += velocity.X;
@@ -100,9 +107,9 @@ namespace noRestForTheQuery {
                 Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
         }
     }
-    class Midterm : DamagableObject {
-        public Midterm(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
-            base(position, origin, velocity, speed, FinalGame.midtermSprite.Width, FinalGame.midtermSprite.Height) {
+    class Exam : Assignment {
+        public Exam(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+            base(position, origin, velocity, speed, FinalGame.midtermSprite.Width, FinalGame.midtermSprite.Height, false, 550) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -113,33 +120,24 @@ namespace noRestForTheQuery {
             attackPower = 25 * FinalGame.gameLevel;
 
             // Assign Values to Local Members
-
         }
-        // Update the Position And/Or Velocity
-        public void update() {
-
-        }
-
+        public void update( float x, float y ) { }
     }
-    class Final : DamagableObject {
-        public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
-            base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
-            // Values Already Assigned To: 
-            //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-            //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
-            // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
+    //class Final : DamagableObject {
+    //    public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
+    //        base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
+    //        // Values Already Assigned To: 
+    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
+    //        //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
+    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
 
-            fullHealth = 200 * FinalGame.gameLevel;
-            currentHealth = fullHealth;
-            attackPower = 50 * FinalGame.gameLevel;
+    //        fullHealth = 200 * FinalGame.gameLevel;
+    //        currentHealth = fullHealth;
+    //        attackPower = 50 * FinalGame.gameLevel;
 
-            // Assign Values to Local Members
+    //        // Assign Values to Local Members
 
-        }
-
-        // Update the Position And/Or Velocity
-        public void update() {
-
-        }
-    }
+    //    }
+    //    public void update( float x, float y ) { }
+    //}
 }
