@@ -41,10 +41,10 @@ namespace noRestForTheQuery {
         public Rectangle rectangle;
         public Platform(Vector2 position, Vector2 velocity, float speed)
             : base(position, 
-                   new Vector2((FinalGame.defaultBlockSize / 2), (FinalGame.defaultBlockSize / 2)), 
-                   velocity, speed, FinalGame.defaultBlockSize, FinalGame.defaultBlockSize) 
+                   new Vector2((FinalGame.defaultBlockWidth / 2), (FinalGame.defaultBlockHeight / 2)), 
+                   velocity, speed, FinalGame.defaultBlockWidth, FinalGame.defaultBlockHeight) 
         {
-            rectangle = new Rectangle((int)position.X, (int)position.Y, FinalGame.defaultBlockSize, FinalGame.defaultBlockSize);
+            rectangle = new Rectangle((int)position.X, (int)position.Y, FinalGame.defaultBlockWidth, FinalGame.defaultBlockHeight);
         }
     }
 

@@ -1,12 +1,10 @@
 ﻿                                                                x                  x
-                                                                x                  x
-                                                                x                  x
                                                                 x                  x 
-                                                                x            h     xxxxxxx    xx
-                                                                x  xxxxxxxxxxxx    x       h  xx
-                                                       h        x   xxxxxxxxxxx    x    xxxxxxxx
-                                             h         x        xx  xxxxxxxxxxx         xxxxxxxx      
-                                             xx  x  x  x          h xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxx
+                                                                x   x              x          xx
+                                                                x   x        h     x       h  xx
+                                                       h        xx  xxxxxxxxxxx    x    xxxxxxxx
+                                             h         x            xxxxxxxxxxx         xxxxxxxx      
+                                             xx  x  x  x          hxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxx
                   h xxx  xxx  h              xx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       s          xxxxxx  xxxxxx        xxxxxxxx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxx  xxxxxxxxx  xxxxxxxxxx  xxxxxxxxxx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

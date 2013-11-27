@@ -85,7 +85,10 @@ namespace noRestForTheQuery
 
         // BATTLE/WEEKDAY SCREEN
         // GAME TOOLS
-        public static int defaultBlockSize = 50;
+        public static int studentWidth = 50;
+        public static int studentHeight = 65;
+        public static int defaultBlockWidth = studentWidth;     //To make level design easier
+        public static int defaultBlockHeight = studentHeight;   //Student assured to fit in spaces
         public static int gameLevel = 1;
         public static Random rand = new Random();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
@@ -96,8 +99,6 @@ namespace noRestForTheQuery
 
         // STUDENT
         Student1 student;
-        public static int studentWidth = 50;
-        public static int studentHeight = 50;
         AnimatedSprite studentAnimation;
         int hitRecoilTime = INVUL_TIME;
         int blinkDuration = BLINK_TIME;
@@ -174,7 +175,7 @@ namespace noRestForTheQuery
             }
 
             // Animation sheet
-            studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/simplePlayerSheet"), 
+            studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/playerSheet"), 
                                                    5, studentWidth, studentHeight );
 
             // Student starts in the top center of the screen for testing. Otherwise, it follows the level plan
@@ -364,6 +365,8 @@ namespace noRestForTheQuery
                     double x = (mouseX - (student.position.X + student.sprite.width / 2));
                     double y = (mouseY - (student.position.Y + student.sprite.height / 2));
                     student.shoot((float)(Math.Atan2(y, x)));
+                    if( x <= 0 ){ student.sprite.currentFrame = 4; }
+                    else{ student.sprite.currentFrame = 0; }
                 }
 
                 // TEST - Professor Appearance
@@ -690,8 +693,8 @@ namespace noRestForTheQuery
             for (int i = 0; i < platforms.Count; ++i) {
                 interLeft = Math.Max((int)student.position.X, platforms[i].rectangle.Left);
                 interTop = Math.Max((int)student.position.Y, platforms[i].rectangle.Top);
-                interRight = Math.Min((int)student.position.X + studentSprite.Width, platforms[i].rectangle.Right);
-                interBot = Math.Min((int)student.position.Y + studentSprite.Height, platforms[i].rectangle.Bottom);
+                interRight = Math.Min((int)student.position.X + studentWidth, platforms[i].rectangle.Right);
+                interBot = Math.Min((int)student.position.Y + studentHeight, platforms[i].rectangle.Bottom);
                 interWidth = interRight - interLeft;
                 interHeight = (interBot - interTop);
 
@@ -769,10 +772,10 @@ namespace noRestForTheQuery
                         homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
                         homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
                     }
-                    x += defaultBlockSize;
+                    x += defaultBlockWidth;
                 }
                 x = 0;
-                y += defaultBlockSize;
+                y += defaultBlockHeight;
             }
         }
     }
