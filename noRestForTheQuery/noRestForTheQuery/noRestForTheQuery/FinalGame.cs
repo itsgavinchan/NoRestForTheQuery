@@ -594,7 +594,7 @@ namespace noRestForTheQuery
                 for (int i = 0; i < numOfWeekendOptions; i++) {
                     if (chosenChoices.Contains(i)) { spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.White); }
                 }
-                if ( checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
+                if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
                 if (chosenChoices.Count() == maxChoices) { spriteBatch.Draw(submitSprite, statsPos, Color.White); }
             }
             // WEEKDAY SCREEN
@@ -704,6 +704,24 @@ namespace noRestForTheQuery
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
         }
+        protected void softReset() {
+            //Reset all objects on the stage
+            homeworks.Clear();
+            goal = new Rectangle();
+
+            //Load stage
+            buildLevel(ref platforms, ref student, ref homeworks); 
+
+            //Reset game tool variables
+            screenOffset = 0;
+            translation = Matrix.Identity;
+            updatePosition();
+            hitRecoilTime = INVUL_TIME;
+            blinkDuration = BLINK_TIME;
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
+            
+        }
         protected void handleStudentPlatformCollision() {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
             for (int i = 0; i < platforms.Count; ++i) {
@@ -774,12 +792,14 @@ namespace noRestForTheQuery
         protected void checkForVictory(){
 
             //If the student falls into the 
-            if( goal.Left < student.origin.X && student.origin.X <= goal.Right &&
-                goal.Top  < student.origin.Y && student.origin.Y <= goal.Bottom ){
+            if( goal.Left < student.position.X+student.origin.X && student.position.X+student.origin.X <= goal.Right &&
+                goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
                 
-                gameLevel++;
+                //Increment game level
+                if( gameLevel < MAXLEVELS ){ gameLevel++; }
                 currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                screenOffset = 0;
+                softReset();
+                staticScreenTrigger = true;
                 currentStatus = (int)ScreenStatus.WEEKEND;
 
             }
