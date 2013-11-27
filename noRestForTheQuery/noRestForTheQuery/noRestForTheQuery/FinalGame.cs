@@ -29,6 +29,7 @@ namespace noRestForTheQuery
 
         // STATSBAR
         Texture2D statSprite, idSprite, filler;
+        Vector2 statsPos = Vector2.Zero;
         Vector2 levelPos = new Vector2(105, 90);
         Vector2 budgetPos = new Vector2(255, 92);
         Vector2 ammoPos = new Vector2(462, 92);
@@ -66,22 +67,25 @@ namespace noRestForTheQuery
 
         List<int> chosenChoices = new List<int>(3);
         //Texture2D[] weekendIcons = new Texture2D[numOfWeekendOptions];
-        List<Vector2> weekendPositions = new List<Vector2>();
-        Texture2D weekEndSprite, filledBulletSprite;
+        Vector2[] weekendPositions = new Vector2[numOfWeekendOptions];
+        Texture2D weekEndBGSprite, filledBulletSprite, plansSprite, listSprite, submitSprite;
 
         // STORE Option Specific
         public static int SHIELDCOST = 100;
         public static int SLEEPINCREMENT = 50;
         public static int BULKBUY = 50;
-        public static double PENCILCOST = 10.0/BULKBUY;
-        int pencilPurchasing = 0;
-        bool pencilCheck = false, shieldCheck = false;
+        public static double PENCILCOST = 20.0/BULKBUY;
+        int pencilPurchasing = 0, costOfShield, costOfPencils;
+        bool shieldCheck = false, staticScreenTrigger = false;
         Vector2 pencilOption = new Vector2( 790, 240 );
         Vector2 shieldOption = new Vector2(790, 363);
-        Vector2 minusPos = new Vector2(812, 288);
-        Vector2 plusPos = new Vector2(1007, 288);
-        Vector2 submitPos = new Vector2(908, 483);
-
+        Vector2 minusPos = new Vector2(795, 275);
+        Vector2 plusPos = new Vector2(1010, 275);
+        Vector2 submitPos = new Vector2(900, 475);
+        Vector2 quantityPos = new Vector2(850, 275);
+        Vector2 remainingPos = new Vector2(910, 140); 
+        Vector2 spendingPos = new Vector2(960, 180);
+        Color b80000 = new Color(184, 0, 0);
 
         // BATTLE/WEEKDAY SCREEN
         // GAME TOOLS
@@ -106,6 +110,7 @@ namespace noRestForTheQuery
         int sanityTime = SANITY_TIME;
         int sanityBlockade = 0;
         const double SANITYTRIGGER = 0.5;
+        Vector2 blockadePos;
         bool lostHealth = false; //Needed in order to decrement health only once after being hit.
 
         // PROFESSORS
@@ -118,7 +123,7 @@ namespace noRestForTheQuery
         List<Homework> homeworks = new List<Homework>();
 
         // DISPLAY Variables
-        SpriteFont mainFont;
+        SpriteFont mainFont, largeFont;
         public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, midtermSprite, finalSprite, notebookSprite, professorSprite, blockadeSprite;
         
         // INPUT States
@@ -136,6 +141,7 @@ namespace noRestForTheQuery
         protected override void LoadContent() {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             mainFont = Content.Load<SpriteFont>(@"Fonts/MainFont");
+            largeFont = Content.Load<SpriteFont>(@"Fonts/LargeFont");
 
             studentSprite = Content.Load<Texture2D>(@"Sprites/player");
             platformSprite = Content.Load<Texture2D>(@"Sprites/platform");
@@ -151,17 +157,14 @@ namespace noRestForTheQuery
             filler = Content.Load<Texture2D>(@"Sprites/filler");
             statSprite = Content.Load<Texture2D>(@"Sprites/statsbar");
             idSprite = Content.Load<Texture2D>(@"Sprites/identification");
-            
-            // Temporary Implmentation - UI Will Change
-            //weekendIcons[(int)WeekendChoices.SLEEP] = Content.Load<Texture2D>(@"Sprites/menuItem01");
-            //weekendIcons[(int)WeekendChoices.FOOD] = Content.Load<Texture2D>(@"Sprites/menuItem01");
-            //weekendIcons[(int)WeekendChoices.STUDY] = Content.Load<Texture2D>(@"Sprites/menuItem01");
-            //weekendIcons[(int)WeekendChoices.STORE] = Content.Load<Texture2D>(@"Sprites/menuItem01");
-            //weekendIcons[(int)WeekendChoices.RELAX] = Content.Load<Texture2D>(@"Sprites/menuItem01");
 
-            weekEndSprite = Content.Load<Texture2D>(@"Sprites/weekend");
+            weekEndBGSprite = Content.Load<Texture2D>(@"Sprites/weekend");
+            plansSprite = Content.Load<Texture2D>(@"Sprites/plans");
+            listSprite = Content.Load<Texture2D>(@"Sprites/shoppingList");
+            submitSprite = Content.Load<Texture2D>(@"Sprites/submit");
             filledBulletSprite = Content.Load<Texture2D>(@"Sprites/filled");
 
+            blockadePos = new Vector2(WINDOW_WIDTH - sanityBlockade, 0);
             gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
             continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
@@ -172,7 +175,7 @@ namespace noRestForTheQuery
             //for (int i = 0; i < weekendIcons.Count(); i++) { sum += weekendIcons[i].Width; }
             //float itemMargin = ( (WINDOW_WIDTH - weekendMargin * 2) - sum) / weekendIcons.Count();
             for( int i = 0; i < numOfWeekendOptions; i++ ) {
-                weekendPositions.Add(new Vector2(165, 200 + 57*i));
+                weekendPositions[i] = new Vector2(160, 198 + 57*i);
             }
 
             // Animation sheet
@@ -206,6 +209,37 @@ namespace noRestForTheQuery
 
         }
         protected override void UnloadContent() { }
+        public void updatePosition() {
+            if (currentStatus == (int)ScreenStatus.WEEKDAY) {
+                // Update Position to Keep Still - StatsBar
+                levelPos.X = 105 + screenOffset;
+                budgetPos.X = 255 + screenOffset;
+                ammoPos.X = 462 + screenOffset;
+                shieldPos.X = 628 + screenOffset;
+                healthPos.X = 161 + screenOffset;
+                sanityPos.X = 148 + screenOffset;
+                expPos.X = 135 + screenOffset;
+                statsPos.X = screenOffset;
+                blockadePos.X = WINDOW_WIDTH - sanityBlockade + screenOffset;
+            }
+            else if (currentStatus == (int)ScreenStatus.WEEKEND && staticScreenTrigger) {
+                for (int i = 0; i < weekendPositions.Count(); i++) {
+                    weekendPositions[i].X = 160 + screenOffset;
+                }
+                quantityPos.X = 850 + screenOffset;
+                pencilOption.X = 790 + screenOffset;
+                shieldOption.X = 790 + screenOffset;
+                minusPos.X = 795 + screenOffset;
+                plusPos.X = 1010 + screenOffset;
+                submitPos.X = 780 + screenOffset;
+                remainingPos.X = 910 + screenOffset;
+                spendingPos.X = 960 + screenOffset;
+            }
+            else if (currentStatus == (int)ScreenStatus.GAMEOVER && staticScreenTrigger) {
+                gameOverPos.X += screenOffset;
+                gameOverContPos.X += screenOffset;
+            }
+        }
         protected override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -228,16 +262,19 @@ namespace noRestForTheQuery
             // PAUSE SCREEN - Provides option to pause the screen; may implement SAVE, QUIT GAME, RESTART LEVEL in future iterations
             // Press Backspace to resume the game in Weekday Stage (Pause Stage can only be accessed from Weekday Stage)
             else if (IsActive && currentStatus == (int)ScreenStatus.PAUSE) {
+                if (staticScreenTrigger) staticScreenTrigger = false;
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) { currentStatus = (int)ScreenStatus.WEEKDAY; }
             }
             // STATUS SCREEN - Displays the status of the player; not yet implemented; a testing screen to be removed at final implementation
             // Pressing Space will proceed back to the Weekend Stage (Status Stage can only be accessed from Weekend Stage)
             else if (IsActive && currentStatus == (int)ScreenStatus.STATUS) {
+                if (staticScreenTrigger) staticScreenTrigger = false;
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.WEEKEND; }
             }
             // GAME OVER SCREEN
             // Pressing R Key will restart the game from the beginning - Start Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.GAMEOVER) {
+                if (staticScreenTrigger) staticScreenTrigger = false;
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); currentStatus = (int)ScreenStatus.START; }
             }
             // WEEKEND SCREEN
@@ -248,37 +285,40 @@ namespace noRestForTheQuery
                 // of allowed choices.
             // Pressing Space will lead you to the Status Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
+                if (staticScreenTrigger) staticScreenTrigger = false;
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.STATUS; }
 
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released) {
 
-
                     for (int i = 0; i < numOfWeekendOptions; i++) {
-                        if (checkMouseOverlap(weekendPositions[i], filledBulletSprite.Width, filledBulletSprite.Height) && !chosenChoices.Contains(i)) { 
-                            if (chosenChoices.Count() >= maxChoices) { chosenChoices.RemoveAt(0); chosenChoices.Add(i); }
-                            else { chosenChoices.Add(i); }
+                        if (checkMouseOverlap(weekendPositions[i], filledBulletSprite.Width, filledBulletSprite.Height)) {
+                            if (chosenChoices.Count() >= maxChoices && !chosenChoices.Contains(i)) { chosenChoices.RemoveAt(0); chosenChoices.Add(i); }
+                            else if (chosenChoices.Contains(i) ) { chosenChoices.RemoveAt(chosenChoices.IndexOf(i)); }
+                            else if ( !chosenChoices.Contains(i) ) { chosenChoices.Add(i); }
                         }
                     }
 
                     if (chosenChoices.Contains((int)WeekendChoices.STORE)) {
-                        if (checkMouseOverlap(pencilOption, filledBulletSprite.Width, filledBulletSprite.Height)) {
-                            if (pencilCheck) { pencilPurchasing = 0; }
-                            pencilCheck= !pencilCheck; 
-
+                        if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height)) {
+                            if (!shieldCheck) costOfShield = 0;
+                            shieldCheck = !shieldCheck;
                         }
-                        else if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height) ) { shieldCheck = !shieldCheck; }
 
-                        if (pencilCheck) {
+
                             if (checkMouseOverlap(minusPos, 25, 25) && pencilPurchasing > 0 ) { pencilPurchasing -= BULKBUY; }
                             else if(checkMouseOverlap(plusPos, 25, 25)) { 
-                                if( !shieldCheck && pencilPurchasing * PENCILCOST < student.budget ) pencilPurchasing += BULKBUY; 
-                                else if( shieldCheck && SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook) + pencilPurchasing * PENCILCOST < student.budget ){ pencilPurchasing += BULKBUY;  }
+                                if( !shieldCheck && costOfPencils < student.budget ) pencilPurchasing += BULKBUY; 
+                                else if( shieldCheck && costOfPencils + costOfShield < student.budget ){ pencilPurchasing += BULKBUY;  }
                             }
+                        
+                        if (shieldCheck && costOfPencils + costOfShield > student.budget) {
+                                pencilPurchasing = (int)((student.budget - costOfShield) / PENCILCOST);
                         }
+                        
                     }
 
-                    if( checkMouseOverlap( submitPos, 250, 35 ) ) {
+                    if( chosenChoices.Count() == 3 && checkMouseOverlap( submitPos, 250, 35 ) ) {
                         for (int i = 0; i < chosenChoices.Count(); i++) {
                             if (chosenChoices[i] == (int)WeekendChoices.BEG) { student.budget+= 500; }
                             else if (chosenChoices[i] == (int)WeekendChoices.SLEEP) { student.sleepEffect(); }
@@ -286,22 +326,24 @@ namespace noRestForTheQuery
                             else if (chosenChoices[i] == (int)WeekendChoices.FOOD) { student.foodEffect(); }
                             else if (chosenChoices[i] == (int)WeekendChoices.RELAX) { student.socialEffect(); }
                             else if (chosenChoices[i] == (int)WeekendChoices.STORE) { 
-                                if( pencilCheck ){
-                                    student.amtPencil += pencilPurchasing;
-                                    student.budget -= (int)(pencilPurchasing * PENCILCOST);
-                                }
+                                student.amtPencil += pencilPurchasing;
+                                student.budget -= (int)(pencilPurchasing * PENCILCOST);
                                 if( shieldCheck ){
                                     student.budget -= SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook);
                                     student.notebook.reset();
                                 }
                             }
                         }
-                        pencilCheck = false;
                         shieldCheck = false;
                         chosenChoices.Clear();
                         pencilPurchasing = 0;
+                        costOfPencils = 0;
+                        costOfShield = 0;
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
+
+                    costOfShield = SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook);
+                    costOfPencils = (int)(pencilPurchasing * PENCILCOST);
                 }
             }
             // WEEKDAY SCREEN - Where the Action Happens and You Die (A Lot); Currently In Testing
@@ -319,24 +361,14 @@ namespace noRestForTheQuery
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
                 if ( student.currentHealth <= 0 || Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
-                    gameOverPos = new Vector2(gameOverPos.X + screenOffset, gameOverPos.Y);
-                    gameOverContPos = new Vector2(gameOverContPos.X + screenOffset, gameOverContPos.Y); 
+                    staticScreenTrigger = true;
                     student.isAlive = false; 
                     currentStatus = (int)ScreenStatus.GAMEOVER; 
                 }
 
                 // TEST - Initiate WEEKEND Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) {
-                    // Readjusts the positions of the weekend icons (Temporary Implementation - UI will change)
-                    for (int i = 0; i < numOfWeekendOptions; i++) {
-                        weekendPositions[i] = new Vector2(165 + screenOffset, 200 + 57 * i);
-                    }
-
-                    pencilOption = new Vector2(790 + screenOffset, 240);
-                    shieldOption = new Vector2(790 + screenOffset, 363);
-                    minusPos = new Vector2(798 + screenOffset, 275);
-                    plusPos = new Vector2(993 + screenOffset, 275);
-                    submitPos = new Vector2(780 + screenOffset, 475);
+                    staticScreenTrigger = true;
                     // Transitions to WEEKEND Stage
                     currentStatus = (int)ScreenStatus.WEEKEND;
                 }
@@ -487,6 +519,7 @@ namespace noRestForTheQuery
                 }
 
                 // BOOK-KEEPING
+                updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision();                               //Handle student/platform collision
 
@@ -496,7 +529,7 @@ namespace noRestForTheQuery
                 checkForVictory();
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
-                //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
+
             }
 
             lastKeyState = Keyboard.GetState();
@@ -524,11 +557,21 @@ namespace noRestForTheQuery
                 }
             }
 
-            // PAUSE SCREEN - In development
-            else if (IsActive && currentStatus == (int)ScreenStatus.PAUSE) { }
-
             // STATUS SCREEN - In development; May Not Implement (For Testing Purposes)
-            else if (IsActive && currentStatus == (int)ScreenStatus.STATUS) { }
+            else if (IsActive && (currentStatus == (int)ScreenStatus.STATUS || currentStatus == (int)ScreenStatus.PAUSE ) ) { 
+                spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
+                int ypos = 0, yAmt = 30;
+                spriteBatch.DrawString(largeFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Ammo Held: " + student.amtPencil, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Homework Killed: " + hwKilled, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Experience: " + (student.experience * 100) + "/100", new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Attack Power: " + student.attackPower, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Budget: $" + student.budget, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Sanity: " + (student.sanity * 100) + "/100", new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                
+            }
 
             // GAMEOVER SCREEN
             else if (IsActive && currentStatus == (int)ScreenStatus.GAMEOVER) {
@@ -540,22 +583,19 @@ namespace noRestForTheQuery
             // Temporary implementation; actual UI will be different. Selected choices will be brown and unselected choices will be red. 
             // Hovering over a choice will show the choice as black. 
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
-                spriteBatch.Draw(weekEndSprite, new Vector2( screenOffset, 0 ), Color.White);
-                for (int i = 0; i < numOfWeekendOptions; i++) {
-                    if (checkMouseOverlap(weekendPositions[i], filledBulletSprite.Width, filledBulletSprite.Height) && !chosenChoices.Contains(i)) { 
-                        spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.Black); 
-                    } 
-                    else if (chosenChoices.Contains(i)) { spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.White); }
+                spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
+                spriteBatch.Draw(plansSprite, statsPos, Color.White);
+                if (chosenChoices.Contains((int)WeekendChoices.STORE)) {
+                    spriteBatch.Draw(listSprite, statsPos, Color.White);
+                    spriteBatch.DrawString(mainFont, pencilPurchasing + " for $" + PENCILCOST * pencilPurchasing, quantityPos, Color.White);
+                    spriteBatch.DrawString(largeFont, "$" + (student.budget - costOfShield - costOfPencils), remainingPos, b80000);
+                    spriteBatch.DrawString(largeFont, "$" + (costOfShield + costOfPencils), spendingPos, b80000);
                 }
-                    if ( checkMouseOverlap( pencilOption, filledBulletSprite.Width, filledBulletSprite.Height ) || pencilCheck) { spriteBatch.Draw(filledBulletSprite, pencilOption, Color.White); }
-                    if ( checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
-                    spriteBatch.Draw(filledBulletSprite, minusPos, Color.White);
-                    spriteBatch.Draw(filledBulletSprite, plusPos, Color.White);
-
-                    spriteBatch.DrawString(mainFont, pencilPurchasing + " > " + PENCILCOST *pencilPurchasing, new Vector2(screenOffset + 950 - mainFont.MeasureString(pencilPurchasing + " > " + pencilPurchasing * PENCILCOST).X, 275), Color.White);
-                
-
-
+                for (int i = 0; i < numOfWeekendOptions; i++) {
+                    if (chosenChoices.Contains(i)) { spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.White); }
+                }
+                if ( checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
+                if (chosenChoices.Count() == maxChoices) { spriteBatch.Draw(submitSprite, statsPos, Color.White); }
             }
             // WEEKDAY SCREEN
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
@@ -611,43 +651,22 @@ namespace noRestForTheQuery
 
                 // SANITY CONTROL
                 //if (student.sanity <= SANITYTRIGGER) {
-                    spriteBatch.Draw(blockadeSprite, new Vector2( screenOffset + WINDOW_WIDTH - sanityBlockade, 0 ), Color.White);
+                    spriteBatch.Draw(blockadeSprite, blockadePos, Color.White);
                 //}
                 
                 // Display stats
-                spriteBatch.Draw(statSprite, new Vector2(screenOffset, 0), Color.White);
-                spriteBatch.Draw(filler, new Rectangle((int)healthPos.X + screenOffset, (int)healthPos.Y, (int)(((float)student.currentHealth / student.fullHealth) * 450), 17), healthColor);
-                spriteBatch.Draw(filler, new Rectangle((int)sanityPos.X + screenOffset, (int)sanityPos.Y, (int)(student.sanity * 450), 17), sanityColor);
-                spriteBatch.Draw(filler, new Rectangle((int)expPos.X + screenOffset, (int)expPos.Y, (int)(student.experience * 450), 17), expColor);
-                spriteBatch.Draw(idSprite, new Vector2(screenOffset, 0), Color.White);
-                spriteBatch.DrawString(mainFont, "$" + student.budget, new Vector2(budgetPos.X + screenOffset, budgetPos.Y), Color.Black);
-                spriteBatch.DrawString(mainFont, "" + student.amtPencil, new Vector2(ammoPos.X + screenOffset, ammoPos.Y), Color.Black);
-                spriteBatch.DrawString(mainFont, "" + student.notebook.numOfNotebook, new Vector2(shieldPos.X + screenOffset, shieldPos.Y), Color.Black);
-                if (gameLevel == 1) spriteBatch.DrawString(mainFont, "Fr", new Vector2(levelPos.X + screenOffset, levelPos.Y), Color.Black);
-                else if (gameLevel == 2) spriteBatch.DrawString(mainFont, "So", new Vector2(levelPos.X + screenOffset, levelPos.Y), Color.Black);
-                else if (gameLevel == 3) spriteBatch.DrawString(mainFont, "Jr", new Vector2(levelPos.X + screenOffset, levelPos.Y), Color.Black);
-                else if (gameLevel == 4) spriteBatch.DrawString(mainFont, "Sr", new Vector2(levelPos.X + screenOffset, levelPos.Y), Color.Black);
-
-
-                spriteBatch.DrawString(mainFont, "blockade" + sanityBlockade, new Vector2(screenOffset, 200), Color.White);
-
-                
-
-                /*
-                int ypos = 0;
-                spriteBatch.DrawString(mainFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(screenOffset, 200), Color.White);
-                spriteBatch.DrawString(mainFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "Ammo Held: " + student.amtPencil, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "hwKilled: " + hwKilled, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "exp: " + student.experience, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "AttPow: " + student.attackPower, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "Budget: " + student.budget, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                spriteBatch.DrawString(mainFont, "Sanity: " + student.sanity, new Vector2(screenOffset, (ypos++) * 25), Color.White);
-                
-                ypos = 0;
-                spriteBatch.DrawString(mainFont, "Prof's AtkPow: " + professors[gameLevel - 1].attackPower, new Vector2(screenOffset + WINDOW_WIDTH - 300, (ypos++) * 25), Color.White);
-                 */
+                spriteBatch.Draw(statSprite, statsPos, Color.White);
+                spriteBatch.Draw(filler, new Rectangle((int)healthPos.X, (int)healthPos.Y, (int)(((float)student.currentHealth / student.fullHealth) * 450), 17), healthColor);
+                spriteBatch.Draw(filler, new Rectangle((int)sanityPos.X, (int)sanityPos.Y, (int)(student.sanity * 450), 17), sanityColor);
+                spriteBatch.Draw(filler, new Rectangle((int)expPos.X, (int)expPos.Y, (int)(student.experience * 450), 17), expColor);
+                spriteBatch.Draw(idSprite, statsPos, Color.White);
+                spriteBatch.DrawString(mainFont, "$" + student.budget, budgetPos, Color.Black);
+                spriteBatch.DrawString(mainFont, "" + student.amtPencil, ammoPos, Color.Black);
+                spriteBatch.DrawString(mainFont, "" + student.notebook.numOfNotebook, shieldPos, Color.Black);
+                if (gameLevel == 1) spriteBatch.DrawString(mainFont, "Fr", levelPos, Color.Black);
+                else if (gameLevel == 2) spriteBatch.DrawString(mainFont, "So", levelPos, Color.Black);
+                else if (gameLevel == 3) spriteBatch.DrawString(mainFont, "Jr", levelPos, Color.Black);
+                else if (gameLevel == 4) spriteBatch.DrawString(mainFont, "Sr", levelPos, Color.Black);
             }
             
             spriteBatch.End();
@@ -681,8 +700,6 @@ namespace noRestForTheQuery
             sanityBlockade = 0;
 
             // Reset the Positions
-            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
-            continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
