@@ -85,7 +85,10 @@ namespace noRestForTheQuery
 
         // BATTLE/WEEKDAY SCREEN
         // GAME TOOLS
-        public static int defaultBlockSize = 50;
+        public static int studentWidth = 50;
+        public static int studentHeight = 65;
+        public static int defaultBlockWidth = studentWidth;     //To make level design easier
+        public static int defaultBlockHeight = studentHeight;   //Student assured to fit in spaces
         public static int gameLevel = 1;
         public static Random rand = new Random();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
@@ -96,8 +99,6 @@ namespace noRestForTheQuery
 
         // STUDENT
         Student1 student;
-        public static int studentWidth = 50;
-        public static int studentHeight = 50;
         AnimatedSprite studentAnimation;
         int hitRecoilTime = INVUL_TIME;
         int blinkDuration = BLINK_TIME;
@@ -174,7 +175,7 @@ namespace noRestForTheQuery
             }
 
             // Animation sheet
-            studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/simplePlayerSheet"), 
+            studentAnimation = new AnimatedSprite( Content.Load<Texture2D>(@"Sprites/playerSheet"), 
                                                    5, studentWidth, studentHeight );
 
             // Student starts in the top center of the screen for testing. Otherwise, it follows the level plan
@@ -364,6 +365,8 @@ namespace noRestForTheQuery
                     double x = (mouseX - (student.position.X + student.sprite.width / 2));
                     double y = (mouseY - (student.position.Y + student.sprite.height / 2));
                     student.shoot((float)(Math.Atan2(y, x)));
+                    if( x <= 0 ){ student.sprite.currentFrame = 4; }
+                    else{ student.sprite.currentFrame = 0; }
                 }
 
                 // TEST - Professor Appearance
@@ -445,18 +448,11 @@ namespace noRestForTheQuery
                                                 studentSprite.Width, studentSprite.Height);
 
                     if (student.hit) {
-                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
                             else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
                             homeworks[index].isAlive = false;
-                            lostHealth = true;
-                        }
-
-                        if( hitRecoilTime < 0 ){
-                            hitRecoilTime = INVUL_TIME;
-                            student.hit = false;
-                            lostHealth = false;
+                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
                     }
 
@@ -481,18 +477,10 @@ namespace noRestForTheQuery
                     }
 
                     if( student.hit ){
-
-                        hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
                             else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
-                            lostHealth = true;
-                        }
-
-                        if( hitRecoilTime < 0 ){
-                            hitRecoilTime = INVUL_TIME;
-                            student.hit = false;
-                            lostHealth = false;
+                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
                     }
                 }
@@ -503,6 +491,7 @@ namespace noRestForTheQuery
 
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
+                if (student.hit){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
                 //if (Keyboard.GetState().GetPressedKeys().Length == 0 ) { resetCurrentAnimation( student.sprite ); }
@@ -600,10 +589,10 @@ namespace noRestForTheQuery
                     if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
                 }
                 else {
-                    blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
 
                     // If the notebook shield still holds, blink the notebook shield
                     if (student.notebook.isAlive) {
+                        blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F);
                             blinkDuration = BLINK_TIME;
@@ -613,6 +602,7 @@ namespace noRestForTheQuery
 
                     // Otherwise, if the shield is destroyed, blink the student instead
                     else {
+                        blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red); 
                             blinkDuration = BLINK_TIME;
@@ -626,7 +616,7 @@ namespace noRestForTheQuery
                 //}
                 
                 // Display stats
-                spriteBatch.Draw(statSprite, new Vector2( screenOffset, 0), Color.White);
+                spriteBatch.Draw(statSprite, new Vector2(screenOffset, 0), Color.White);
                 spriteBatch.Draw(filler, new Rectangle((int)healthPos.X + screenOffset, (int)healthPos.Y, (int)(((float)student.currentHealth / student.fullHealth) * 450), 17), healthColor);
                 spriteBatch.Draw(filler, new Rectangle((int)sanityPos.X + screenOffset, (int)sanityPos.Y, (int)(student.sanity * 450), 17), sanityColor);
                 spriteBatch.Draw(filler, new Rectangle((int)expPos.X + screenOffset, (int)expPos.Y, (int)(student.experience * 450), 17), expColor);
@@ -703,8 +693,8 @@ namespace noRestForTheQuery
             for (int i = 0; i < platforms.Count; ++i) {
                 interLeft = Math.Max((int)student.position.X, platforms[i].rectangle.Left);
                 interTop = Math.Max((int)student.position.Y, platforms[i].rectangle.Top);
-                interRight = Math.Min((int)student.position.X + studentSprite.Width, platforms[i].rectangle.Right);
-                interBot = Math.Min((int)student.position.Y + studentSprite.Height, platforms[i].rectangle.Bottom);
+                interRight = Math.Min((int)student.position.X + studentWidth, platforms[i].rectangle.Right);
+                interBot = Math.Min((int)student.position.Y + studentHeight, platforms[i].rectangle.Bottom);
                 interWidth = interRight - interLeft;
                 interHeight = (interBot - interTop);
 
@@ -757,6 +747,14 @@ namespace noRestForTheQuery
                 }
             }
         }
+        protected void handleInvulTime( GameTime gameTime ){
+            hitRecoilTime -= gameTime.ElapsedGameTime.Milliseconds;
+            if( hitRecoilTime < 0 ){
+                hitRecoilTime = INVUL_TIME;
+                student.hit = false;
+                lostHealth = false;
+            }
+        }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
             platforms.Clear();
             int x = 0; int y = 0;
@@ -774,10 +772,10 @@ namespace noRestForTheQuery
                         homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
                         homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
                     }
-                    x += defaultBlockSize;
+                    x += defaultBlockWidth;
                 }
                 x = 0;
-                y += defaultBlockSize;
+                y += defaultBlockHeight;
             }
         }
     }
