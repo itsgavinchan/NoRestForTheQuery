@@ -63,7 +63,7 @@ namespace noRestForTheQuery {
         public void decrementHealth(int damage) { if (isAlive) currentHealth -= damage; checkDeath(); }
         public void incrementAttack(int boost) { if (isAlive) attackPower += boost; }
 
-        protected Rectangle boundingRectangle(Rectangle rectangle, Matrix transform) {
+        public Rectangle boundingRectangle(Rectangle rectangle, Matrix transform) {
             //Rectangle's four corners
             Vector2 topLeft  = new Vector2(rectangle.Left, rectangle.Top);
             Vector2 topRight = new Vector2(rectangle.Right, rectangle.Top);
