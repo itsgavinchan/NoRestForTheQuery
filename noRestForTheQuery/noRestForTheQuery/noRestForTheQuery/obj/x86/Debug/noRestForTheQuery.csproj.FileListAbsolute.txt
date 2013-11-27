@@ -55,3 +55,8 @@ C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\weekend.xnb
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\filled.xnb
 C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\playerSheet.xnb
+C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\playerSheet.xnb
+C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\plans.xnb
+C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\shoppingList.xnb
+C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\submit.xnb
+C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\LargeFont.xnb

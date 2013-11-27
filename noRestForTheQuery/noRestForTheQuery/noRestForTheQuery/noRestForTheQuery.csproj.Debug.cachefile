@@ -15,5 +15,9 @@ Content\Sprites\filler.xnb
 Content\Sprites\blockade.xnb
 Content\Sprites\weekend.xnb
 Content\Sprites\filled.xnb
-Content\Fonts\MainFont.xnb
 Content\Sprites\playerSheet.xnb
+Content\Fonts\MainFont.xnb
+Content\Sprites\plans.xnb
+Content\Sprites\shoppingList.xnb
+Content\Sprites\submit.xnb
+Content\Fonts\LargeFont.xnb
