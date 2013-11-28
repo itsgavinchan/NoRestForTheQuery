@@ -520,21 +520,18 @@ namespace noRestForTheQuery
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
                             else { student.decrementHealth( exams[index].attackPower ); }
-                            exams[index].isAlive = false;
+                            exams[index].durability--;
                             lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
                     }
 
+                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; }
                     //if (exams[index].checkBoundaries(examsprite.Width, examsprite.Height) ) { exams.RemoveAt(index); }
                     if (!exams[index].isAlive) {
-                        if (exams[index].durability > 0) { 
-                            exams[index].durability--;
-                            exams[index].isAlive = true;
-                        }
-                        else { 
+                        
                             exams.RemoveAt(index); 
                             student.gainExperience();
-                        }
+                        
                     }
                     else { index++; }
                 }

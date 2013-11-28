@@ -119,10 +119,10 @@ namespace noRestForTheQuery {
 
             fullHealth = 100 * FinalGame.gameLevel;
             currentHealth = fullHealth;
-            attackPower = 25 * FinalGame.gameLevel;
+            attackPower = 20 * FinalGame.gameLevel;
 
             // Assign Values to Local Members
-            durability = FinalGame.gameLevel * 3;
+            durability = FinalGame.gameLevel * 10;
             speed = (float)(FinalGame.rand.Next(5, 6) + FinalGame.rand.NextDouble());
         }
 
