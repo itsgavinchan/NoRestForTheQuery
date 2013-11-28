@@ -22,6 +22,7 @@ namespace noRestForTheQuery
         const int INVUL_TIME = 1500;
         const int BLINK_TIME = 100;
         const int SANITY_TIME = 600;
+        const int PROFESSOR_TIME = 9000;
         int mouseX, mouseY, hwKilled;
 
         enum ScreenStatus { START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY };
@@ -109,6 +110,7 @@ namespace noRestForTheQuery
         int blinkDuration = BLINK_TIME;
         int sanityTime = SANITY_TIME;
         int sanityBlockade = 0;
+        int professorTime = PROFESSOR_TIME * gameLevel;
         const double SANITYTRIGGER = 0.5;
         Vector2 blockadePos;
         bool lostHealth = false; //Needed in order to decrement health only once after being hit.
@@ -118,6 +120,8 @@ namespace noRestForTheQuery
 
         // PLATFORMS
         List<Platform> platforms = new List<Platform>();
+        List<Platform> hiddenPlatforms = new List<Platform>();
+        List<Platform> triggers = new List<Platform>();
 
         // HOMEWORKS
         List<Homework> homeworks = new List<Homework>();
@@ -408,6 +412,30 @@ namespace noRestForTheQuery
                     else { professors[gameLevel - 1].reset(); }
                 }
 
+                if (!professors[gameLevel - 1].isAlive) {
+                    for (int i = 0; i < triggers.Count(); i++) {
+                        if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
+                            professors[gameLevel - 1].isAlive = true;
+                        }
+                    }
+                }
+                else {
+                    professorTime -= gameTime.ElapsedGameTime.Milliseconds;
+                    // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
+                    if (professorTime % 600 == 0) {
+                        double x = ((student.position.X + studentSprite.Width / 2) - (professors[gameLevel - 1].position.X + professorSprite.Width / 2));
+                        double y = ((student.position.Y + studentSprite.Height / 2) - (professors[gameLevel - 1].position.Y + professorSprite.Height / 2));
+                        professors[gameLevel - 1].shoot(x, y);
+                    }
+
+                    if (professorTime < 0) {
+                        professors[gameLevel - 1].isAlive = false;
+                        professorTime = PROFESSOR_TIME * gameLevel;
+                        student.sanity -= 0.005;
+                    }
+                    
+                
+                }
                 // TEST - Professor Attack
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     if (professors[gameLevel - 1].isAlive) {
@@ -560,10 +588,12 @@ namespace noRestForTheQuery
                     }
                 }
 
-                // BOOK-KEEPING
-                updatePosition();
+
+                    // BOOK-KEEPING
+                    updatePosition();
                 handleSpriteMovement(ref student.sprite);
-                handleStudentPlatformCollision();                               //Handle student/platform collision
+                handleStudentPlatformCollision( platforms );                               //Handle student/platform collision
+                handleStudentPlatformCollision( hiddenPlatforms);
 
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
@@ -579,7 +609,7 @@ namespace noRestForTheQuery
             base.Update(gameTime);
         }
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Gray);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, translation);
 
             // Displays the different screen stages - START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY
@@ -645,6 +675,12 @@ namespace noRestForTheQuery
                 // Platform Display
                 for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
                 
+                // HIDDEN PLATFORMS Display
+                for (int i = 0; i < hiddenPlatforms.Count; ++i) { spriteBatch.Draw(platformSprite, hiddenPlatforms[i].position, hiddenPlatforms[i].rectangle, Color.LightGray); }
+                
+                // TRIGGERS
+                for (int i = 0; i < triggers.Count; ++i) { spriteBatch.Draw(platformSprite, triggers[i].position, triggers[i].rectangle, Color.White); }
+                
                 //Goal Display
                 spriteBatch.Draw( platformSprite, goal, Color.White );
 
@@ -669,10 +705,11 @@ namespace noRestForTheQuery
                         spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
                     }
                 }
+                
                 // If the student is not hit, draw the student and the notebook shield as usual
                 if (!student.hit) {
-                    spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
-                    if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
+                    spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.White);
+                    if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.Red, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
                 }
                 else {
 
@@ -680,17 +717,17 @@ namespace noRestForTheQuery
                     if (student.notebook.isAlive) {
                         blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
-                            spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.White, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F);
+                            spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.Red, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F);
                             blinkDuration = BLINK_TIME;
                         }
-                        spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red);
+                        spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.White);
                     }
 
                     // Otherwise, if the shield is destroyed, blink the student instead
                     else {
                         blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
-                            spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.Red); 
+                            spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.White); 
                             blinkDuration = BLINK_TIME;
                         }
                     }
@@ -722,6 +759,13 @@ namespace noRestForTheQuery
 
         public bool checkMouseOverlap(Vector2 position, int width, int height) {
             if (mouseX > position.X && mouseX < position.X + width && mouseY > position.Y && mouseY < position.Y + height) { return true; }
+            else { return false; }
+        }
+        public bool checkOverlap(Vector2 o1Pos, int o1W, int o1H, Vector2 o2Pos, int o2W, int o2H) {
+            Rectangle o1 = new Rectangle((int)o1Pos.X, (int)o1Pos.Y, o1W, o1H);
+            Rectangle o2 = new Rectangle((int)o2Pos.X, (int)o2Pos.Y, o2W, o2H);
+
+            if (o1.Intersects(o2)) { return true; }
             else { return false; }
         }
         public bool purchasePencils(int quantity) {
@@ -771,13 +815,14 @@ namespace noRestForTheQuery
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
         }
-        protected void handleStudentPlatformCollision() {
+
+        private void handleStudentPlatformCollision( List<Platform> platform ) {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
-            for (int i = 0; i < platforms.Count; ++i) {
-                interLeft = Math.Max((int)student.position.X, platforms[i].rectangle.Left);
-                interTop = Math.Max((int)student.position.Y, platforms[i].rectangle.Top);
-                interRight = Math.Min((int)student.position.X + studentWidth, platforms[i].rectangle.Right);
-                interBot = Math.Min((int)student.position.Y + studentHeight, platforms[i].rectangle.Bottom);
+            for (int i = 0; i < platform.Count; ++i) {
+                interLeft = Math.Max((int)student.position.X, platform[i].rectangle.Left);
+                interTop = Math.Max((int)student.position.Y, platform[i].rectangle.Top);
+                interRight = Math.Min((int)student.position.X + studentWidth, platform[i].rectangle.Right);
+                interBot = Math.Min((int)student.position.Y + studentHeight, platform[i].rectangle.Bottom);
                 interWidth = interRight - interLeft;
                 interHeight = (interBot - interTop);
 
@@ -800,7 +845,7 @@ namespace noRestForTheQuery
                     //Vertical movement collision (Adjustments added compensate for odd corner cases)
                     if (interWidth > interHeight-Math.Abs(student.velocity.Y) && interWidth > student.speed+1) {
                         //If student is falling, stop them at the top edge of the platform (Make sure it's above the platform)
-                        if (student.velocity.Y > 0 && student.position.Y < platforms[i].position.Y) {
+                        if (student.velocity.Y > 0 && student.position.Y < platform[i].position.Y) {
                             student.position.Y -= interHeight; 
                             student.onGround = true;
                             student.velocity.Y = 0;
@@ -872,10 +917,17 @@ namespace noRestForTheQuery
                     }
                     if( symbol == 'g' ){
                         goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight );
-                    } if (symbol == 'e') {
+                    }
+                    if (symbol == 'e') {
                         exams.Add(new Exam(new Vector2(x, y), new Vector2(examSprite.Width / 2, examSprite.Height / 2), Vector2.Zero));
                         exams.Last().colorArr = new Color[examSprite.Width * examSprite.Height];
                         examSprite.GetData<Color>(exams.Last().colorArr);
+                    }
+                    if (symbol == '-') {
+                        hiddenPlatforms.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
+                    } 
+                    if (symbol == 't') {
+                        triggers.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
                     }
                     x += defaultBlockWidth;
                 }
