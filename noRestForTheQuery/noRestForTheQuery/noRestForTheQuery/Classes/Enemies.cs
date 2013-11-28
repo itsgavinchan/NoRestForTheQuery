@@ -79,7 +79,7 @@ namespace noRestForTheQuery {
             else {
                 rotation = (float)Math.Atan2(y - (position.Y + origin.Y), x - (position.X + origin.X));
                 velocity.X += (float)Math.Cos(rotation) * (.05F * speed);
-                velocity.Y += (float)Math.Sin(rotation) * (.06F * speed);
+                velocity.Y += (float)Math.Sin(rotation) * (.07F * speed);
                 rotation = (float)Math.Atan2(velocity.Y, velocity.X);
             }
 

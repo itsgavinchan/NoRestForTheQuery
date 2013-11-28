@@ -342,7 +342,7 @@ namespace noRestForTheQuery
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
 
-                    costOfShield = SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook);
+                    if( shieldCheck ){ costOfShield = SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook); }
                     costOfPencils = (int)(pencilPurchasing * PENCILCOST);
                 }
             }
