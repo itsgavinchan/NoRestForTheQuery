@@ -118,13 +118,14 @@ namespace noRestForTheQuery
 
         // PLATFORMS
         List<Platform> platforms = new List<Platform>();
-        
+
         // HOMEWORKS
         List<Homework> homeworks = new List<Homework>();
+        List<Exam> exams = new List<Exam>();
 
         // DISPLAY Variables
         SpriteFont mainFont, largeFont;
-        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, midtermSprite, finalSprite, notebookSprite, professorSprite, blockadeSprite;
+        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite;
         
         // INPUT States
         KeyboardState lastKeyState = Keyboard.GetState();
@@ -148,8 +149,7 @@ namespace noRestForTheQuery
             pencilSprite = Content.Load<Texture2D>(@"Sprites/pencil");
             markerSprite = Content.Load<Texture2D>(@"Sprites/marker");
             homeworkSprite = Content.Load<Texture2D>(@"Sprites/homework");
-            midtermSprite = Content.Load<Texture2D>(@"Sprites/midterm");
-            finalSprite = Content.Load<Texture2D>(@"Sprites/final");
+            examSprite = Content.Load<Texture2D>(@"Sprites/final");
             notebookSprite = Content.Load<Texture2D>(@"Sprites/notebook");
             professorSprite = Content.Load<Texture2D>(@"Sprites/professor");
             blockadeSprite = Content.Load<Texture2D>(@"Sprites/blockade");
@@ -351,7 +351,7 @@ namespace noRestForTheQuery
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
-                if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
+                // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
                     student.sanity -= 0.005;
@@ -483,7 +483,7 @@ namespace noRestForTheQuery
                     if (student.hit) {
                         if (!lostHealth) {
                             if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
-                            else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
+                            else { student.decrementHealth( homeworks[index].attackPower );  }
                             homeworks[index].isAlive = false;
                             lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
@@ -491,6 +491,51 @@ namespace noRestForTheQuery
 
                     //if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) ) { homeworks.RemoveAt(index); }
                     if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
+                    else { index++; }
+                }
+
+                // POSITION AND COLLISION UPDATE - Exams
+                index = 0;
+                while (index < exams.Count()) {
+                    exams[index].update(student.position.X + student.origin.X, student.position.Y + student.origin.Y);
+
+                    int i = 0;
+                    while (i < student.pencils.Count()) {
+                        exams[index].handleCollision(student.pencils[i], pencilSprite.Width, pencilSprite.Height,
+                                                examSprite.Width, examSprite.Height);
+                        if (exams[index].hit) { break; }
+                        i++;
+                    }
+
+                    if (exams[index].hit) {
+                        exams[index].decrementHealth(student.attackPower);
+                        student.pencils.RemoveAt(i);
+                        exams[index].hit = false;
+                    }
+
+                    student.handleCollision(exams[index], examSprite.Width, examSprite.Height,
+                                                studentSprite.Width, studentSprite.Height);
+
+                    if (student.hit) {
+                        if (!lostHealth) {
+                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                            else { student.decrementHealth( exams[index].attackPower ); }
+                            exams[index].isAlive = false;
+                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                        }
+                    }
+
+                    //if (exams[index].checkBoundaries(examsprite.Width, examsprite.Height) ) { exams.RemoveAt(index); }
+                    if (!exams[index].isAlive) {
+                        if (exams[index].durability > 0) { 
+                            exams[index].durability--;
+                            exams[index].isAlive = true;
+                        }
+                        else { 
+                            exams.RemoveAt(index); 
+                            student.gainExperience();
+                        }
+                    }
                     else { index++; }
                 }
 
@@ -606,10 +651,15 @@ namespace noRestForTheQuery
                 //Goal Display
                 spriteBatch.Draw( platformSprite, goal, Color.White );
 
-                // Spawned Homework Display
+                // Homework Display
                 for (int i = 0; i < homeworks.Count(); i++) { 
                     spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange);
                     spriteBatch.DrawString(mainFont, "" + homeworks[i].currentHealth, homeworks[i].position, Color.Black);
+                }
+
+                for (int i = 0; i < exams.Count(); i++) {
+                    spriteBatch.Draw(examSprite, exams[i].position, Color.Beige);
+                    spriteBatch.DrawString(mainFont, "" + exams[i].currentHealth, exams[i].position, Color.Black);
                 }
 
                 // Ammo (Pencil) Display
@@ -684,6 +734,7 @@ namespace noRestForTheQuery
         protected void reset() {
             // Reset The Objects (Or Clear the Lists)
             homeworks.Clear();
+            exams.Clear();
             professors[gameLevel - 1].reset();
             student.reset();
 
@@ -707,6 +758,7 @@ namespace noRestForTheQuery
         protected void softReset() {
             //Reset all objects on the stage
             homeworks.Clear();
+            exams.Clear();
             goal = new Rectangle();
 
             //Load stage
@@ -823,6 +875,10 @@ namespace noRestForTheQuery
                     }
                     if( symbol == 'g' ){
                         goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight );
+                    } if (symbol == 'e') {
+                        exams.Add(new Exam(new Vector2(x, y), new Vector2(examSprite.Width / 2, examSprite.Height / 2), Vector2.Zero));
+                        exams.Last().colorArr = new Color[examSprite.Width * examSprite.Height];
+                        examSprite.GetData<Color>(exams.Last().colorArr);
                     }
                     x += defaultBlockWidth;
                 }
