@@ -69,6 +69,27 @@ namespace noRestForTheQuery {
                 this.searchRadius = searchRadius;
                 this.hover = 0.0F;
         }
+
+        public void update(float x, float y) {
+            if (!chasing) {
+                velocity.Y = (float)Math.Sin(hover -= .05F);
+                if (hover < -2 * Math.PI) { hover = 0; } //To prevent the hover value from getting too large
+                if (isOtherObjectClose(x, y, searchRadius)) { chasing = true; }
+            }
+            else {
+                rotation = (float)Math.Atan2(y - (position.Y + origin.Y), x - (position.X + origin.X));
+                velocity.X += (float)Math.Cos(rotation) * (.05F * speed);
+                velocity.Y += (float)Math.Sin(rotation) * (.06F * speed);
+                rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+            }
+
+            position.X += velocity.X;
+            position.Y += velocity.Y;
+            this.transform =
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position + this.origin, 0.0f));
+        }
     }
 
     class Homework : Assignment {
@@ -86,30 +107,11 @@ namespace noRestForTheQuery {
             // Assign Values to Local Members
             speed = (float)(FinalGame.rand.Next(2, 3) + FinalGame.rand.NextDouble());
         }
-        public void update( float x, float y ) {
-            if( !chasing ){ 
-                velocity.Y = (float)Math.Sin( hover-=.05F );
-                if( hover < -2*Math.PI ){ hover = 0; } //To prevent the hover value from getting too large
-                if( isOtherObjectClose( x, y, searchRadius ) ){ chasing = true; }
-            }
-            else{
-                rotation = (float)Math.Atan2( y - (position.Y+origin.Y), x - (position.X+origin.X) );
-                velocity.X += (float)Math.Cos(rotation) * (.05F*speed);
-                velocity.Y += (float)Math.Sin(rotation) * (.06F*speed);
-                rotation = (float)Math.Atan2( velocity.Y, velocity.X );
-            }
-            
-            position.X += velocity.X;
-            position.Y += velocity.Y;
-            this.transform = 
-                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
-                Matrix.CreateRotationZ(this.rotation) *
-                Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
-        }
     }
     class Exam : Assignment {
-        public Exam(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
-            base(position, origin, velocity, speed, FinalGame.midtermSprite.Width, FinalGame.midtermSprite.Height, false, 550) {
+        public int durability;
+        public Exam(Vector2 position, Vector2 origin, Vector2 velocity ) :
+            base(position, origin, velocity, 0, FinalGame.examSprite.Width, FinalGame.examSprite.Height, false, 550) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -120,8 +122,10 @@ namespace noRestForTheQuery {
             attackPower = 25 * FinalGame.gameLevel;
 
             // Assign Values to Local Members
+            durability = FinalGame.gameLevel * 3;
+            speed = (float)(FinalGame.rand.Next(5, 6) + FinalGame.rand.NextDouble());
         }
-        public void update( float x, float y ) { }
+
     }
     //class Final : DamagableObject {
     //    public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
