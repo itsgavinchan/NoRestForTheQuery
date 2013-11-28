@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿                                                                x                  x
                                                                 x                  x 
                                                                 x   x              x          xx
@@ -7,4 +8,15 @@
                                              xx  x  x  x          hxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxx
                   h xxx  xxx  h              xx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       s          xxxxxx  xxxxxx        xxxxxxxx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+=======
+﻿                                  t                             x                  x
+                                  t                             x                  x 
+                     -----        t                             x   x              x          xx
+                                  t                             x   x        e     x       h  xx
+                 ---              t               h        xx  xxxxxxxxxxx    x    xxxxxxxx
+            ------                t          h         x            xxxxxxxxxxx         xxxxxxxx         
+      ----                        t          xx  x  x  x          hxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxx
+ ---              h xxx  xxx  h   t          xx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      s  --      xxxxxx  xxxxxx   t    xxxxxxxx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+>>>>>>> kayEdits
 xxxxxxxxxxxx  xxxxxxxxx  xxxxxxxxxx  xxxxxxxxxx  x  x  x  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
