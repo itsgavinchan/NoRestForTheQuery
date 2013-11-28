@@ -95,6 +95,7 @@ namespace noRestForTheQuery
         public static int defaultBlockHeight = studentHeight;   //Student assured to fit in spaces
         public static int gameLevel = 1;
         public static Random rand = new Random();
+        public Rectangle goal = new Rectangle();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
 
         // CAMERA
@@ -525,6 +526,7 @@ namespace noRestForTheQuery
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
                 if (student.hit){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
+                checkForVictory();
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
 
@@ -592,7 +594,7 @@ namespace noRestForTheQuery
                 for (int i = 0; i < numOfWeekendOptions; i++) {
                     if (chosenChoices.Contains(i)) { spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.White); }
                 }
-                if ( checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
+                if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
                 if (chosenChoices.Count() == maxChoices) { spriteBatch.Draw(submitSprite, statsPos, Color.White); }
             }
             // WEEKDAY SCREEN
@@ -601,6 +603,9 @@ namespace noRestForTheQuery
                 // Platform Display
                 for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
                 
+                //Goal Display
+                spriteBatch.Draw( platformSprite, goal, Color.White );
+
                 // Spawned Homework Display
                 for (int i = 0; i < homeworks.Count(); i++) { 
                     spriteBatch.Draw(homeworkSprite, homeworks[i].position, Color.Orange);
@@ -699,6 +704,24 @@ namespace noRestForTheQuery
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
         }
+        protected void softReset() {
+            //Reset all objects on the stage
+            homeworks.Clear();
+            goal = new Rectangle();
+
+            //Load stage
+            buildLevel(ref platforms, ref student, ref homeworks); 
+
+            //Reset game tool variables
+            screenOffset = 0;
+            translation = Matrix.Identity;
+            updatePosition();
+            hitRecoilTime = INVUL_TIME;
+            blinkDuration = BLINK_TIME;
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
+            
+        }
         protected void handleStudentPlatformCollision() {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
             for (int i = 0; i < platforms.Count; ++i) {
@@ -766,6 +789,21 @@ namespace noRestForTheQuery
                 lostHealth = false;
             }
         }
+        protected void checkForVictory(){
+
+            //If the student falls into the 
+            if( goal.Left < student.position.X+student.origin.X && student.position.X+student.origin.X <= goal.Right &&
+                goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
+                
+                //Increment game level
+                if( gameLevel < MAXLEVELS ){ gameLevel++; }
+                currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                softReset();
+                staticScreenTrigger = true;
+                currentStatus = (int)ScreenStatus.WEEKEND;
+
+            }
+        }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
             platforms.Clear();
             int x = 0; int y = 0;
@@ -782,6 +820,9 @@ namespace noRestForTheQuery
                         homeworks.Add( new Homework( new Vector2( x, y ), new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2), Vector2.Zero ) ); 
                         homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
                         homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
+                    }
+                    if( symbol == 'g' ){
+                        goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight );
                     }
                     x += defaultBlockWidth;
                 }
