@@ -9,7 +9,7 @@ namespace noRestForTheQuery {
 
     class Missile : GameObject {
         public int attackPower;
-        public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height) :
+        public Missile(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, int width, int height) :
             base(position, origin, velocity, speed, width, height) {
             // Assign Values To: attackPower
             // Values Already Assigned To: 

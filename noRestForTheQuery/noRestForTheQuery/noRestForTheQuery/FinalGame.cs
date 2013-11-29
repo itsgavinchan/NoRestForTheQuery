@@ -129,7 +129,7 @@ namespace noRestForTheQuery
 
         // DISPLAY Variables
         SpriteFont mainFont, largeFont;
-        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite;
+        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite, searchConeSprite;
         
         // INPUT States
         KeyboardState lastKeyState = Keyboard.GetState();
@@ -157,6 +157,7 @@ namespace noRestForTheQuery
             notebookSprite = Content.Load<Texture2D>(@"Sprites/notebook");
             professorSprite = Content.Load<Texture2D>(@"Sprites/professor");
             blockadeSprite = Content.Load<Texture2D>(@"Sprites/blockade");
+            searchConeSprite = Content.Load<Texture2D>(@"Sprites/searchCone");
 
             filler = Content.Load<Texture2D>(@"Sprites/filler");
             statSprite = Content.Load<Texture2D>(@"Sprites/statsbar");
@@ -463,8 +464,12 @@ namespace noRestForTheQuery
                     screenOffset += 1;
                 }
 
+                #region Position update and collision testing
+
                 // POSITION UPDATE - Student
                 student.update();
+
+
 
                 int index = 0;
                 // POSITION UPDATE - Student's Ammo (Pencils)
@@ -475,16 +480,20 @@ namespace noRestForTheQuery
                     else { index++; }
                 }
 
+
+
                 // POSITION UPDATE - Professor and Their Ammo (Markers)
                 //if (professors[gameLevel - 1].isAlive) { 
                 index = 0;
-                professors[gameLevel - 1].update();
+                professors[gameLevel - 1].update( student, gameTime );
                 while (index < professors[gameLevel - 1].markers.Count()) {
                     professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
                     if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
                     else { index++; }
                 }
                 //}
+
+
 
                 // POSITION AND COLLISION UPDATE - Homeworks
                 index = 0;
@@ -493,8 +502,7 @@ namespace noRestForTheQuery
 
                     int i = 0;
                     while (i < student.pencils.Count() ) {
-                        homeworks[index].handleCollision(student.pencils[i], pencilSprite.Width, pencilSprite.Height,
-                                                homeworkSprite.Width, homeworkSprite.Height);
+                        homeworks[index].handleCollision(student.pencils[i]);
                         if (homeworks[index].hit) { break; }
                         i++;
                     }
@@ -505,8 +513,7 @@ namespace noRestForTheQuery
                         homeworks[index].hit = false;
                     }
 
-                    student.handleCollision(homeworks[index], homeworkSprite.Width, homeworkSprite.Height,
-                                                studentSprite.Width, studentSprite.Height);
+                    student.handleCollision(homeworks[index]);
 
                     if (student.hit) {
                         if (!lostHealth) {
@@ -522,6 +529,8 @@ namespace noRestForTheQuery
                     else { index++; }
                 }
 
+
+
                 // POSITION AND COLLISION UPDATE - Exams
                 index = 0;
                 while (index < exams.Count()) {
@@ -529,8 +538,7 @@ namespace noRestForTheQuery
 
                     int i = 0;
                     while (i < student.pencils.Count()) {
-                        exams[index].handleCollision(student.pencils[i], pencilSprite.Width, pencilSprite.Height,
-                                                examSprite.Width, examSprite.Height);
+                        exams[index].handleCollision(student.pencils[i]);
                         if (exams[index].hit) { break; }
                         i++;
                     }
@@ -541,8 +549,7 @@ namespace noRestForTheQuery
                         exams[index].hit = false;
                     }
 
-                    student.handleCollision(exams[index], examSprite.Width, examSprite.Height,
-                                                studentSprite.Width, studentSprite.Height);
+                    student.handleCollision(exams[index]);
 
                     if (student.hit) {
                         if (!lostHealth) {
@@ -564,6 +571,8 @@ namespace noRestForTheQuery
                     else { index++; }
                 }
 
+
+
                 // POSITION UPDATE - Camera
                 translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
                 screenOffset += 1;
@@ -573,8 +582,7 @@ namespace noRestForTheQuery
                     index = 0;
 
                     while ( index < professors[gameLevel - 1].markers.Count()) {
-                        student.handleCollision( professors[gameLevel-1].markers[index], markerSprite.Width, markerSprite.Height, 
-                                                 studentSprite.Width, studentSprite.Height );
+                        student.handleCollision( professors[gameLevel-1].markers[index] );
                         if( student.hit ){ break; }
                         index++;
                     }
@@ -588,8 +596,9 @@ namespace noRestForTheQuery
                     }
                 }
 
+                #endregion
 
-                    // BOOK-KEEPING
+                // BOOK-KEEPING
                     updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision( platforms );                               //Handle student/platform collision
@@ -597,7 +606,7 @@ namespace noRestForTheQuery
 
                 if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
                 if (student.onGround) { student.jumping = false; }              //Reset jump state
-                if (student.hit){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
+                if (student.hit || hitRecoilTime != INVUL_TIME){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
                 checkForVictory();
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
@@ -704,7 +713,11 @@ namespace noRestForTheQuery
                     for (int i = 0; i < professors[gameLevel - 1].markers.Count(); i++) {
                         spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
                     }
+
+                    //Professor search area
+                    spriteBatch.Draw(searchConeSprite, professors[gameLevel - 1].search.position, null, Color.Red, professors[gameLevel - 1].search.rotation, professors[gameLevel - 1].search.origin, 1.0F, SpriteEffects.None, 0.0F);
                 }
+
                 
                 // If the student is not hit, draw the student and the notebook shield as usual
                 if (!student.hit) {
@@ -712,13 +725,12 @@ namespace noRestForTheQuery
                     if (student.notebook.isAlive) { spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.Red, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F); }
                 }
                 else {
-
                     // If the notebook shield still holds, blink the notebook shield
                     if (student.notebook.isAlive) {
                         blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(notebookSprite, student.notebook.position, null, Color.Red, student.notebook.rotation, student.notebook.origin, 1.0F, SpriteEffects.None, 0.0F);
-                            blinkDuration = BLINK_TIME;
+                            blinkDuration += BLINK_TIME;
                         }
                         spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.White);
                     }
@@ -728,7 +740,7 @@ namespace noRestForTheQuery
                         blinkDuration -= gameTime.ElapsedGameTime.Milliseconds;
                         if (blinkDuration < 0) {
                             spriteBatch.Draw(student.sprite.Texture, student.position, student.sprite.SourceRect, Color.White); 
-                            blinkDuration = BLINK_TIME;
+                            blinkDuration += BLINK_TIME;
                         }
                     }
                 }
