@@ -112,8 +112,8 @@ namespace noRestForTheQuery {
                 Matrix.CreateRotationZ(this.rotation) *
                 Matrix.CreateTranslation(new Vector3(this.position + this.origin, 0.0f));
             sprite.Texture.GetData<Color>( 0, sprite.SourceRect, colorArr,
-                                           sprite.currentFrame*sprite.width, 
-                                           sprite.width * sprite.height );
+                                           sprite.currentFrame*width, 
+                                           width * height );
             
         }
 

@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace noRestForTheQuery {
 
     class Professor : GameObject {
-        int /*markerAmt,*/ markerSpeed;
+        int /*markerAmt,*/ markerSpeed, shootCooldown, elapsedTime;
+        public SearchCone search;
         public int attackPower;
         public List<Marker> markers = new List<Marker>();
         public Professor(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
@@ -21,10 +23,17 @@ namespace noRestForTheQuery {
                 //markerAmt = 10;
                 markerSpeed = 10;
                 this.attackPower = attackPower;
+                //Search Cone will rotate around the professor, so the professor's origin is provided in the constructor
+                search = new SearchCone( new Vector2( position.X+origin.X-FinalGame.searchConeSprite.Width, 
+                                                      position.Y+origin.Y-FinalGame.searchConeSprite.Height/2 ),
+                                         new Vector2( FinalGame.searchConeSprite.Width, FinalGame.searchConeSprite.Height/2 ) );
+                shootCooldown = 1000;
+                elapsedTime = shootCooldown/2;
         }
 
         // Update the Position And/Or Velocity
-        public void update() {
+        public void update( Student1 student, GameTime gameTime ) {
+            
             
             if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
             else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
@@ -33,6 +42,17 @@ namespace noRestForTheQuery {
                 Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
                 Matrix.CreateRotationZ(this.rotation) *
                 Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
+
+            
+            search.update( position.X+width/2, position.Y+origin.Y/2, student); 
+            if( search.foundSomeone ){ 
+                elapsedTime -= gameTime.ElapsedGameTime.Milliseconds;
+                if( elapsedTime < 0 ){
+                    shoot( student.position.X, student.position.Y );
+                    elapsedTime = shootCooldown;
+                }
+            }
+            
         }
 
         public void reset() {
@@ -63,8 +83,8 @@ namespace noRestForTheQuery {
         protected bool chasing;
         protected float hover, searchRadius;
 
-        public Assignment(Vector2 position, Vector2 origin, Vector2 velocity, float speed, float width, float height, bool chaseState, float searchRadius):
-            base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height) {
+        public Assignment(Vector2 position, Vector2 origin, Vector2 velocity, float speed, int width, int height, bool chaseState, float searchRadius):
+            base(position, origin, velocity, 0, width, height) {
                 this.chasing = chaseState;
                 this.searchRadius = searchRadius;
                 this.hover = 0.0F;
@@ -78,11 +98,13 @@ namespace noRestForTheQuery {
             }
             else {
                 rotation = (float)Math.Atan2(y - (position.Y + origin.Y), x - (position.X + origin.X));
-                velocity.X += (float)Math.Cos(rotation) * (.05F * speed);
+                velocity.X += (float)Math.Cos(rotation) * (.09F * speed);
                 velocity.Y += (float)Math.Sin(rotation) * (.07F * speed);
                 rotation = (float)Math.Atan2(velocity.Y, velocity.X);
             }
 
+            velocity.X = MathHelper.Clamp( velocity.X, -2.5F*speed, 2.5F*speed );
+            velocity.Y = MathHelper.Clamp( velocity.Y, -2.5F*speed, 2.5F*speed );
             position.X += velocity.X;
             position.Y += velocity.Y;
             this.transform =
@@ -123,7 +145,7 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
             durability = FinalGame.gameLevel * 10;
-            speed = (float)(FinalGame.rand.Next(5, 6) + FinalGame.rand.NextDouble());
+            speed = (float)(FinalGame.rand.Next(4, 5) + FinalGame.rand.NextDouble());
         }
 
     }
