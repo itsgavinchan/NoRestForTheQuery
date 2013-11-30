@@ -88,6 +88,8 @@
     </Content>
     <Content Include="Layouts\level1.txt" />
     <Content Include="Layouts\level2.txt" />
+    <Content Include="Saves\save1.txt" />
+    <Content Include="Saves\save2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\noRestForTheQueryContent\noRestForTheQueryContent.contentproj">

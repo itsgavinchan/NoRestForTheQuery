@@ -1,0 +1,12 @@
+First line
+Third line
+Fourth line
+1
+100
+100
+10
+150
+0.999
+200
+0
+3

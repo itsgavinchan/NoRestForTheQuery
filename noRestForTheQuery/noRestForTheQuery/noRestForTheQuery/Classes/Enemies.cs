@@ -47,8 +47,8 @@ namespace noRestForTheQuery {
             search.update( position.X+width/2, position.Y+origin.Y/2, student); 
             if( search.foundSomeone ){ 
                 elapsedTime -= gameTime.ElapsedGameTime.Milliseconds;
-                if( elapsedTime < 0 ){
-                    shoot( student.position.X, student.position.Y );
+                if (elapsedTime < 0 ) {
+                    if( student.position.X + FinalGame.studentSprite.Width*3 < position.X ) shoot( student.position.X, student.position.Y );
                     elapsedTime = shootCooldown;
                 }
             }
