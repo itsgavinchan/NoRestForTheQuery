@@ -139,7 +139,7 @@ namespace noRestForTheQuery {
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
 
-            fullHealth = 100 * FinalGame.gameLevel;
+            fullHealth = 10 * FinalGame.gameLevel;
             currentHealth = fullHealth;
             attackPower = 20 * FinalGame.gameLevel;
 
