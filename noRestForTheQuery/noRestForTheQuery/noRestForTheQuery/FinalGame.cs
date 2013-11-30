@@ -318,7 +318,8 @@ namespace noRestForTheQuery
                             }
                         
                         if (shieldCheck && costOfPencils + costOfShield > student.budget) {
-                                pencilPurchasing = (int)((student.budget - costOfShield) / PENCILCOST);
+                            pencilPurchasing = (int)((student.budget - costOfShield) / PENCILCOST);
+                            if( pencilPurchasing < 0 ){ pencilPurchasing = 0; }
                         }
                         
                     }
@@ -334,12 +335,15 @@ namespace noRestForTheQuery
                                 student.amtPencil += pencilPurchasing;
                                 student.budget -= (int)(pencilPurchasing * PENCILCOST);
                                 if( shieldCheck ){
-                                    student.budget -= SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook);
-                                    student.notebook.reset();
+                                    //Only allow shieldCheck if the cost is less than budget
+                                    if( student.budget > SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook) ){
+                                        student.budget -= SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook);
+                                        student.notebook.reset();
+                                    }
+                                    else{ shieldCheck = false; }
                                 }
                             }
                         }
-                        shieldCheck = false;
                         chosenChoices.Clear();
                         pencilPurchasing = 0;
                         costOfPencils = 0;
@@ -347,10 +351,12 @@ namespace noRestForTheQuery
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
 
-                    if( shieldCheck ){ costOfShield = SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook); }
+                    costOfShield = (shieldCheck) ? SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook) : 0 ;
                     costOfPencils = (int)(pencilPurchasing * PENCILCOST);
                 }
             }
+
+
             // WEEKDAY SCREEN - Where the Action Happens and You Die (A Lot); Currently In Testing
             // While the game is active and in the Weekday Stage, homework will continually be spawned
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
@@ -362,7 +368,29 @@ namespace noRestForTheQuery
                     student.sanity -= 0.005;
                 }
 
+                
+
+                #region Stage Controls
+
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
+
+                // TEST - Progression to Next Level
+                if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
+                    softReset();
+                    if (gameLevel < MAXLEVELS) gameLevel++;
+                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                    buildLevel(ref platforms, ref student, ref homeworks);
+                }
+
+                // TEST - Controls for Camera Movement
+                if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
+                    translation *= Matrix.CreateTranslation(new Vector3(1, 0, 0));
+                    screenOffset -= 1;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
+                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+                    screenOffset += 1;
+                }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
                 if ( student.currentHealth <= 0 || Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
@@ -382,6 +410,10 @@ namespace noRestForTheQuery
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) {
                     currentStatus = (int)ScreenStatus.PAUSE;
                 }
+
+                #endregion
+
+                #region Player Controls
 
                 // PLAYER CONTROL - Jump
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
@@ -407,36 +439,17 @@ namespace noRestForTheQuery
                     else{ student.sprite.currentFrame = 0; }
                 }
 
+                #endregion
+
+                #region Professor (test) controls
+                
                 // TEST - Professor Appearance
                 if (Keyboard.GetState().IsKeyDown(Keys.P) && lastKeyState.IsKeyUp(Keys.P)) {
                     if (!professors[gameLevel - 1].isAlive) { professors[gameLevel - 1].isAlive = !professors[gameLevel - 1].isAlive; }
                     else { professors[gameLevel - 1].reset(); }
                 }
 
-                if (!professors[gameLevel - 1].isAlive) {
-                    for (int i = 0; i < triggers.Count(); i++) {
-                        if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
-                            professors[gameLevel - 1].isAlive = true;
-                        }
-                    }
-                }
-                else {
-                    professorTime -= gameTime.ElapsedGameTime.Milliseconds;
-                    // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
-                    if (professorTime % 600 == 0) {
-                        double x = ((student.position.X + studentSprite.Width / 2) - (professors[gameLevel - 1].position.X + professorSprite.Width / 2));
-                        double y = ((student.position.Y + studentSprite.Height / 2) - (professors[gameLevel - 1].position.Y + professorSprite.Height / 2));
-                        professors[gameLevel - 1].shoot(x, y);
-                    }
 
-                    if (professorTime < 0) {
-                        professors[gameLevel - 1].isAlive = false;
-                        professorTime = PROFESSOR_TIME * gameLevel;
-                        student.sanity -= 0.005;
-                    }
-                    
-                
-                }
                 // TEST - Professor Attack
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     if (professors[gameLevel - 1].isAlive) {
@@ -446,40 +459,49 @@ namespace noRestForTheQuery
                     }
                 }
 
-                // TEST - Progression to Next Level
-                if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
-                    reset();
-                    if (gameLevel < MAXLEVELS) gameLevel++;
-                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                    buildLevel(ref platforms, ref student, ref homeworks);
-                }
-
-                // TEST - Controls for Camera Movement
-                if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(1, 0, 0));
-                    screenOffset -= 1;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                    screenOffset += 1;
-                }
+                #endregion
 
                 #region Position update and collision testing
+
+                //Professor appearance on stage
+                if (!professors[gameLevel - 1].isAlive) {
+                    for (int i = 0; i < triggers.Count(); i++) {
+                        if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
+                            professors[gameLevel - 1].isAlive = true;
+                        }
+                    }
+                }
+                else {
+                    professorTime -= gameTime.ElapsedGameTime.Milliseconds;
+                    
+                    if (professorTime < 0) {
+                        professors[gameLevel - 1].isAlive = false;
+                        professorTime = PROFESSOR_TIME * gameLevel;
+                        student.sanity -= 0.005;
+                    }
+
+                    //Professor attack implemented w/ spotlight, so this is commented out as a backup
+                    // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
+                    //if (professorTime % 600 == 0) {
+                    //    double x = ((student.position.X + studentSprite.Width / 2) - (professors[gameLevel - 1].position.X + professorSprite.Width / 2));
+                    //    double y = ((student.position.Y + studentSprite.Height / 2) - (professors[gameLevel - 1].position.Y + professorSprite.Height / 2));
+                    //    professors[gameLevel - 1].shoot(x, y);
+                    //}
+
+                }
+
 
                 // POSITION UPDATE - Student
                 student.update();
 
 
-
                 int index = 0;
                 // POSITION UPDATE - Student's Ammo (Pencils)
-                index = 0;
                 while (index < student.pencils.Count()) {
                     student.pencils[index].update();
                     if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
                     else { index++; }
                 }
-
 
 
                 // POSITION UPDATE - Professor and Their Ammo (Markers)
@@ -492,7 +514,6 @@ namespace noRestForTheQuery
                     else { index++; }
                 }
                 //}
-
 
 
                 // POSITION AND COLLISION UPDATE - Homeworks
@@ -528,7 +549,6 @@ namespace noRestForTheQuery
                     if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
                     else { index++; }
                 }
-
 
 
                 // POSITION AND COLLISION UPDATE - Exams
@@ -572,11 +592,11 @@ namespace noRestForTheQuery
                 }
 
 
-
                 // POSITION UPDATE - Camera
                 translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
                 screenOffset += 1;
-                
+
+
                 // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
                 if (professors[gameLevel - 1].isAlive /*&& professors[gameLevel - 1].markers.Count() > 0 */) { 
                     index = 0;
@@ -598,15 +618,17 @@ namespace noRestForTheQuery
 
                 #endregion
 
+
+
                 // BOOK-KEEPING
                     updatePosition();
                 handleSpriteMovement(ref student.sprite);
-                handleStudentPlatformCollision( platforms );                               //Handle student/platform collision
+                handleStudentPlatformCollision( platforms );
                 handleStudentPlatformCollision( hiddenPlatforms);
 
-                if (student.velocity.Y != 0) { student.onGround = false; }      //Check if on ground
-                if (student.onGround) { student.jumping = false; }              //Reset jump state
-                if (student.hit || hitRecoilTime != INVUL_TIME){ handleInvulTime( gameTime ); }                //If hit, countdown invul time
+                if (student.velocity.Y != 0) { student.onGround = false; }                          //Check if on ground
+                if (student.onGround) { student.jumping = false; }                                  //Reset jump state
+                if (student.hit || hitRecoilTime != INVUL_TIME){ handleInvulTime( gameTime ); }     //If hit, countdown invul time
                 checkForVictory();
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
@@ -671,11 +693,11 @@ namespace noRestForTheQuery
                     spriteBatch.DrawString(mainFont, pencilPurchasing + " for $" + PENCILCOST * pencilPurchasing, quantityPos, Color.White);
                     spriteBatch.DrawString(largeFont, "$" + (student.budget - costOfShield - costOfPencils), remainingPos, b80000);
                     spriteBatch.DrawString(largeFont, "$" + (costOfShield + costOfPencils), spendingPos, b80000);
+                    if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
                 }
                 for (int i = 0; i < numOfWeekendOptions; i++) {
                     if (chosenChoices.Contains(i)) { spriteBatch.Draw(filledBulletSprite, weekendPositions[i], Color.White); }
                 }
-                if (checkMouseOverlap(shieldOption, filledBulletSprite.Width, filledBulletSprite.Height ) || shieldCheck) { spriteBatch.Draw(filledBulletSprite, shieldOption, Color.White); }
                 if (chosenChoices.Count() == maxChoices) { spriteBatch.Draw(submitSprite, statsPos, Color.White); }
             }
             // WEEKDAY SCREEN
@@ -691,7 +713,7 @@ namespace noRestForTheQuery
                 for (int i = 0; i < triggers.Count; ++i) { spriteBatch.Draw(platformSprite, triggers[i].position, triggers[i].rectangle, Color.White); }
                 
                 //Goal Display
-                spriteBatch.Draw( platformSprite, goal, Color.White );
+                spriteBatch.Draw( platformSprite, goal, Color.LightGreen );
 
                 // Homework Display
                 for (int i = 0; i < homeworks.Count(); i++) { 
@@ -715,7 +737,7 @@ namespace noRestForTheQuery
                     }
 
                     //Professor search area
-                    spriteBatch.Draw(searchConeSprite, professors[gameLevel - 1].search.position, null, Color.Red, professors[gameLevel - 1].search.rotation, professors[gameLevel - 1].search.origin, 1.0F, SpriteEffects.None, 0.0F);
+                    spriteBatch.Draw(searchConeSprite, professors[gameLevel - 1].search.position, null, Color.White, professors[gameLevel - 1].search.rotation, professors[gameLevel - 1].search.origin, 1.0F, SpriteEffects.None, 0.0F);
                 }
 
                 
@@ -912,6 +934,8 @@ namespace noRestForTheQuery
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
             platforms.Clear();
+            homeworks.Clear();
+            triggers.Clear();
             int x = 0; int y = 0;
             string line;
             System.IO.StreamReader file = new System.IO.StreamReader( currentLevelFile );
