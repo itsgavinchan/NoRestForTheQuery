@@ -151,10 +151,15 @@ namespace noRestForTheQuery {
 
     class SearchCone : GameObject {
         public bool foundSomeone;
-        
+        public float angle, searchDirection, searchBoundary;
         public SearchCone( Vector2 position, Vector2 origin )
             : base( position, origin, Vector2.Zero, 0, FinalGame.searchConeSprite.Width, FinalGame.searchConeSprite.Height ){
             foundSomeone = false;
+            searchBoundary = (float)Math.PI/6;
+            angle = 0;
+            searchDirection = -1;
+            this.colorArr = new Color[ FinalGame.searchConeSprite.Width * FinalGame.searchConeSprite.Height ];
+            FinalGame.searchConeSprite.GetData<Color>( colorArr );
         }
 
         public Rectangle boundingRectangle(Rectangle rectangle, Matrix transform) {
@@ -183,8 +188,8 @@ namespace noRestForTheQuery {
         public void searchFor(GameObject other) {
             Rectangle otherBoundary, objBoundary;
             
-            objBoundary = boundingRectangle( new Rectangle( 0, 0, (int)width, (int)height ), this.transform );
-            otherBoundary = boundingRectangle( new Rectangle( 0, 0, (int)other.width, (int)other.height ), other.transform );
+            objBoundary = boundingRectangle( new Rectangle( 0, 0, width, height ), this.transform );
+            otherBoundary = boundingRectangle( new Rectangle( 0, 0, other.width, other.height ), other.transform );
 
             //Check only if the other object is in close vicinity
             if( otherBoundary.Intersects( objBoundary ) ){
@@ -218,6 +223,7 @@ namespace noRestForTheQuery {
                             //Compare the colors. If both are not transparent, the other object is sighted!
                             if (other.colorArr[xA + yA * (int)other.width].A != 0 && this.colorArr[xB + yB * (int)width].A != 0) {
                                 foundSomeone = true;
+                                return;
                             }
                         }
                         //As we advance to the next pixel in A, advance to the next pixel in B
@@ -232,6 +238,28 @@ namespace noRestForTheQuery {
             else{
                 foundSomeone = false;
             }
+        }
+
+        public void update( float anchorPosX, float anchorPosY, GameObject target ){
+            searchFor( target );
+            //Default behavior
+            if( !foundSomeone ){
+                if( angle >= searchBoundary ){ searchDirection = -1; }
+                else if( angle < -searchBoundary ){ searchDirection = 1; }
+                angle += searchDirection*.01F;
+                rotation = angle;
+            }
+            else{
+                angle = (float)Math.Atan2( (position.Y)-(target.position.Y+target.origin.Y) , (position.X)-(target.position.X+target.origin.X)  );
+                rotation = angle;
+            }
+
+            position.X = anchorPosX;
+            position.Y = anchorPosY;
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position, 0.0f));
         }
     }
 
