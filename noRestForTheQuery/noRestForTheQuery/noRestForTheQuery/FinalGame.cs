@@ -113,7 +113,7 @@ namespace noRestForTheQuery
         int professorTime = PROFESSOR_TIME * gameLevel;
         const double SANITYTRIGGER = 0.5;
         Vector2 blockadePos;
-        bool lostHealth = false; //Needed in order to decrement health only once after being hit.
+        bool lostHealth = false, examEncounter = false; //Needed in order to decrement health only once after being hit.
 
         // PROFESSORS
         List<Professor> professors = new List<Professor>();
@@ -290,6 +290,9 @@ namespace noRestForTheQuery
                 // of allowed choices.
             // Pressing Space will lead you to the Status Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
+
+                int numRepairing = 0;
+
                 if (staticScreenTrigger) staticScreenTrigger = false;
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.STATUS; }
@@ -316,14 +319,20 @@ namespace noRestForTheQuery
                                 if( !shieldCheck && costOfPencils < student.budget ) pencilPurchasing += BULKBUY; 
                                 else if( shieldCheck && costOfPencils + costOfShield < student.budget ){ pencilPurchasing += BULKBUY;  }
                             }
-                        
+
+
                         if (shieldCheck && costOfPencils + costOfShield > student.budget) {
                             pencilPurchasing = (int)((student.budget - costOfShield) / PENCILCOST);
                             if( pencilPurchasing < 0 ){ pencilPurchasing = 0; }
                         }
+
+                        if (shieldCheck) {
+                            numRepairing = student.budget / SHIELDCOST;
+                            if (numRepairing > student.notebook.maxBooks - student.notebook.numOfNotebook) { numRepairing = student.notebook.maxBooks - student.notebook.numOfNotebook; }
+                            else if (numRepairing > student.notebook.maxBooks) { numRepairing = student.notebook.maxBooks; } 
+                        }
                         
                     }
-
                     if( chosenChoices.Count() == 3 && checkMouseOverlap( submitPos, 250, 35 ) ) {
                         for (int i = 0; i < chosenChoices.Count(); i++) {
                             if (chosenChoices[i] == (int)WeekendChoices.BEG) { student.budget+= 500; }
@@ -335,15 +344,14 @@ namespace noRestForTheQuery
                                 student.amtPencil += pencilPurchasing;
                                 student.budget -= (int)(pencilPurchasing * PENCILCOST);
                                 if( shieldCheck ){
-                                    //Only allow shieldCheck if the cost is less than budget
-                                    if( student.budget > SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook) ){
-                                        student.budget -= SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook);
-                                        student.notebook.reset();
-                                    }
-                                    else{ shieldCheck = false; }
+                                    student.budget -= SHIELDCOST * numRepairing;
+                                    int temp = student.notebook.numOfNotebook + numRepairing;
+                                    student.notebook.reset();
+                                    student.notebook.numOfNotebook = temp;
                                 }
                             }
                         }
+                        shieldCheck = false;
                         chosenChoices.Clear();
                         pencilPurchasing = 0;
                         costOfPencils = 0;
@@ -351,7 +359,7 @@ namespace noRestForTheQuery
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
 
-                    costOfShield = (shieldCheck) ? SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook) : 0 ;
+                    costOfShield = (shieldCheck) ? SHIELDCOST * (numRepairing) : 0 ;
                     costOfPencils = (int)(pencilPurchasing * PENCILCOST);
                 }
             }
@@ -580,12 +588,12 @@ namespace noRestForTheQuery
                         }
                     }
 
-                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; }
+                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; examEncounter = false; }
                     //if (exams[index].checkBoundaries(examsprite.Width, examsprite.Height) ) { exams.RemoveAt(index); }
                     if (!exams[index].isAlive) {
                         
-                            exams.RemoveAt(index); 
-                            student.gainExperience();
+                        exams.RemoveAt(index); 
+                        student.gainExperience();
                         
                     }
                     else { index++; }
@@ -593,9 +601,16 @@ namespace noRestForTheQuery
 
 
                 // POSITION UPDATE - Camera
-                translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                screenOffset += 1;
+                for (int i = 0; i < exams.Count(); i++) {
+                    if ( WINDOW_WIDTH + screenOffset >= exams[i].position.X + examSprite.Width) {
+                        examEncounter = true;
+                    }
+                }
 
+                if (!examEncounter) { 
+                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+                    screenOffset += 1;
+                }
 
                 // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
                 if (professors[gameLevel - 1].isAlive /*&& professors[gameLevel - 1].markers.Count() > 0 */) { 
@@ -618,13 +633,11 @@ namespace noRestForTheQuery
 
                 #endregion
 
-
-
                 // BOOK-KEEPING
                     updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision( platforms );
-                handleStudentPlatformCollision( hiddenPlatforms);
+                handleStudentPlatformCollision( hiddenPlatforms );
 
                 if (student.velocity.Y != 0) { student.onGround = false; }                          //Check if on ground
                 if (student.onGround) { student.jumping = false; }                                  //Reset jump state
@@ -824,7 +837,7 @@ namespace noRestForTheQuery
             blinkDuration = BLINK_TIME;
             sanityTime = SANITY_TIME;
             sanityBlockade = 0;
-
+            examEncounter = false;
             // Reset the Positions
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
@@ -944,7 +957,7 @@ namespace noRestForTheQuery
                 char[] levelRow = line.ToCharArray();
                 foreach( char symbol in levelRow ){
                     //if( symbol == '.' || symbol == ' ') {  }
-                    if( symbol == 's' ){ student.position = new Vector2( x, y ); }
+                    if( symbol == 'b' ){ student.position = new Vector2( x, y ); }
                     if( symbol == 'x' ){ platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) ); }
                     if( symbol == 'h' ){ 
                         homeworks.Add( new Homework( new Vector2( x, y ), new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2), Vector2.Zero ) ); 
@@ -961,7 +974,7 @@ namespace noRestForTheQuery
                     }
                     if (symbol == '-') {
                         hiddenPlatforms.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
-                    } 
+                    }
                     if (symbol == 't') {
                         triggers.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
                     }
