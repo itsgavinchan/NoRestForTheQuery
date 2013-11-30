@@ -22,7 +22,6 @@ namespace noRestForTheQuery
         const int INVUL_TIME = 1500;
         const int BLINK_TIME = 100;
         const int SANITY_TIME = 600;
-        const int AUTO_SAVE = 10000;
         const int PROFESSOR_TIME = 9000;
         int mouseX, mouseY, hwKilled;
 
@@ -50,31 +49,16 @@ namespace noRestForTheQuery
 
         // INTRODUCTION SCREEN
         string[] introMessage = new string[] { 
-            "Congratulations. Starting today, you're a student at NYU-Poly.",
-            "In the incoming years, become the masochistic young adult you are ",
+            "Congratulations. Starting today, you're a CS student at NYU-Poly.",
+            "In the incoming years, become the masochistic programmer you are ",
             "paying tuition to be and get ready to sweat blood. Good luck, young",
-            "student. May you survive this hurdle intact and graduate (on time)."
-            };
-
-        string[] controlMessage = new string[] { 
-            "While in WEEKEDAY STAGE",
-            "Use A and D to travel left and right, and W to jump",
-            "Left Click to Shoot Pencils and damage the Homeworks and Exams",
-            "",
-            "There is no turning back in this game.",
-            "",
-            "Shields will protect you for the first three hits. Afterwards, damages impact your health.",
-            "Professors will appear if you trigger the white squares. If they catch you in their sight and",
-            "you're in the back, they will shoot markers at you. Homework and exam will swarm at you. Defeat",
-            "them to gain experience. Once you level up on experience, your attack power will increase by a ",
-            "margin. You can 'procrastinate' by avoiding them but they will come back and bite you in the buttocks, ",
-            "so get your work done. The moment an exam enters your view, the screen will pause. This forces you",
-            "to be unable to progress until you defeat the exam. You can't run away. "
+            "programmer. May you survive this hurdle intact and graduate (on time).",
+            ""
             };
 
         // GAME OVER SCREEN
         const string gameOverMessage = "Game Over";
-        const string gameOverContMessage = "Press R to Restart The Game or M to Load Where You Last Manually Saved or L where the Game last autosaved";
+        const string gameOverContMessage = "Press R to Restart The Game or L to Load Where You Last Saved";
         Vector2 gameOverPos, gameOverContPos;
         
         // WEEKEND STANDBY SCREEN
@@ -114,9 +98,7 @@ namespace noRestForTheQuery
         public static Random rand = new Random();
         public Rectangle goal = new Rectangle();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-        string manualSave = "../../../Saves/manualSave.txt";
-        string autoSave = "../../../Saves/autoSave.txt";
-        bool displaySave = false;
+        string currentSaveFile = "../../../Saves/save1.txt";
 
         // CAMERA
         public static int screenOffset = 0, tempScreenOffset;
@@ -128,7 +110,6 @@ namespace noRestForTheQuery
         int hitRecoilTime = INVUL_TIME;
         int blinkDuration = BLINK_TIME;
         int sanityTime = SANITY_TIME;
-        int autoSaveTime = AUTO_SAVE;
         int sanityBlockade = 0;
         int professorTime = PROFESSOR_TIME * gameLevel;
         const double SANITYTRIGGER = 0.5;
@@ -195,7 +176,10 @@ namespace noRestForTheQuery
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
-
+            // Temporary Signal for Selection of Options
+            //int sum = 0;
+            //for (int i = 0; i < weekendIcons.Count(); i++) { sum += weekendIcons[i].Width; }
+            //float itemMargin = ( (WINDOW_WIDTH - weekendMargin * 2) - sum) / weekendIcons.Count();
             for( int i = 0; i < numOfWeekendOptions; i++ ) {
                 weekendPositions[i] = new Vector2(160, 198 + 57*i);
             }
@@ -279,7 +263,7 @@ namespace noRestForTheQuery
             // INTRODUCTION SCREEN - Explains the Story and Rules of Game
             // Pressing Space will proceed to the Start of Game - Weekday Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { writeSaves(autoSave); currentStatus = (int)ScreenStatus.WEEKDAY; }
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.WEEKDAY; }
             }
             // PAUSE SCREEN - Provides option to pause the screen; may implement SAVE, QUIT GAME, RESTART LEVEL in future iterations
             // Press Backspace to resume the game in Weekday Stage (Pause Stage can only be accessed from Weekday Stage)
@@ -303,12 +287,7 @@ namespace noRestForTheQuery
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     reset();
-                    checkSaves(autoSave);
-                    currentStatus = (int)ScreenStatus.WEEKDAY;
-                } 
-                if (Keyboard.GetState().IsKeyDown(Keys.M) && lastKeyState.IsKeyUp(Keys.M)) {
-                    reset();
-                    checkSaves(manualSave);
+                    checkSaves();
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
                 
@@ -399,13 +378,6 @@ namespace noRestForTheQuery
             // WEEKDAY SCREEN - Where the Action Happens and You Die (A Lot); Currently In Testing
             // While the game is active and in the Weekday Stage, homework will continually be spawned
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
-                autoSaveTime -= gameTime.ElapsedGameTime.Milliseconds;
-                if (autoSaveTime < 0) {
-                    autoSaveTime = AUTO_SAVE;
-                    displaySave = true;
-                    writeSaves(autoSave);
-                }
-                else if (autoSaveTime % 2000 == 0) { displaySave = false; }
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
                 // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
@@ -414,6 +386,8 @@ namespace noRestForTheQuery
                     student.sanity -= 0.001;
                 }
 
+                
+
                 #region Stage Controls
 
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
@@ -421,7 +395,6 @@ namespace noRestForTheQuery
                 // TEST - Progression to Next Level
                 if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
                     softReset();
-                    updatePosition();
                     if (gameLevel < MAXLEVELS) gameLevel++;
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                     buildLevel(ref platforms, ref student, ref homeworks);
@@ -459,7 +432,7 @@ namespace noRestForTheQuery
                 #endregion
 
                 #region Player Controls
-                if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves(manualSave); writeSaves(autoSave); }
+                if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
@@ -509,14 +482,12 @@ namespace noRestForTheQuery
 
                 #region Position update and collision testing
 
-                Rectangle o1 = new Rectangle((int)student.position.X, (int)student.position.Y, studentSprite.Width, studentSprite.Height);
-                Rectangle o2;
-
                 //Professor appearance on stage
                 if (!professors[gameLevel - 1].isAlive) {
                     for (int i = 0; i < triggers.Count(); i++) {
-                        o2 = new Rectangle((int)triggers[i].position.X, (int)triggers[i].position.Y, platformSprite.Width, platformSprite.Height);
-                        if (o1.Intersects(o2)) { professors[gameLevel - 1].isAlive = true; }
+                        if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
+                            professors[gameLevel - 1].isAlive = true;
+                        }
                     }
                 }
                 else {
@@ -674,7 +645,7 @@ namespace noRestForTheQuery
                 #endregion
 
                 // BOOK-KEEPING
-                updatePosition();
+                    updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision( platforms );
                 handleStudentPlatformCollision( hiddenPlatforms );
@@ -709,11 +680,7 @@ namespace noRestForTheQuery
             // Displays the Welcoming Message to Greet the Player as well as brief them on the controls
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
                 for (int i = 0; i < introMessage.Count(); i++) {
-                    spriteBatch.DrawString(mainFont, introMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(introMessage[i]).X / 2, i * 25 + 50), Color.White);
-                }
-
-                for (int i = 0; i < controlMessage.Count(); i++) {
-                    spriteBatch.DrawString(mainFont, controlMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(controlMessage[i]).X / 2, i * 25 + 200), Color.White);
+                    spriteBatch.DrawString(mainFont, introMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(introMessage[i]).X / 2, i * 25 + 100), Color.White);
                 }
             }
 
@@ -764,7 +731,7 @@ namespace noRestForTheQuery
             }
             // WEEKDAY SCREEN
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
-                if (displaySave) { spriteBatch.DrawString(mainFont, "AutoSaved", new Vector2( WINDOW_WIDTH - mainFont.MeasureString("Autosaved").X + screenOffset, 0 ), Color.White); }
+
                 // Platform Display
                 for (int i = 0; i < platforms.Count; ++i) { spriteBatch.Draw(platformSprite, platforms[i].position, platforms[i].rectangle, Color.Black); }
                 
@@ -857,19 +824,39 @@ namespace noRestForTheQuery
             if (mouseX > position.X && mouseX < position.X + width && mouseY > position.Y && mouseY < position.Y + height) { return true; }
             else { return false; }
         }
+        public bool checkOverlap(Vector2 o1Pos, int o1W, int o1H, Vector2 o2Pos, int o2W, int o2H) {
+            Rectangle o1 = new Rectangle((int)o1Pos.X, (int)o1Pos.Y, o1W, o1H);
+            Rectangle o2 = new Rectangle((int)o2Pos.X, (int)o2Pos.Y, o2W, o2H);
+
+            if (o1.Intersects(o2)) { return true; }
+            else { return false; }
+        }
+        public bool purchasePencils(int quantity) {
+            if (quantity * PENCILCOST > student.budget) { return false; }
+            else { student.amtPencil += quantity; student.budget -= (int)(quantity * PENCILCOST); return true; }
+        }
         protected void reset() {
             // Reset The Objects (Or Clear the Lists)
+            homeworks.Clear();
+            exams.Clear();
             professors[gameLevel - 1].reset();
             student.reset();
 
             // Reset The Game Mechaics
             gameLevel = 1;
             currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+            buildLevel(ref platforms, ref student, ref homeworks); 
+            screenOffset = 0;
+            translation = Matrix.Identity;
 
+            hitRecoilTime = INVUL_TIME;
+            blinkDuration = BLINK_TIME;
             sanityTime = SANITY_TIME;
             sanityBlockade = 0;
-
-            softReset(); 
+            examEncounter = false;
+            // Reset the Positions
+            gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
+            gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
         }
         protected void softReset() {
@@ -881,19 +868,18 @@ namespace noRestForTheQuery
             //Load stage
             buildLevel(ref platforms, ref student, ref homeworks); 
 
-            //Reset Game Tool Variables
+            //Reset game tool variables
             screenOffset = 0;
             translation = Matrix.Identity;
-
+            updatePosition();
             hitRecoilTime = INVUL_TIME;
             blinkDuration = BLINK_TIME;
             examEncounter = false;
-
-            // Resets the Positions
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
         }
+
         private void handleStudentPlatformCollision( List<Platform> platform ) {
             int interLeft, interRight, interTop, interBot, interWidth, interHeight;
             for (int i = 0; i < platform.Count; ++i) {
@@ -963,7 +949,7 @@ namespace noRestForTheQuery
         }
         protected void checkForVictory(){
 
-            //If the student falls into the goal space
+            //If the student falls into the 
             if( goal.Left < student.position.X+student.origin.X && student.position.X+student.origin.X <= goal.Right &&
                 goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
                 
@@ -971,9 +957,9 @@ namespace noRestForTheQuery
                 if( gameLevel < MAXLEVELS ){ gameLevel++; }
                 currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                 softReset();
-                updatePosition();
                 staticScreenTrigger = true;
                 currentStatus = (int)ScreenStatus.WEEKEND;
+
             }
         }
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
@@ -1010,10 +996,11 @@ namespace noRestForTheQuery
             }
 
             file.Close();
+
         }
-        private void checkSaves( string saveFile ) { 
+        private void checkSaves() { 
             string line;
-            System.IO.StreamReader file = new System.IO.StreamReader( saveFile );
+            System.IO.StreamReader file = new System.IO.StreamReader( currentSaveFile );
             while ((line = file.ReadLine()) != null) {
                 int equalIndex = line.IndexOf('=');
                 string variable = line.Substring(0, equalIndex);
@@ -1048,7 +1035,8 @@ namespace noRestForTheQuery
             file.Close();
 
         }
-        private void writeSaves( string saveFile ){
+
+        private void writeSaves(){
             string[] lines = { 
                                 "gameLevel=" + gameLevel,
                                 "offset=" + screenOffset,
@@ -1064,7 +1052,7 @@ namespace noRestForTheQuery
                                 "experience=" + student.experience,
                                 "shield=" + student.notebook.numOfNotebook };
 
-            System.IO.File.WriteAllLines(saveFile, lines);
+            System.IO.File.WriteAllLines(currentSaveFile, lines);
         }
     }
 }
