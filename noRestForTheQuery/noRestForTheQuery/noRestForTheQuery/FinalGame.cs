@@ -58,7 +58,7 @@ namespace noRestForTheQuery
 
         // GAME OVER SCREEN
         const string gameOverMessage = "Game Over";
-        const string gameOverContMessage = "Press R to Restart The Game";
+        const string gameOverContMessage = "Press R to Restart The Game or L to Load Where You Last Saved";
         Vector2 gameOverPos, gameOverContPos;
         
         // WEEKEND STANDBY SCREEN
@@ -98,6 +98,7 @@ namespace noRestForTheQuery
         public static Random rand = new Random();
         public Rectangle goal = new Rectangle();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+        string currentSaveFile = "../../../Saves/save1.txt";
 
         // CAMERA
         public static int screenOffset = 0, tempScreenOffset;
@@ -113,7 +114,7 @@ namespace noRestForTheQuery
         int professorTime = PROFESSOR_TIME * gameLevel;
         const double SANITYTRIGGER = 0.5;
         Vector2 blockadePos;
-        bool lostHealth = false; //Needed in order to decrement health only once after being hit.
+        bool lostHealth = false, examEncounter = false; //Needed in order to decrement health only once after being hit.
 
         // PROFESSORS
         List<Professor> professors = new List<Professor>();
@@ -280,7 +281,16 @@ namespace noRestForTheQuery
             // Pressing R Key will restart the game from the beginning - Start Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.GAMEOVER) {
                 if (staticScreenTrigger) staticScreenTrigger = false;
-                if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); currentStatus = (int)ScreenStatus.START; }
+                if (Keyboard.GetState().IsKeyDown(Keys.R)) { 
+                    reset(); 
+                    currentStatus = (int)ScreenStatus.START; 
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
+                    reset();
+                    checkSaves();
+                    currentStatus = (int)ScreenStatus.WEEKDAY;
+                }
+                
             }
             // WEEKEND SCREEN
             // Left-Clicking will allow you to choose three of the five options - SLEEP, STUDY, FOOD, STORE, RELAX=
@@ -290,6 +300,9 @@ namespace noRestForTheQuery
                 // of allowed choices.
             // Pressing Space will lead you to the Status Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
+
+                int numRepairing = 0;
+
                 if (staticScreenTrigger) staticScreenTrigger = false;
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.STATUS; }
@@ -316,14 +329,20 @@ namespace noRestForTheQuery
                                 if( !shieldCheck && costOfPencils < student.budget ) pencilPurchasing += BULKBUY; 
                                 else if( shieldCheck && costOfPencils + costOfShield < student.budget ){ pencilPurchasing += BULKBUY;  }
                             }
-                        
+
+
                         if (shieldCheck && costOfPencils + costOfShield > student.budget) {
                             pencilPurchasing = (int)((student.budget - costOfShield) / PENCILCOST);
                             if( pencilPurchasing < 0 ){ pencilPurchasing = 0; }
                         }
+
+                        if (shieldCheck) {
+                            numRepairing = student.budget / SHIELDCOST;
+                            if (numRepairing > student.notebook.maxBooks - student.notebook.numOfNotebook) { numRepairing = student.notebook.maxBooks - student.notebook.numOfNotebook; }
+                            else if (numRepairing > student.notebook.maxBooks) { numRepairing = student.notebook.maxBooks; } 
+                        }
                         
                     }
-
                     if( chosenChoices.Count() == 3 && checkMouseOverlap( submitPos, 250, 35 ) ) {
                         for (int i = 0; i < chosenChoices.Count(); i++) {
                             if (chosenChoices[i] == (int)WeekendChoices.BEG) { student.budget+= 500; }
@@ -335,15 +354,14 @@ namespace noRestForTheQuery
                                 student.amtPencil += pencilPurchasing;
                                 student.budget -= (int)(pencilPurchasing * PENCILCOST);
                                 if( shieldCheck ){
-                                    //Only allow shieldCheck if the cost is less than budget
-                                    if( student.budget > SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook) ){
-                                        student.budget -= SHIELDCOST* (student.notebook.maxBooks - student.notebook.numOfNotebook);
-                                        student.notebook.reset();
-                                    }
-                                    else{ shieldCheck = false; }
+                                    student.budget -= SHIELDCOST * numRepairing;
+                                    int temp = student.notebook.numOfNotebook + numRepairing;
+                                    student.notebook.reset();
+                                    student.notebook.numOfNotebook = temp;
                                 }
                             }
                         }
+                        shieldCheck = false;
                         chosenChoices.Clear();
                         pencilPurchasing = 0;
                         costOfPencils = 0;
@@ -351,7 +369,7 @@ namespace noRestForTheQuery
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
 
-                    costOfShield = (shieldCheck) ? SHIELDCOST * (student.notebook.maxBooks - student.notebook.numOfNotebook) : 0 ;
+                    costOfShield = (shieldCheck) ? SHIELDCOST * (numRepairing) : 0 ;
                     costOfPencils = (int)(pencilPurchasing * PENCILCOST);
                 }
             }
@@ -365,7 +383,7 @@ namespace noRestForTheQuery
                 // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.005;
+                    student.sanity -= 0.001;
                 }
 
                 
@@ -414,6 +432,7 @@ namespace noRestForTheQuery
                 #endregion
 
                 #region Player Controls
+                if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
@@ -580,12 +599,12 @@ namespace noRestForTheQuery
                         }
                     }
 
-                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; }
+                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; examEncounter = false; }
                     //if (exams[index].checkBoundaries(examsprite.Width, examsprite.Height) ) { exams.RemoveAt(index); }
                     if (!exams[index].isAlive) {
                         
-                            exams.RemoveAt(index); 
-                            student.gainExperience();
+                        exams.RemoveAt(index); 
+                        student.gainExperience();
                         
                     }
                     else { index++; }
@@ -593,9 +612,16 @@ namespace noRestForTheQuery
 
 
                 // POSITION UPDATE - Camera
-                translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                screenOffset += 1;
+                for (int i = 0; i < exams.Count(); i++) {
+                    if ( WINDOW_WIDTH + screenOffset >= exams[i].position.X + examSprite.Width) {
+                        examEncounter = true;
+                    }
+                }
 
+                if (!examEncounter) { 
+                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
+                    screenOffset += 1;
+                }
 
                 // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
                 if (professors[gameLevel - 1].isAlive /*&& professors[gameLevel - 1].markers.Count() > 0 */) { 
@@ -618,13 +644,11 @@ namespace noRestForTheQuery
 
                 #endregion
 
-
-
                 // BOOK-KEEPING
                     updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision( platforms );
-                handleStudentPlatformCollision( hiddenPlatforms);
+                handleStudentPlatformCollision( hiddenPlatforms );
 
                 if (student.velocity.Y != 0) { student.onGround = false; }                          //Check if on ground
                 if (student.onGround) { student.jumping = false; }                                  //Reset jump state
@@ -663,16 +687,21 @@ namespace noRestForTheQuery
             // STATUS SCREEN - In development; May Not Implement (For Testing Purposes)
             else if (IsActive && (currentStatus == (int)ScreenStatus.STATUS || currentStatus == (int)ScreenStatus.PAUSE ) ) { 
                 spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
-                int ypos = 0, yAmt = 30;
-                spriteBatch.DrawString(largeFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Ammo Held: " + student.amtPencil, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Homework Killed: " + hwKilled, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Experience: " + (student.experience * 100) + "/100", new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Attack Power: " + student.attackPower, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Budget: $" + student.budget, new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Sanity: " + (student.sanity * 100) + "/100", new Vector2(screenOffset + 120, 100 + (ypos++) * yAmt), b80000);
+                int yPos = 0, yAmt = 30, xPos = screenOffset + 120;
+
+                spriteBatch.DrawString(largeFont, "Level: " + gameLevel, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Offset: " + screenOffset, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "X: " + student.position.X, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Y: " + student.position.Y, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Ammo Held: " + student.amtPencil, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Ammo On Screen: " + student.pencils.Count(), new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Homework Killed: " + hwKilled, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Experience: " + (student.experience * 100) + "/100", new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Attack Power: " + student.attackPower, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Budget: $" + student.budget, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
+                spriteBatch.DrawString(largeFont, "Sanity: " + (student.sanity * 100) + "/100", new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 
             }
 
@@ -824,7 +853,7 @@ namespace noRestForTheQuery
             blinkDuration = BLINK_TIME;
             sanityTime = SANITY_TIME;
             sanityBlockade = 0;
-
+            examEncounter = false;
             // Reset the Positions
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
@@ -845,6 +874,7 @@ namespace noRestForTheQuery
             updatePosition();
             hitRecoilTime = INVUL_TIME;
             blinkDuration = BLINK_TIME;
+            examEncounter = false;
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
             
@@ -944,32 +974,85 @@ namespace noRestForTheQuery
                 char[] levelRow = line.ToCharArray();
                 foreach( char symbol in levelRow ){
                     //if( symbol == '.' || symbol == ' ') {  }
-                    if( symbol == 's' ){ student.position = new Vector2( x, y ); }
+                    if( symbol == 'b' ){ student.position = new Vector2( x, y ); }
                     if( symbol == 'x' ){ platforms.Add( new Platform( new Vector2( x, y ), Vector2.Zero, 0 ) ); }
                     if( symbol == 'h' ){ 
                         homeworks.Add( new Homework( new Vector2( x, y ), new Vector2(homeworkSprite.Width / 2, homeworkSprite.Height / 2), Vector2.Zero ) ); 
                         homeworks.Last().colorArr = new Color[ homeworkSprite.Width * homeworkSprite.Height ];
                         homeworkSprite.GetData<Color>( homeworks.Last().colorArr );
                     }
-                    if( symbol == 'g' ){
-                        goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight );
-                    }
+                    if( symbol == 'g' ){ goal = new Rectangle( x, y, defaultBlockWidth, defaultBlockHeight ); }
                     if (symbol == 'e') {
                         exams.Add(new Exam(new Vector2(x, y), new Vector2(examSprite.Width / 2, examSprite.Height / 2), Vector2.Zero));
                         exams.Last().colorArr = new Color[examSprite.Width * examSprite.Height];
                         examSprite.GetData<Color>(exams.Last().colorArr);
                     }
-                    if (symbol == '-') {
-                        hiddenPlatforms.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
-                    } 
-                    if (symbol == 't') {
-                        triggers.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0));
-                    }
+                    if (symbol == '-') { hiddenPlatforms.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0)); }
+                    if (symbol == 't') { triggers.Add(new Platform(new Vector2(x, y), Vector2.Zero, 0)); }
                     x += defaultBlockWidth;
                 }
                 x = 0;
                 y += defaultBlockHeight;
             }
+
+            file.Close();
+
+        }
+        private void checkSaves() { 
+            string line;
+            System.IO.StreamReader file = new System.IO.StreamReader( currentSaveFile );
+            while ((line = file.ReadLine()) != null) {
+                int equalIndex = line.IndexOf('=');
+                string variable = line.Substring(0, equalIndex);
+                string value = line.Substring(equalIndex + 1, line.Length - equalIndex - 1);
+
+                float numValue;
+                float.TryParse ( value, out numValue );
+
+                if (variable == "gameLevel") { 
+                    gameLevel = (int)numValue; 
+                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt"; 
+                }
+                else if (variable == "offset") screenOffset = (int)numValue;
+                else if (variable == "translation") {
+                    translation = Matrix.Identity;
+                    for (int i = 0; i < screenOffset; i++) { translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0)); }
+                }
+                else if (variable == "student.position.X") student.position.X = numValue;
+                else if (variable == "student.position.Y") student.position.Y = numValue;
+                else if (variable == "currentHealth") student.currentHealth = (int)numValue;
+                else if (variable == "fullHealth") student.fullHealth = (int)numValue;
+                else if (variable == "attackPower") student.attackPower = (int)numValue;
+                else if (variable == "amtPencil") student.amtPencil = (int)numValue;
+                else if (variable == "sanity") student.sanity = numValue;
+                else if (variable == "budget") student.budget = (int)numValue;
+                else if (variable == "experience") student.experience = numValue;
+                else if (variable == "shield") { 
+                    student.notebook.numOfNotebook = (int)numValue;
+                    if (student.notebook.numOfNotebook <= 0 ) { student.notebook.isAlive = false; }
+                }
+            }
+            file.Close();
+
+        }
+
+        private void writeSaves(){
+            string[] lines = { 
+                                "gameLevel=" + gameLevel,
+                                "offset=" + screenOffset,
+                                "translation=" + translation,
+                                "student.position.X=" + student.position.X,
+                                "student.position.Y=" + student.position.Y,
+                                "currentHealth=" + student.currentHealth,
+                                "fullHealth=" + student.fullHealth,
+                                "attackPower=" + student.attackPower,
+                                "amtPencil=" + student.amtPencil,
+                                "sanity=" + student.sanity,
+                                "budget=" + student.budget,
+                                "experience=" + student.experience,
+                                "shield=" + student.notebook.numOfNotebook };
+
+            System.IO.File.WriteAllLines(currentSaveFile, lines);
         }
     }
 }
