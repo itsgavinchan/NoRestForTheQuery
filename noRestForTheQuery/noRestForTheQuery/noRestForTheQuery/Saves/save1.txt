@@ -1,0 +1,9 @@
+gameLevel=3
+currentHealth=300
+fullHealth=300
+attackPower=120
+amtPencil=250
+sanity=0.989
+budget=660
+experience=0
+shield=3
