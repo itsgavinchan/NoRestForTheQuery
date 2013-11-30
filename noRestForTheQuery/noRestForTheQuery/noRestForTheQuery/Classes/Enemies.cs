@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace noRestForTheQuery {
 
@@ -23,32 +24,35 @@ namespace noRestForTheQuery {
                 markerSpeed = 10;
                 this.attackPower = attackPower;
                 //Search Cone will rotate around the professor, so the professor's origin is provided in the constructor
-                search = new SearchCone( new Vector2( origin.X-FinalGame.searchConeSprite.Width, origin.Y-FinalGame.searchConeSprite.Height ), this.origin );
-                shootCooldown = 200;
-                elapsedTime = 0;
+                search = new SearchCone( new Vector2( position.X+origin.X-FinalGame.searchConeSprite.Width, 
+                                                      position.Y+origin.Y-FinalGame.searchConeSprite.Height/2 ),
+                                         new Vector2( FinalGame.searchConeSprite.Width, FinalGame.searchConeSprite.Height/2 ) );
+                shootCooldown = 1000;
+                elapsedTime = shootCooldown/2;
         }
 
         // Update the Position And/Or Velocity
         public void update( Student1 student, GameTime gameTime ) {
             
+            
             if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
             else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
             //if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
-            search.searchFor( student );
-            if( search.foundSomeone ){
+            this.transform = 
+                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
+                Matrix.CreateRotationZ(this.rotation) *
+                Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
+
+            
+            search.update( position.X+width/2, position.Y+origin.Y/2, student); 
+            if( search.foundSomeone ){ 
                 elapsedTime -= gameTime.ElapsedGameTime.Milliseconds;
                 if( elapsedTime < 0 ){
                     shoot( student.position.X, student.position.Y );
                     elapsedTime = shootCooldown;
                 }
             }
-            search.position.X = origin.X-FinalGame.searchConeSprite.Width;
-            search.position.Y = origin.Y-FinalGame.searchConeSprite.Height;
             
-            this.transform = 
-                Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
-                Matrix.CreateRotationZ(this.rotation) *
-                Matrix.CreateTranslation(new Vector3(this.position+this.origin, 0.0f));
         }
 
         public void reset() {
@@ -94,7 +98,7 @@ namespace noRestForTheQuery {
             }
             else {
                 rotation = (float)Math.Atan2(y - (position.Y + origin.Y), x - (position.X + origin.X));
-                velocity.X += (float)Math.Cos(rotation) * (.05F * speed);
+                velocity.X += (float)Math.Cos(rotation) * (.09F * speed);
                 velocity.Y += (float)Math.Sin(rotation) * (.07F * speed);
                 rotation = (float)Math.Atan2(velocity.Y, velocity.X);
             }
@@ -141,7 +145,7 @@ namespace noRestForTheQuery {
 
             // Assign Values to Local Members
             durability = FinalGame.gameLevel * 10;
-            speed = (float)(FinalGame.rand.Next(5, 6) + FinalGame.rand.NextDouble());
+            speed = (float)(FinalGame.rand.Next(4, 5) + FinalGame.rand.NextDouble());
         }
 
     }

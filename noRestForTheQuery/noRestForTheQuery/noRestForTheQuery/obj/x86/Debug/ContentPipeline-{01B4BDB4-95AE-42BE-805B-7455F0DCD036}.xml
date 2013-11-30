@@ -191,15 +191,6 @@
       <Time>2013-11-27T14:02:22.578125-05:00</Time>
     </Item>
     <Item>
-      <Source>Sprites\searchCone.png</Source>
-      <Name>Sprites\searchCone</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\searchCone.xnb</Output>
-      <Time>2013-11-28T21:01:10.5820312-05:00</Time>
-    </Item>
-    <Item>
       <Source>Fonts\MainFont.spritefont</Source>
       <Name>Fonts\MainFont</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -216,6 +207,15 @@
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\LargeFont.xnb</Output>
       <Time>2013-11-27T14:02:22.578125-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\searchCone.png</Source>
+      <Name>Sprites\searchCone</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\searchCone.xnb</Output>
+      <Time>2013-11-29T17:54:43.1244141-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
