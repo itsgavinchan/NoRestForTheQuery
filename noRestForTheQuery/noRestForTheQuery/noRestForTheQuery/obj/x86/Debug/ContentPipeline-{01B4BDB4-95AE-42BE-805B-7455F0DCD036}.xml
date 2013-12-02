@@ -217,6 +217,33 @@
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\LargeFont.xnb</Output>
       <Time>2013-11-27T13:50:09.2148438-05:00</Time>
     </Item>
+    <Item>
+      <Source>Fonts\ExtraLargeFont.spritefont</Source>
+      <Name>Fonts\ExtraLargeFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\ExtraLargeFont.xnb</Output>
+      <Time>2013-12-02T10:22:14.3640938-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\controls-intro.png</Source>
+      <Name>Sprites\controls-intro</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-intro.xnb</Output>
+      <Time>2013-12-02T11:26:51.8095703-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\controls-pause.png</Source>
+      <Name>Sprites\controls-pause</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-pause.xnb</Output>
+      <Time>2013-12-02T11:26:51.8115234-05:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{01B4BDB4-95AE-42BE-805B-7455F0DCD036}</ContentProjectGUID>
