@@ -12,6 +12,7 @@ namespace noRestForTheQuery {
         int /*markerAmt,*/ markerSpeed, shootCooldown, elapsedTime;
         public SearchCone search;
         public int attackPower;
+        public float hover;
         public List<Marker> markers = new List<Marker>();
         public Professor(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
             base(position, origin, velocity, speed, FinalGame.professorSprite.Width, FinalGame.professorSprite.Height) {
@@ -33,7 +34,11 @@ namespace noRestForTheQuery {
 
         // Update the Position And/Or Velocity
         public void update( Student1 student, GameTime gameTime ) {
-            
+
+            //Add a hover to make it look nicer
+            velocity.Y = (float)Math.Cos(hover -= .05F);
+            if (hover < -2 * Math.PI) { hover = 0; } //To prevent the hover value from getting too large
+            position.Y += velocity.Y;
             
             if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
             else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
@@ -116,7 +121,7 @@ namespace noRestForTheQuery {
 
     class Homework : Assignment {
         public Homework(Vector2 position, Vector2 origin, Vector2 velocity ) :
-            base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height, false, 400) {
+            base(position, origin, velocity, 0, FinalGame.homeworkSprite.Width, FinalGame.homeworkSprite.Height, false, 250) {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
@@ -139,7 +144,7 @@ namespace noRestForTheQuery {
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
 
-            fullHealth = 10 * FinalGame.gameLevel;
+            fullHealth = 30 * FinalGame.gameLevel;
             currentHealth = fullHealth;
             attackPower = 20 * FinalGame.gameLevel;
 
