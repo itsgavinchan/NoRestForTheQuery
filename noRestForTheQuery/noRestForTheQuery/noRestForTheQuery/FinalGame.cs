@@ -53,8 +53,10 @@ namespace noRestForTheQuery
             "In the incoming years, become the masochistic programmer you are ",
             "paying tuition to be and get ready to sweat blood. Good luck, young",
             "programmer. May you survive this hurdle intact and graduate (on time).",
-            ""
+            "",
+            "Press Space to Proceed."
             };
+
 
         // GAME OVER SCREEN
         const string gameOverMessage = "Game Over";
@@ -98,7 +100,7 @@ namespace noRestForTheQuery
         public static Random rand = new Random();
         public Rectangle goal = new Rectangle();
         string currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-        string currentSaveFile = "../../../Saves/save1.txt";
+        string currentSaveFile = "../../../Saves/autoSave.txt";
 
         // CAMERA
         public static int screenOffset = 0, tempScreenOffset;
@@ -129,8 +131,8 @@ namespace noRestForTheQuery
         List<Exam> exams = new List<Exam>();
 
         // DISPLAY Variables
-        SpriteFont mainFont, largeFont;
-        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite, searchConeSprite;
+        SpriteFont mainFont, largeFont, xLargeFont;
+        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite, searchConeSprite, controlsPause, controlsIntro;
         
         // INPUT States
         KeyboardState lastKeyState = Keyboard.GetState();
@@ -148,6 +150,7 @@ namespace noRestForTheQuery
             spriteBatch = new SpriteBatch(GraphicsDevice);
             mainFont = Content.Load<SpriteFont>(@"Fonts/MainFont");
             largeFont = Content.Load<SpriteFont>(@"Fonts/LargeFont");
+            xLargeFont = Content.Load<SpriteFont>(@"Fonts/ExtraLargeFont");
 
             studentSprite = Content.Load<Texture2D>(@"Sprites/player");
             platformSprite = Content.Load<Texture2D>(@"Sprites/platform");
@@ -169,9 +172,11 @@ namespace noRestForTheQuery
             listSprite = Content.Load<Texture2D>(@"Sprites/shoppingList");
             submitSprite = Content.Load<Texture2D>(@"Sprites/submit");
             filledBulletSprite = Content.Load<Texture2D>(@"Sprites/filled");
+            controlsIntro = Content.Load<Texture2D>(@"Sprites/controls-intro");
+            controlsPause = Content.Load<Texture2D>(@"Sprites/controls-pause");
 
             blockadePos = new Vector2(WINDOW_WIDTH - sanityBlockade, 0);
-            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameTitle).Y / 2 - 25);
+            gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - xLargeFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - xLargeFont.MeasureString(gameTitle).Y / 2 - 25);
             continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
@@ -263,7 +268,11 @@ namespace noRestForTheQuery
             // INTRODUCTION SCREEN - Explains the Story and Rules of Game
             // Pressing Space will proceed to the Start of Game - Weekday Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.WEEKDAY; }
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) {
+                    reset();
+                    writeSaves();
+                    currentStatus = (int)ScreenStatus.WEEKDAY; 
+                }
             }
             // PAUSE SCREEN - Provides option to pause the screen; may implement SAVE, QUIT GAME, RESTART LEVEL in future iterations
             // Press Backspace to resume the game in Weekday Stage (Pause Stage can only be accessed from Weekday Stage)
@@ -275,7 +284,7 @@ namespace noRestForTheQuery
             // Pressing Space will proceed back to the Weekend Stage (Status Stage can only be accessed from Weekend Stage)
             else if (IsActive && currentStatus == (int)ScreenStatus.STATUS) {
                 if (staticScreenTrigger) staticScreenTrigger = false;
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.WEEKEND; }
+                if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) { currentStatus = (int)ScreenStatus.WEEKEND; }
             }
             // GAME OVER SCREEN
             // Pressing R Key will restart the game from the beginning - Start Screen
@@ -306,7 +315,7 @@ namespace noRestForTheQuery
 
                 if (staticScreenTrigger) staticScreenTrigger = false;
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.STATUS; }
+                if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) { currentStatus = (int)ScreenStatus.STATUS; }
 
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released) {
 
@@ -404,6 +413,14 @@ namespace noRestForTheQuery
 
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
 
+                if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
+                    reset();
+                    checkSaves();
+                    buildLevel(ref platforms, ref student, ref homeworks);
+                    currentStatus = (int)ScreenStatus.WEEKDAY;
+                }
+
+                /*
                 // TEST - Progression to Next Level
                 if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
                     softReset();
@@ -411,6 +428,7 @@ namespace noRestForTheQuery
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                     buildLevel(ref platforms, ref student, ref homeworks);
                 }
+                */
 
                 // TEST - Controls for Camera Movement
                 if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
@@ -423,18 +441,20 @@ namespace noRestForTheQuery
                 }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
-                if ( student.currentHealth <= 0 || Keyboard.GetState().IsKeyDown(Keys.Q) || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
+                if ( student.currentHealth <= 0 /*|| Keyboard.GetState().IsKeyDown(Keys.Q)*/ || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
                     staticScreenTrigger = true;
                     student.isAlive = false; 
                     currentStatus = (int)ScreenStatus.GAMEOVER; 
                 }
 
+                /*
                 // TEST - Initiate WEEKEND Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.U)) {
                     staticScreenTrigger = true;
                     // Transitions to WEEKEND Stage
                     currentStatus = (int)ScreenStatus.WEEKEND;
                 }
+                */
 
                 // TEST - Initiate PAUSE Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) {
@@ -444,7 +464,7 @@ namespace noRestForTheQuery
                 #endregion
 
                 #region Player Controls
-                if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
+                // if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
@@ -684,13 +704,14 @@ namespace noRestForTheQuery
             // START SCREEN
             // Displays the Game Title and Continue Message
             if (IsActive && currentStatus == (int)ScreenStatus.START) {
-                spriteBatch.DrawString(mainFont, gameTitle, gameTitlePos, Color.White);
+                spriteBatch.DrawString(xLargeFont, gameTitle, gameTitlePos, Color.White);
                 spriteBatch.DrawString(mainFont, continueMessage, continueMessagePos, Color.White);
             }
 
             // INTRODUCTION SCREEN
             // Displays the Welcoming Message to Greet the Player as well as brief them on the controls
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
+                spriteBatch.Draw(controlsIntro, Vector2.Zero, Color.White);
                 for (int i = 0; i < introMessage.Count(); i++) {
                     spriteBatch.DrawString(mainFont, introMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(introMessage[i]).X / 2, i * 25 + 100), Color.White);
                 }
@@ -700,11 +721,8 @@ namespace noRestForTheQuery
             else if (IsActive && (currentStatus == (int)ScreenStatus.STATUS || currentStatus == (int)ScreenStatus.PAUSE ) ) { 
                 spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
                 int yPos = 0, yAmt = 30, xPos = screenOffset + 120;
-
+                spriteBatch.Draw(controlsPause, Vector2.Zero, Color.White);
                 spriteBatch.DrawString(largeFont, "Level: " + gameLevel, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Offset: " + screenOffset, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "X: " + student.position.X, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
-                spriteBatch.DrawString(largeFont, "Y: " + student.position.Y, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 spriteBatch.DrawString(largeFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 spriteBatch.DrawString(largeFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 spriteBatch.DrawString(largeFont, "Ammo Held: " + student.amtPencil, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
