@@ -92,12 +92,13 @@ namespace noRestForTheQuery {
             base(position, origin, velocity, 0, width, height) {
                 this.chasing = chaseState;
                 this.searchRadius = searchRadius;
-                this.hover = 0.0F;
+                this.hover = (float)FinalGame.rand.NextDouble();
         }
 
         public void update(float x, float y) {
             if (!chasing) {
-                velocity.Y = (float)Math.Sin(hover -= .05F);
+                velocity.Y = 4 * (float)Math.Sin(hover -= .05F);
+                velocity.X = (float)Math.Cos(hover);
                 if (hover < -2 * Math.PI) { hover = 0; } //To prevent the hover value from getting too large
                 if (isOtherObjectClose(x, y, searchRadius)) { chasing = true; }
             }

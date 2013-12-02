@@ -402,10 +402,10 @@ namespace noRestForTheQuery
                 //if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.001;
+                    student.sanity -= 0.005;
                     if( student.sanity < 0 ){ student.sanity = 0; }
                     if( student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width/2 ){
-                        sanityBlockade = (float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
+                        sanityBlockade = 2*(float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
                     }
                 }
                 
@@ -421,7 +421,7 @@ namespace noRestForTheQuery
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
 
-                /*
+                
                 // TEST - Progression to Next Level
                 if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
                     softReset();
@@ -429,16 +429,16 @@ namespace noRestForTheQuery
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                     buildLevel(ref platforms, ref student, ref homeworks);
                 }
-                */
+                
 
                 // TEST - Controls for Camera Movement
                 if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(1, 0, 0));
-                    screenOffset -= 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(2, 0, 0));
+                    screenOffset -= 2;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                    screenOffset += 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
+                    screenOffset += 2;
                 }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
@@ -468,7 +468,7 @@ namespace noRestForTheQuery
                 // if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
-                if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space) && !student.jumping && student.onGround) { student.jump(); }
 
                 // PLAYER CONTROL - Move Left
                 if (Keyboard.GetState().IsKeyDown(Keys.A)) {
@@ -652,8 +652,8 @@ namespace noRestForTheQuery
                 }
 
                 if (!examEncounter) { 
-                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                    screenOffset += 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
+                    screenOffset += 2;
                 }
 
                 // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
@@ -990,12 +990,18 @@ namespace noRestForTheQuery
                 goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
                 
                 //Increment game level
-                if (gameLevel < MAXLEVELS) { gameLevel++; }
-                else { currentStatus = (int)ScreenStatus.WIN; }
-                currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                softReset();
-                staticScreenTrigger = true;
-                currentStatus = (int)ScreenStatus.WEEKEND;
+                if (gameLevel < MAXLEVELS) { 
+                    gameLevel++; 
+                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                    softReset();
+                    staticScreenTrigger = true;
+                    currentStatus = (int)ScreenStatus.WEEKEND;
+                }
+                else { 
+                    softReset();
+                    staticScreenTrigger = true;
+                    currentStatus = (int)ScreenStatus.WIN; 
+                }
 
             }
         }
