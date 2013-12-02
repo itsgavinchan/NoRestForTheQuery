@@ -340,7 +340,10 @@ namespace noRestForTheQuery
                         if (shieldCheck) {
                             numRepairing = student.budget / SHIELDCOST;
                             if (numRepairing > student.notebook.maxBooks - student.notebook.numOfNotebook) { numRepairing = student.notebook.maxBooks - student.notebook.numOfNotebook; }
-                            else if (numRepairing > student.notebook.maxBooks) { numRepairing = student.notebook.maxBooks; } 
+                            else if (numRepairing > student.notebook.maxBooks) { numRepairing = student.notebook.maxBooks; }
+                            if (numRepairing * SHIELDCOST + pencilPurchasing * PENCILCOST > student.budget) {
+                                numRepairing = (student.budget - (int)(pencilPurchasing * PENCILCOST) ) / SHIELDCOST;
+                            }
                         }
                         
                     }
@@ -376,6 +379,7 @@ namespace noRestForTheQuery
 
                     costOfShield = (shieldCheck) ? SHIELDCOST * (numRepairing) : 0 ;
                     costOfPencils = (int)(pencilPurchasing * PENCILCOST);
+
                 }
             }
 
