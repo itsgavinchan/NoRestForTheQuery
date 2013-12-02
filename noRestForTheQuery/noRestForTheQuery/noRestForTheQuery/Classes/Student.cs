@@ -39,7 +39,7 @@ namespace noRestForTheQuery {
         public void gainExperience() { 
             experience += 1.0 / ( FinalGame.gameLevel * 10.0 );
             if (experience > 1.0) {
-                attackPower += FinalGame.gameLevel;
+                attackPower += FinalGame.gameLevel*2;
                 experience = 0;
             }
         }
@@ -68,7 +68,7 @@ namespace noRestForTheQuery {
         }
 
         // Weekend Option Effects
-        public void studyEffect() { attackPower += FinalGame.gameLevel * 10; }
+        public void studyEffect() { attackPower += FinalGame.gameLevel * 5; }
         public void sleepEffect() { fullHealth += FinalGame.SLEEPINCREMENT; }
         public void foodEffect() { currentHealth = fullHealth; }
         public void socialEffect() {
@@ -82,7 +82,7 @@ namespace noRestForTheQuery {
         // Map Options / Actions
         public void jump() {
             velocity.Y = 0; //Guarantees a full jump
-            velocity.Y -= 15;
+            velocity.Y -= 17;
             jumping = true;
             onGround = false;
         }
