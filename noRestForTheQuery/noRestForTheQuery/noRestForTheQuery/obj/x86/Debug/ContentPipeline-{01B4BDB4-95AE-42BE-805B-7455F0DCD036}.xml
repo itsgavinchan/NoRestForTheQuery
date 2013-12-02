@@ -206,7 +206,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-intro.xnb</Output>
-      <Time>2013-12-02T11:46:14.1734297-05:00</Time>
+      <Time>2013-12-02T14:28:32.9101562-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\controls-pause.png</Source>
@@ -215,7 +215,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-pause.xnb</Output>
-      <Time>2013-12-02T11:46:14.1734297-05:00</Time>
+      <Time>2013-12-02T14:28:32.9570312-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\winStage.png</Source>
@@ -224,7 +224,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\winStage.xnb</Output>
-      <Time>2013-12-02T13:09:00.2324218-05:00</Time>
+      <Time>2013-12-02T14:28:32.9570312-05:00</Time>
     </Item>
     <Item>
       <Source>Fonts\MainFont.spritefont</Source>
@@ -251,7 +251,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Tony\Desktop\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\ExtraLargeFont.xnb</Output>
-      <Time>2013-12-02T11:46:14.1734297-05:00</Time>
+      <Time>2013-12-02T14:28:32.8476562-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
