@@ -18,7 +18,7 @@ namespace noRestForTheQuery
         public const int WINDOW_HEIGHT = 600;
         public const float GRAVITY = 0.9F;
         const int MAXHOMEWORK = 5;
-        const int MAXLEVELS = 2;
+        const int MAXLEVELS = 3;
         const int INVUL_TIME = 1500;
         const int BLINK_TIME = 100;
         const int SANITY_TIME = 600;
@@ -110,7 +110,7 @@ namespace noRestForTheQuery
         int hitRecoilTime = INVUL_TIME;
         int blinkDuration = BLINK_TIME;
         int sanityTime = SANITY_TIME;
-        int sanityBlockade = 0;
+        float sanityBlockade = 0;
         int professorTime = PROFESSOR_TIME * gameLevel;
         const double SANITYTRIGGER = 0.5;
         Vector2 blockadePos;
@@ -288,6 +288,7 @@ namespace noRestForTheQuery
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     reset();
                     checkSaves();
+                    buildLevel( ref platforms, ref student, ref homeworks );
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
                 
@@ -366,6 +367,10 @@ namespace noRestForTheQuery
                         pencilPurchasing = 0;
                         costOfPencils = 0;
                         costOfShield = 0;
+
+                        //Auto save before entering next stage
+                        writeSaves();
+
                         currentStatus = (int)ScreenStatus.WEEKDAY; 
                     }
 
@@ -380,12 +385,15 @@ namespace noRestForTheQuery
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
-                // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
+                //if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
                     student.sanity -= 0.001;
+                    if( student.sanity < 0 ){ student.sanity = 0; }
+                    if( student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width/2 ){
+                        sanityBlockade = (float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
+                    }
                 }
-
                 
 
                 #region Stage Controls
@@ -965,6 +973,7 @@ namespace noRestForTheQuery
         private void buildLevel( ref List<Platform> platforms, ref Student1 student, ref List<Homework> homeworks ) {
             platforms.Clear();
             homeworks.Clear();
+            exams.Clear();
             triggers.Clear();
             int x = 0; int y = 0;
             string line;
@@ -1039,10 +1048,10 @@ namespace noRestForTheQuery
         private void writeSaves(){
             string[] lines = { 
                                 "gameLevel=" + gameLevel,
-                                "offset=" + screenOffset,
-                                "translation=" + translation,
-                                "student.position.X=" + student.position.X,
-                                "student.position.Y=" + student.position.Y,
+                                //"offset=" + screenOffset,                     //Easier to save just before entering next level.
+                                //"translation=" + translation,                 //If we allow saves mid-level, we have to keep track
+                                //"student.position.X=" + student.position.X,   //of enemies as well
+                                //"student.position.Y=" + student.position.Y,
                                 "currentHealth=" + student.currentHealth,
                                 "fullHealth=" + student.fullHealth,
                                 "attackPower=" + student.attackPower,
