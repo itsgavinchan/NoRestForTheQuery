@@ -25,7 +25,7 @@ namespace noRestForTheQuery
         const int PROFESSOR_TIME = 9000;
         int mouseX, mouseY, hwKilled;
 
-        enum ScreenStatus { START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY };
+        enum ScreenStatus { START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY, WIN };
         int currentStatus = (int) ScreenStatus.START;
 
         // STATSBAR
@@ -132,7 +132,7 @@ namespace noRestForTheQuery
 
         // DISPLAY Variables
         SpriteFont mainFont, largeFont, xLargeFont;
-        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite, searchConeSprite, controlsPause, controlsIntro;
+        public static Texture2D platformSprite, studentSprite, pencilSprite, markerSprite, homeworkSprite, examSprite, notebookSprite, professorSprite, blockadeSprite, searchConeSprite, controlsPause, controlsIntro, winStage;
         
         // INPUT States
         KeyboardState lastKeyState = Keyboard.GetState();
@@ -174,6 +174,7 @@ namespace noRestForTheQuery
             filledBulletSprite = Content.Load<Texture2D>(@"Sprites/filled");
             controlsIntro = Content.Load<Texture2D>(@"Sprites/controls-intro");
             controlsPause = Content.Load<Texture2D>(@"Sprites/controls-pause");
+            winStage = Content.Load<Texture2D>(@"Sprites/winStage");
 
             blockadePos = new Vector2(WINDOW_WIDTH - sanityBlockade, 0);
             gameTitlePos = new Vector2(WINDOW_WIDTH / 2 - xLargeFont.MeasureString(gameTitle).X / 2, WINDOW_HEIGHT / 2 - xLargeFont.MeasureString(gameTitle).Y / 2 - 25);
@@ -741,6 +742,11 @@ namespace noRestForTheQuery
                 spriteBatch.DrawString(mainFont, gameOverContMessage, gameOverContPos, Color.White);
             }
 
+            // WIN SCREEN
+            else if (IsActive && currentStatus == (int)ScreenStatus.WIN) {
+                spriteBatch.Draw(winStage, Vector2.Zero, Color.White);
+            }
+
             // WEEKEND SCREEN
             // Temporary implementation; actual UI will be different. Selected choices will be brown and unselected choices will be red. 
             // Hovering over a choice will show the choice as black. 
@@ -984,7 +990,8 @@ namespace noRestForTheQuery
                 goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
                 
                 //Increment game level
-                if( gameLevel < MAXLEVELS ){ gameLevel++; }
+                if (gameLevel < MAXLEVELS) { gameLevel++; }
+                else { currentStatus = (int)ScreenStatus.WIN; }
                 currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                 softReset();
                 staticScreenTrigger = true;

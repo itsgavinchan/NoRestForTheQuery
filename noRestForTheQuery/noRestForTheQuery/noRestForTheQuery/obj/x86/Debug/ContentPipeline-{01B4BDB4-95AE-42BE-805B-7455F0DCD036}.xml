@@ -224,7 +224,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Fonts\ExtraLargeFont.xnb</Output>
-      <Time>2013-12-02T10:22:14.3640938-05:00</Time>
+      <Time>2013-12-02T11:34:17.0556641-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\controls-intro.png</Source>
@@ -233,7 +233,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-intro.xnb</Output>
-      <Time>2013-12-02T11:26:51.8095703-05:00</Time>
+      <Time>2013-12-02T11:34:17.0576172-05:00</Time>
     </Item>
     <Item>
       <Source>Sprites\controls-pause.png</Source>
@@ -242,7 +242,16 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\controls-pause.xnb</Output>
-      <Time>2013-12-02T11:26:51.8115234-05:00</Time>
+      <Time>2013-12-02T11:34:17.0595703-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Sprites\winStage.png</Source>
+      <Name>Sprites\winStage</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Emrys\Documents\GitHub\gameProgramming\noRestForTheQuery\noRestForTheQuery\noRestForTheQuery\bin\x86\Debug\Content\Sprites\winStage.xnb</Output>
+      <Time>2013-12-02T12:13:45.7414922-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
