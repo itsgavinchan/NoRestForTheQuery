@@ -1,10 +1,10 @@
 ﻿
 
 
-        h   h   h   h   h   h   h   h   e
 
 
-      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  
-  b   tttttttttttttttttttttttttttttttttttttttg         
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  
+xx b   tttttttttttttttttttttttttttttttttttttttgx         
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

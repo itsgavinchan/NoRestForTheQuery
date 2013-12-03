@@ -18,7 +18,7 @@ namespace noRestForTheQuery
         public const int WINDOW_HEIGHT = 600;
         public const float GRAVITY = 0.9F;
         const int MAXHOMEWORK = 5;
-        const int MAXLEVELS = 3;
+        const int MAXLEVELS = 4;
         const int INVUL_TIME = 1500;
         const int BLINK_TIME = 100;
         const int SANITY_TIME = 600;
@@ -57,11 +57,15 @@ namespace noRestForTheQuery
             "Press Space to Proceed."
             };
 
-
         // GAME OVER SCREEN
         const string gameOverMessage = "Game Over";
         const string gameOverContMessage = "Press R to Restart The Game or L to Load Where You Last Saved";
         Vector2 gameOverPos, gameOverContPos;
+
+        // WIN SCREEN
+        const string winMessage = "Congrats!";
+        const string winContMessage = "Press Space to Return to Start";
+        Vector2 winMsgPos, winContMsgPos;
         
         // WEEKEND STANDBY SCREEN
         // You may only choose three choices of the total of SIX options - BEG, SLEEP, FOOD, SANITY, STUDY, STORE
@@ -103,7 +107,7 @@ namespace noRestForTheQuery
         string currentSaveFile = "../../../Saves/autoSave.txt";
 
         // CAMERA
-        public static int screenOffset = 0, tempScreenOffset;
+        public static int screenOffset = 0;
         public static Matrix translation = Matrix.Identity;
 
         // STUDENT
@@ -181,7 +185,9 @@ namespace noRestForTheQuery
             continueMessagePos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(continueMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(continueMessage).Y / 2 + 25);
             gameOverPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverMessage).Y / 2 - 25);
             gameOverContPos = new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(gameOverContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(gameOverContMessage).Y / 2 + 25);
-            
+            winMsgPos = new Vector2(WINDOW_WIDTH / 4 - mainFont.MeasureString(winMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(winMessage).Y / 2); 
+            winContMsgPos = new Vector2(WINDOW_WIDTH / 4 - mainFont.MeasureString(winContMessage).X / 2, WINDOW_HEIGHT / 2 - mainFont.MeasureString(winMessage).Y / 2 + 25); 
+
             // Temporary Signal for Selection of Options
             //int sum = 0;
             //for (int i = 0; i < weekendIcons.Count(); i++) { sum += weekendIcons[i].Width; }
@@ -261,6 +267,8 @@ namespace noRestForTheQuery
 
             // Implements the different screen stages -  START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY
 
+            #region Static screens
+
             // START SCREEN - Saves Not Implemented Yet
             // Pressing Space will proceed to Introduction Screen
             if (IsActive && currentStatus == (int)ScreenStatus.START){
@@ -301,8 +309,19 @@ namespace noRestForTheQuery
                     buildLevel( ref platforms, ref student, ref homeworks );
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
-                
+
             }
+
+            // WIN SCREEN
+            // Pressing Space will send the user back to the start menu
+            else if (IsActive && currentStatus == (int)ScreenStatus.WIN) {
+                if( Keyboard.GetState().IsKeyDown(Keys.Space) ){
+                    currentStatus = (int)ScreenStatus.START;
+                }
+            }
+
+            #endregion
+
             // WEEKEND SCREEN
             // Left-Clicking will allow you to choose three of the five options - SLEEP, STUDY, FOOD, STORE, RELAX=
             // Pressing Enter will execute your choices and provide you the boosts, but only if you select the maximum amount of choices
@@ -402,10 +421,10 @@ namespace noRestForTheQuery
                 //if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.001;
+                    student.sanity -= 0.005;
                     if( student.sanity < 0 ){ student.sanity = 0; }
                     if( student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width/2 ){
-                        sanityBlockade = (float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
+                        sanityBlockade = 2*(float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
                     }
                 }
                 
@@ -421,7 +440,7 @@ namespace noRestForTheQuery
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
 
-                /*
+                
                 // TEST - Progression to Next Level
                 if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
                     softReset();
@@ -429,16 +448,16 @@ namespace noRestForTheQuery
                     currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
                     buildLevel(ref platforms, ref student, ref homeworks);
                 }
-                */
+                
 
                 // TEST - Controls for Camera Movement
                 if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(1, 0, 0));
-                    screenOffset -= 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(2, 0, 0));
+                    screenOffset -= 2;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                    screenOffset += 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
+                    screenOffset += 2;
                 }
 
                 // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
@@ -652,8 +671,8 @@ namespace noRestForTheQuery
                 }
 
                 if (!examEncounter) { 
-                    translation *= Matrix.CreateTranslation(new Vector3(-1, 0, 0));
-                    screenOffset += 1;
+                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
+                    screenOffset += 2;
                 }
 
                 // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
@@ -702,6 +721,8 @@ namespace noRestForTheQuery
 
             // Displays the different screen stages - START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY
 
+            #region Static screens
+
             // START SCREEN
             // Displays the Game Title and Continue Message
             if (IsActive && currentStatus == (int)ScreenStatus.START) {
@@ -745,6 +766,8 @@ namespace noRestForTheQuery
             // WIN SCREEN
             else if (IsActive && currentStatus == (int)ScreenStatus.WIN) {
                 spriteBatch.Draw(winStage, Vector2.Zero, Color.White);
+                spriteBatch.DrawString(mainFont, winMessage, winMsgPos, Color.White);
+                spriteBatch.DrawString(mainFont, winContMessage, winContMsgPos, Color.White);
             }
 
             // WEEKEND SCREEN
@@ -765,6 +788,9 @@ namespace noRestForTheQuery
                 }
                 if (chosenChoices.Count() == maxChoices) { spriteBatch.Draw(submitSprite, statsPos, Color.White); }
             }
+
+            #endregion
+
             // WEEKDAY SCREEN
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
@@ -777,7 +803,7 @@ namespace noRestForTheQuery
                 // TRIGGERS
                 for (int i = 0; i < triggers.Count; ++i) { spriteBatch.Draw(platformSprite, triggers[i].position, triggers[i].rectangle, Color.White); }
                 
-                //Goal Display
+                // Goal Display
                 spriteBatch.Draw( platformSprite, goal, Color.LightGreen );
 
                 // Homework Display
@@ -990,12 +1016,18 @@ namespace noRestForTheQuery
                 goal.Top  < student.position.Y+student.origin.Y && student.position.Y+student.origin.Y <= goal.Bottom ){
                 
                 //Increment game level
-                if (gameLevel < MAXLEVELS) { gameLevel++; }
-                else { currentStatus = (int)ScreenStatus.WIN; }
-                currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                softReset();
-                staticScreenTrigger = true;
-                currentStatus = (int)ScreenStatus.WEEKEND;
+                if (gameLevel < MAXLEVELS) { 
+                    gameLevel++; 
+                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
+                    softReset();
+                    staticScreenTrigger = true;
+                    currentStatus = (int)ScreenStatus.WEEKEND;
+                }
+                else { 
+                    softReset();
+                    staticScreenTrigger = true;
+                    currentStatus = (int)ScreenStatus.WIN; 
+                }
 
             }
         }
@@ -1073,7 +1105,6 @@ namespace noRestForTheQuery
             file.Close();
 
         }
-
         private void writeSaves(){
             string[] lines = { 
                                 "gameLevel=" + gameLevel,
