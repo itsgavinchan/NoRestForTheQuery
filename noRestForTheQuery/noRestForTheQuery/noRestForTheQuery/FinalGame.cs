@@ -418,16 +418,18 @@ namespace noRestForTheQuery
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
-                //if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.005;
+                    student.sanity -= 0.001;
                     if( student.sanity < 0 ){ student.sanity = 0; }
-                    if( student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width/2 ){
+                    if( student.sanity <= SANITYTRIGGER ){
                         sanityBlockade = 2*(float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
+                        sanityBlockade = MathHelper.Clamp( sanityBlockade, 0, 3*blockadeSprite.Width/4 );
+                    }
+                    if( student.sanity > SANITYTRIGGER ){
+                        sanityBlockade = 0; 
                     }
                 }
-                
 
                 #region Stage Controls
 

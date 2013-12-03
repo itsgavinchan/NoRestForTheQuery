@@ -40,7 +40,7 @@ namespace noRestForTheQuery {
         public void update() {
             position.X += velocity.X;
             position.Y += velocity.Y;
-            velocity.Y += FinalGame.GRAVITY * .2F;
+            velocity.Y += FinalGame.GRAVITY * .15F;
             rotation = (float)Math.Atan2(velocity.Y, velocity.X);
             //Update transform
             this.transform = 
