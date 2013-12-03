@@ -420,7 +420,7 @@ namespace noRestForTheQuery
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.001;
+                    student.sanity -= 0.005F;
                     if( student.sanity < 0 ){ student.sanity = 0; }
                     if( student.sanity <= SANITYTRIGGER ){
                         sanityBlockade = 2*(float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
