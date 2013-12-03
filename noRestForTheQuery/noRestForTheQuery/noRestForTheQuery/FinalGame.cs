@@ -487,7 +487,7 @@ namespace noRestForTheQuery
                 // if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space) && !student.jumping && student.onGround) { student.jump(); }
+                if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
 
                 // PLAYER CONTROL - Move Left
                 if (Keyboard.GetState().IsKeyDown(Keys.A)) {
