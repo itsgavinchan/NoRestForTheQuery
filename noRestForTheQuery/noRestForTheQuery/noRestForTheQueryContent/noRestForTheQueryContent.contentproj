@@ -95,13 +95,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sprites\menuItem01.png">
-      <Name>menuItem01</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Sprites\identification.png">
       <Name>identification</Name>
       <Importer>TextureImporter</Importer>
