@@ -28,7 +28,7 @@ namespace noRestForTheQuery {
                 search = new SearchCone( new Vector2( position.X+origin.X-FinalGame.searchConeSprite.Width, 
                                                       position.Y+origin.Y-FinalGame.searchConeSprite.Height/2 ),
                                          new Vector2( FinalGame.searchConeSprite.Width, FinalGame.searchConeSprite.Height/2 ) );
-                shootCooldown = 1000;
+                shootCooldown = 800;
                 elapsedTime = shootCooldown/2;
         }
 
@@ -50,12 +50,15 @@ namespace noRestForTheQuery {
 
             
             search.update( position.X+width/2, position.Y+origin.Y/2, student); 
-            if( search.foundSomeone ){ 
+            if( isAlive && search.foundSomeone ){ 
                 elapsedTime -= gameTime.ElapsedGameTime.Milliseconds;
                 if (elapsedTime < 0 ) {
                     if( student.position.X + FinalGame.studentSprite.Width*3 < position.X ) shoot( student.position.X, student.position.Y );
                     elapsedTime = shootCooldown;
                 }
+            }
+            else{
+                elapsedTime = shootCooldown/2;
             }
             
         }

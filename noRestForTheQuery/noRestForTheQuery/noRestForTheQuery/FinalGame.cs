@@ -418,16 +418,18 @@ namespace noRestForTheQuery
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
-                //if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
                 if (sanityTime < 0 ) {
                     sanityTime = SANITY_TIME;
-                    student.sanity -= 0.005;
+                    student.sanity -= 0.005F;
                     if( student.sanity < 0 ){ student.sanity = 0; }
-                    if( student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width/2 ){
+                    if( student.sanity <= SANITYTRIGGER ){
                         sanityBlockade = 2*(float)(blockadeSprite.Width * (1.0F-(student.sanity+SANITYTRIGGER)));
+                        sanityBlockade = MathHelper.Clamp( sanityBlockade, 0, 3*blockadeSprite.Width/4 );
+                    }
+                    if( student.sanity > SANITYTRIGGER ){
+                        sanityBlockade = 0; 
                     }
                 }
-                
 
                 #region Stage Controls
 
@@ -743,7 +745,7 @@ namespace noRestForTheQuery
             else if (IsActive && (currentStatus == (int)ScreenStatus.STATUS || currentStatus == (int)ScreenStatus.PAUSE ) ) { 
                 spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
                 int yPos = 0, yAmt = 30, xPos = screenOffset + 120;
-                spriteBatch.Draw(controlsPause, Vector2.Zero, Color.White);
+                spriteBatch.Draw(controlsPause, new Vector2(screenOffset, 0), Color.White);
                 spriteBatch.DrawString(largeFont, "Level: " + gameLevel, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 spriteBatch.DrawString(largeFont, "Health: " + student.currentHealth + "/" + student.fullHealth, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
                 spriteBatch.DrawString(largeFont, "Shield: " + student.notebook.numOfNotebook, new Vector2(xPos, 100 + (yPos++) * yAmt), b80000);
@@ -801,7 +803,7 @@ namespace noRestForTheQuery
                 for (int i = 0; i < hiddenPlatforms.Count; ++i) { spriteBatch.Draw(platformSprite, hiddenPlatforms[i].position, hiddenPlatforms[i].rectangle, Color.LightGray); }
                 
                 // TRIGGERS
-                for (int i = 0; i < triggers.Count; ++i) { spriteBatch.Draw(platformSprite, triggers[i].position, triggers[i].rectangle, Color.White); }
+                for (int i = 0; i < triggers.Count; ++i) { spriteBatch.Draw(platformSprite, triggers[i].position, triggers[i].rectangle, Color.White*0.1F); }
                 
                 // Goal Display
                 spriteBatch.Draw( platformSprite, goal, Color.LightGreen );
