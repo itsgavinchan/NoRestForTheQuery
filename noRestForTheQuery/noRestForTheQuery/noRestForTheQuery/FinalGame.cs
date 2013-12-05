@@ -777,7 +777,7 @@ namespace noRestForTheQuery
                 
                 // Professor Display and their Markers
                 if (professors[gameLevel - 1].isAlive) {
-                    spriteBatch.Draw(homeworkSprite, professors[gameLevel - 1].position, Color.Blue);
+                    spriteBatch.Draw(professorSprite, professors[gameLevel - 1].position, Color.Blue);
                     for (int i = 0; i < professors[gameLevel - 1].markers.Count(); i++) {
                         spriteBatch.Draw(markerSprite, professors[gameLevel - 1].markers[i].position, null, Color.White, professors[gameLevel - 1].markers[i].rotation, professors[gameLevel - 1].markers[i].origin, 1.0F, SpriteEffects.None, 0.0F);
                     }
