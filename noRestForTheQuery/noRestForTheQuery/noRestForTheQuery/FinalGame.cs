@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+// Project by Kay (Mei) Chan and Tony Huynh
+// Game Title: No Rest For The Query
+
 namespace noRestForTheQuery
 {
     public class FinalGame : Microsoft.Xna.Framework.Game {
