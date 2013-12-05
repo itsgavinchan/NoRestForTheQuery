@@ -21,13 +21,14 @@ namespace noRestForTheQuery {
             //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
                 isAlive = false;
-                //markerAmt = 10;
                 markerSpeed = 10;
                 this.attackPower = attackPower;
+
                 //Search Cone will rotate around the professor, so the professor's origin is provided in the constructor
                 search = new SearchCone( new Vector2( position.X+origin.X-FinalGame.searchConeSprite.Width, 
                                                       position.Y+origin.Y-FinalGame.searchConeSprite.Height/2 ),
                                          new Vector2( FinalGame.searchConeSprite.Width, FinalGame.searchConeSprite.Height/2 ) );
+                
                 shootCooldown = 800;
                 elapsedTime = shootCooldown/2;
         }
@@ -42,7 +43,8 @@ namespace noRestForTheQuery {
             
             if ( isAlive && position.X >= FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100) { position.X -= speed; }
             else { position.X = FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100; }
-            //if ( isAlive && position.X < FinalGame.WINDOW_WIDTH + FinalGame.screenOffset - 100 ) { position.X += speed; }
+
+
             this.transform = 
                 Matrix.CreateTranslation(new Vector3(-this.origin, 0.0f)) *
                 Matrix.CreateRotationZ(this.rotation) *
@@ -57,33 +59,27 @@ namespace noRestForTheQuery {
                     elapsedTime = shootCooldown;
                 }
             }
-            else{
-                elapsedTime = shootCooldown/2;
-            }
+            else{ elapsedTime = shootCooldown/2; }
             
         }
 
         public void reset() {
             isAlive = false;
             markers.Clear();
-            //markerAmt = 10;
             position = new Vector2(FinalGame.WINDOW_WIDTH, (FinalGame.WINDOW_HEIGHT - FinalGame.professorSprite.Height) / 2);
         }
 
         public void shoot( double studentPosX, double studentPosY) {
-            //if (markerAmt > 0) {
-                markers.Add(new Marker( attackPower, 
-                                        new Vector2(position.X + FinalGame.professorSprite.Width / 2 - FinalGame.markerSprite.Width / 2,   //Position
-                                                    position.Y + FinalGame.professorSprite.Height / 2 - FinalGame.markerSprite.Height),
-                                        new Vector2(FinalGame.markerSprite.Width / 2,                   //Origin
-                                                    FinalGame.markerSprite.Height / 2), 
-                                        Vector2.Zero,                                                   //Velocity
-                                        markerSpeed,                                                    //Speed
-                                        (float)(Math.Atan2(studentPosY, studentPosX))));                //Rotation
-                markers.Last().colorArr = new Color[ FinalGame.markerSprite.Width*FinalGame.markerSprite.Height ];
-                FinalGame.markerSprite.GetData<Color>( markers.Last().colorArr );
-            //    markerAmt--;
-            //}
+            markers.Add(new Marker( attackPower, 
+                                    new Vector2(position.X + FinalGame.professorSprite.Width / 2 - FinalGame.markerSprite.Width / 2,   //Position
+                                                position.Y + FinalGame.professorSprite.Height / 2 - FinalGame.markerSprite.Height),
+                                    new Vector2(FinalGame.markerSprite.Width / 2,                   //Origin
+                                                FinalGame.markerSprite.Height / 2), 
+                                    Vector2.Zero,                                                   //Velocity
+                                    markerSpeed,                                                    //Speed
+                                    (float)(Math.Atan2(studentPosY, studentPosX))));                //Rotation
+            markers.Last().colorArr = new Color[ FinalGame.markerSprite.Width*FinalGame.markerSprite.Height ];
+            FinalGame.markerSprite.GetData<Color>( markers.Last().colorArr );
         }
     }
 
@@ -139,6 +135,7 @@ namespace noRestForTheQuery {
             speed = (float)(FinalGame.rand.Next(2, 3) + FinalGame.rand.NextDouble());
         }
     }
+
     class Exam : Assignment {
         public int durability;
         public Exam(Vector2 position, Vector2 origin, Vector2 velocity ) :
@@ -158,21 +155,4 @@ namespace noRestForTheQuery {
         }
 
     }
-    //class Final : DamagableObject {
-    //    public Final(Vector2 position, Vector2 origin, Vector2 velocity, float speed ) :
-    //        base(position, origin, velocity, speed, FinalGame.finalSprite.Width, FinalGame.finalSprite.Height) {
-    //        // Values Already Assigned To: 
-    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-    //        //      DamagableObject - int currentHealth, int fullHealth, int attackPower;
-    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-
-    //        fullHealth = 200 * FinalGame.gameLevel;
-    //        currentHealth = fullHealth;
-    //        attackPower = 50 * FinalGame.gameLevel;
-
-    //        // Assign Values to Local Members
-
-    //    }
-    //    public void update( float x, float y ) { }
-    //}
 }

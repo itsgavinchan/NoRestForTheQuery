@@ -21,6 +21,7 @@ namespace noRestForTheQuery {
             this.attackPower = attackPower;
         }
     }
+
     class Pencil : Missile {
 
         public Pencil(int attackPower, Vector2 position, Vector2 origin, float speed, float rotation ) :
@@ -49,6 +50,7 @@ namespace noRestForTheQuery {
                 Matrix.CreateTranslation(new Vector3(this.position, 0.0f));
         }
     } 
+
     class Marker : Missile {
         public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed, float rotation ) :
             base(attackPower, position, origin, velocity, speed, FinalGame.markerSprite.Width, FinalGame.markerSprite.Height) {
@@ -56,9 +58,6 @@ namespace noRestForTheQuery {
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             //      Missle - attackPower
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-            //this.rotation = rotation;
-            //velocity.X = (float)Math.Cos(rotation) * speed;
-            //velocity.Y = (float)Math.Sin(rotation) * speed;
 
             // Assign Values to Local Members
             this.rotation = rotation;
@@ -95,9 +94,10 @@ namespace noRestForTheQuery {
             // Values Already Assigned To: 
             //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
             // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
+
+            // Assign Values to Local Members
             this.rotation = (float)FinalGame.rand.NextDouble() * MathHelper.TwoPi;
             this.rotSpeed = 0.04F;
-            // Assign Values to Local Members
             numOfNotebook = 3;
             maxBooks = 3;
         }
@@ -116,24 +116,4 @@ namespace noRestForTheQuery {
             isAlive = true;
         }
     }
-
-
-
-    //class PopQuizzes : Missile {
-    //    public Marker(int attackPower, Vector2 position, Vector2 origin, Vector2 velocity, float speed) :
-    //        base(attackPower, position, origin, velocity, speed) {
-    //        // Values Already Assigned To: 
-    //        //      GameObject - bool isAlive, Vector2 position, Vector2 origin, Vector2 velocity, float speed
-    //        //      Missle - attackPower
-    //        // Empty Values To Be Assigned: Color[] colorArr, float rotation, float rotSpeed
-
-
-    //        // Assign Values to Local Members
-
-    //    }
-    //    // Update the Position And/Or Velocity
-    //    public void update() {
-
-    //    }
-    //}
 }
