@@ -87,6 +87,7 @@ namespace noRestForTheQuery {
                                  (int)(boundaryBotRight.X - boundaryTopLeft.X),  //Boundary width
                                  (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
         }
+
         public void handleCollision( GameObject other ){
             Rectangle otherBoundary, objBoundary;
             
@@ -104,6 +105,7 @@ namespace noRestForTheQuery {
             }
             
         }
+
         public bool isHit(GameObject other) {
     
             //Map pixels of the other object to this object
@@ -185,6 +187,7 @@ namespace noRestForTheQuery {
                                  (int)(boundaryBotRight.X - boundaryTopLeft.X),  //Boundary width
                                  (int)(boundaryBotRight.Y - boundaryTopLeft.Y)); //Boundary height
         }
+
         public void searchFor(GameObject other) {
             Rectangle otherBoundary, objBoundary;
             
