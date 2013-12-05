@@ -116,7 +116,5 @@ namespace noRestForTheQuery {
                                            width * height );
             
         }
-
-
     }
 }

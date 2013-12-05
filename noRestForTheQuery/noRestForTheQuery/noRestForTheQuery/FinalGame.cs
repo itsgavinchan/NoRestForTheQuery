@@ -230,37 +230,6 @@ namespace noRestForTheQuery
 
         }
         protected override void UnloadContent() { }
-        public void updatePosition() {
-            if (currentStatus == (int)ScreenStatus.WEEKDAY) {
-                // Update Position to Keep Still - StatsBar
-                levelPos.X = 105 + screenOffset;
-                budgetPos.X = 255 + screenOffset;
-                ammoPos.X = 462 + screenOffset;
-                shieldPos.X = 628 + screenOffset;
-                healthPos.X = 161 + screenOffset;
-                sanityPos.X = 148 + screenOffset;
-                expPos.X = 135 + screenOffset;
-                statsPos.X = screenOffset;
-                blockadePos.X = WINDOW_WIDTH - sanityBlockade + screenOffset;
-            }
-            else if (currentStatus == (int)ScreenStatus.WEEKEND && staticScreenTrigger) {
-                for (int i = 0; i < weekendPositions.Count(); i++) {
-                    weekendPositions[i].X = 160 + screenOffset;
-                }
-                quantityPos.X = 850 + screenOffset;
-                pencilOption.X = 790 + screenOffset;
-                shieldOption.X = 790 + screenOffset;
-                minusPos.X = 795 + screenOffset;
-                plusPos.X = 1010 + screenOffset;
-                submitPos.X = 780 + screenOffset;
-                remainingPos.X = 910 + screenOffset;
-                spendingPos.X = 960 + screenOffset;
-            }
-            else if (currentStatus == (int)ScreenStatus.GAMEOVER && staticScreenTrigger) {
-                gameOverPos.X += screenOffset;
-                gameOverContPos.X += screenOffset;
-            }
-        }
         protected override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -268,7 +237,7 @@ namespace noRestForTheQuery
             mouseX = Mouse.GetState().X + screenOffset; 
             mouseY = Mouse.GetState().Y;
 
-            // Implements the different screen stages -  START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY
+            // Implements the different screen stages -  START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY, WIN
 
             #region Static screens
 
@@ -277,6 +246,7 @@ namespace noRestForTheQuery
             if (IsActive && currentStatus == (int)ScreenStatus.START){
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && lastKeyState.IsKeyUp(Keys.Space)) { currentStatus = (int)ScreenStatus.INTRODUCTION; }
             }
+
             // INTRODUCTION SCREEN - Explains the Story and Rules of Game
             // Pressing Space will proceed to the Start of Game - Weekday Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
@@ -286,18 +256,21 @@ namespace noRestForTheQuery
                     currentStatus = (int)ScreenStatus.WEEKDAY; 
                 }
             }
+
             // PAUSE SCREEN - Provides option to pause the screen; may implement SAVE, QUIT GAME, RESTART LEVEL in future iterations
             // Press Backspace to resume the game in Weekday Stage (Pause Stage can only be accessed from Weekday Stage)
             else if (IsActive && currentStatus == (int)ScreenStatus.PAUSE) {
                 if (staticScreenTrigger) staticScreenTrigger = false;
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) { currentStatus = (int)ScreenStatus.WEEKDAY; }
             }
+
             // STATUS SCREEN - Displays the status of the player; not yet implemented; a testing screen to be removed at final implementation
             // Pressing Space will proceed back to the Weekend Stage (Status Stage can only be accessed from Weekend Stage)
             else if (IsActive && currentStatus == (int)ScreenStatus.STATUS) {
                 if (staticScreenTrigger) staticScreenTrigger = false;
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) { currentStatus = (int)ScreenStatus.WEEKEND; }
             }
+
             // GAME OVER SCREEN
             // Pressing R Key will restart the game from the beginning - Start Screen
             else if (IsActive && currentStatus == (int)ScreenStatus.GAMEOVER) {
@@ -325,13 +298,14 @@ namespace noRestForTheQuery
 
             #endregion
 
-            // WEEKEND SCREEN
+            #region WEEKEND SCREEN
             // Left-Clicking will allow you to choose three of the five options - SLEEP, STUDY, FOOD, STORE, RELAX=
             // Pressing Enter will execute your choices and provide you the boosts, but only if you select the maximum amount of choices
                 // If you attempt to choose one more than the maximum amount of allowed choices, the first choice will be removed and 
                 // replaced with the latest choice. This will not give the player an option to choose less or more than the maximum amount 
                 // of allowed choices.
-            // Pressing Space will lead you to the Status Screen
+            // Pressing Back will lead you to the Status Screen
+
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
 
                 int numRepairing = 0;
@@ -415,10 +389,16 @@ namespace noRestForTheQuery
                 }
             }
 
+            #endregion
 
-            // WEEKDAY SCREEN - Where the Action Happens and You Die (A Lot); Currently In Testing
+            #region WEEKDAY SCREEN
+            // Where the Action Happens and You Die (A Lot)
             // While the game is active and in the Weekday Stage, homework will continually be spawned
-            else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
+
+            else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY)
+            {
+
+                #region Sanity Control
 
                 sanityTime -= gameTime.ElapsedGameTime.Milliseconds;
                 if (sanityTime < 0 ) {
@@ -434,10 +414,14 @@ namespace noRestForTheQuery
                     }
                 }
 
+                #endregion
+
                 #region Stage Controls
 
+                //Reset Game
                 if (Keyboard.GetState().IsKeyDown(Keys.R)) { reset(); }
 
+                //Load last save
                 if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
                     reset();
                     checkSaves();
@@ -445,43 +429,16 @@ namespace noRestForTheQuery
                     currentStatus = (int)ScreenStatus.WEEKDAY;
                 }
 
-                
-                // TEST - Progression to Next Level
-                if (Keyboard.GetState().IsKeyDown(Keys.N) && lastKeyState.IsKeyUp(Keys.N)) {
-                    softReset();
-                    if (gameLevel < MAXLEVELS) gameLevel++;
-                    currentLevelFile = "../../../Layouts/level" + gameLevel + ".txt";
-                    buildLevel(ref platforms, ref student, ref homeworks);
-                }
-                
-
-                // TEST - Controls for Camera Movement
-                if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(2, 0, 0));
-                    screenOffset -= 2;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
-                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
-                    screenOffset += 2;
+                // GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
+                if ( student.currentHealth <= 0  || 
+                    (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || 
+                    student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
+                        staticScreenTrigger = true;
+                        student.isAlive = false; 
+                        currentStatus = (int)ScreenStatus.GAMEOVER; 
                 }
 
-                // TEST - Initiate GAMEOVER Stage; CHECK DEATH - Student dies if goes off-screen to the left or jumps off a platform
-                if ( student.currentHealth <= 0 /*|| Keyboard.GetState().IsKeyDown(Keys.Q)*/ || (student.isAlive && (student.position.X < screenOffset - studentSprite.Width * 2 || student.position.Y > WINDOW_HEIGHT + studentSprite.Height))) {
-                    staticScreenTrigger = true;
-                    student.isAlive = false; 
-                    currentStatus = (int)ScreenStatus.GAMEOVER; 
-                }
-
-                /*
-                // TEST - Initiate WEEKEND Stage
-                if (Keyboard.GetState().IsKeyDown(Keys.U)) {
-                    staticScreenTrigger = true;
-                    // Transitions to WEEKEND Stage
-                    currentStatus = (int)ScreenStatus.WEEKEND;
-                }
-                */
-
-                // TEST - Initiate PAUSE Stage
+                // Initiate PAUSE Stage
                 if (Keyboard.GetState().IsKeyDown(Keys.Back) && lastKeyState.IsKeyUp(Keys.Back)) {
                     currentStatus = (int)ScreenStatus.PAUSE;
                 }
@@ -489,7 +446,6 @@ namespace noRestForTheQuery
                 #endregion
 
                 #region Player Controls
-                // if (Keyboard.GetState().IsKeyDown(Keys.J) && lastKeyState.IsKeyUp(Keys.J)) { writeSaves();  }
 
                 // PLAYER CONTROL - Jump
                 if (Keyboard.GetState().IsKeyDown(Keys.W) && lastKeyState.IsKeyUp(Keys.W) && !student.jumping && student.onGround) { student.jump(); }
@@ -517,192 +473,180 @@ namespace noRestForTheQuery
 
                 #endregion
 
-                #region Professor (test) controls
-                
-                // TEST - Professor Appearance
-                if (Keyboard.GetState().IsKeyDown(Keys.P) && lastKeyState.IsKeyUp(Keys.P)) {
-                    if (!professors[gameLevel - 1].isAlive) { professors[gameLevel - 1].isAlive = !professors[gameLevel - 1].isAlive; }
-                    else { professors[gameLevel - 1].reset(); }
-                }
-
-
-                // TEST - Professor Attack
-                if (Keyboard.GetState().IsKeyDown(Keys.L) && lastKeyState.IsKeyUp(Keys.L)) {
-                    if (professors[gameLevel - 1].isAlive) {
-                        double x = ((student.position.X + studentSprite.Width / 2) - (professors[gameLevel - 1].position.X + professorSprite.Width / 2));
-                        double y = ((student.position.Y + studentSprite.Height / 2) - (professors[gameLevel - 1].position.Y + professorSprite.Height / 2));
-                        professors[gameLevel - 1].shoot(x, y);
-                    }
-                }
-
-                #endregion
-
                 #region Position update and collision testing
 
-                //Professor appearance on stage
-                if (!professors[gameLevel - 1].isAlive) {
-                    for (int i = 0; i < triggers.Count(); i++) {
-                        if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
-                            professors[gameLevel - 1].isAlive = true;
+                    #region Professor appearance
+
+                        if (!professors[gameLevel - 1].isAlive) {
+                            for (int i = 0; i < triggers.Count(); i++) {
+                                if (checkOverlap(student.position, studentSprite.Width, studentSprite.Height, triggers[i].position, platformSprite.Width, platformSprite.Height)) {
+                                    professors[gameLevel - 1].isAlive = true;
+                                }
+                            }
                         }
-                    }
-                }
-                else {
-                    professorTime -= gameTime.ElapsedGameTime.Milliseconds;
+                        else {
+                            professorTime -= gameTime.ElapsedGameTime.Milliseconds;
                     
-                    if (professorTime < 0) {
-                        professors[gameLevel - 1].isAlive = false;
-                        professorTime = PROFESSOR_TIME * gameLevel;
-                        student.sanity -= 0.005;
-                    }
+                            if (professorTime < 0) {
+                                professors[gameLevel - 1].isAlive = false;
+                                professorTime = PROFESSOR_TIME * gameLevel;
+                                student.sanity -= 0.005;
+                            }
 
-                    //Professor attack implemented w/ spotlight, so this is commented out as a backup
-                    // if (sanityTime % 6 == 0 && student.sanity <= SANITYTRIGGER && sanityBlockade < blockadeSprite.Width ) sanityBlockade+=3;
-                    //if (professorTime % 600 == 0) {
-                    //    double x = ((student.position.X + studentSprite.Width / 2) - (professors[gameLevel - 1].position.X + professorSprite.Width / 2));
-                    //    double y = ((student.position.Y + studentSprite.Height / 2) - (professors[gameLevel - 1].position.Y + professorSprite.Height / 2));
-                    //    professors[gameLevel - 1].shoot(x, y);
-                    //}
-
-                }
-
-
-                // POSITION UPDATE - Student
-                student.update();
-
-
-                int index = 0;
-                // POSITION UPDATE - Student's Ammo (Pencils)
-                while (index < student.pencils.Count()) {
-                    student.pencils[index].update();
-                    if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
-                    else { index++; }
-                }
-
-
-                // POSITION UPDATE - Professor and Their Ammo (Markers)
-                //if (professors[gameLevel - 1].isAlive) { 
-                index = 0;
-                professors[gameLevel - 1].update( student, gameTime );
-                while (index < professors[gameLevel - 1].markers.Count()) {
-                    professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
-                    if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
-                    else { index++; }
-                }
-                //}
-
-
-                // POSITION AND COLLISION UPDATE - Homeworks
-                index = 0;
-                while (index < homeworks.Count()) {
-                    homeworks[index].update( student.position.X+student.origin.X, student.position.Y+student.origin.Y );
-
-                    int i = 0;
-                    while (i < student.pencils.Count() ) {
-                        homeworks[index].handleCollision(student.pencils[i]);
-                        if (homeworks[index].hit) { break; }
-                        i++;
-                    }
-
-                    if (homeworks[index].hit) { 
-                        homeworks[index].decrementHealth( student.attackPower );
-                        student.pencils.RemoveAt(i);
-                        homeworks[index].hit = false;
-                    }
-
-                    student.handleCollision(homeworks[index]);
-
-                    if (student.hit) {
-                        if (!lostHealth) {
-                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
-                            else { student.decrementHealth( homeworks[index].attackPower );  }
-                            homeworks[index].isAlive = false;
-                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
                         }
-                    }
 
-                    //if (homeworks[index].checkBoundaries(homeworkSprite.Width, homeworkSprite.Height) ) { homeworks.RemoveAt(index); }
-                    if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
-                    else { index++; }
-                }
+                    #endregion
 
+                    // POSITION UPDATE - Student
+                    student.update();
 
-                // POSITION AND COLLISION UPDATE - Exams
-                index = 0;
-                while (index < exams.Count()) {
-                    exams[index].update(student.position.X + student.origin.X, student.position.Y + student.origin.Y);
+                    int index = 0;
+                    #region POSITION UPDATE - Student's Ammo (Pencils)
 
-                    int i = 0;
-                    while (i < student.pencils.Count()) {
-                        exams[index].handleCollision(student.pencils[i]);
-                        if (exams[index].hit) { break; }
-                        i++;
-                    }
-
-                    if (exams[index].hit) {
-                        exams[index].decrementHealth(student.attackPower);
-                        student.pencils.RemoveAt(i);
-                        exams[index].hit = false;
-                    }
-
-                    student.handleCollision(exams[index]);
-
-                    if (student.hit) {
-                        if (!lostHealth) {
-                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
-                            else { student.decrementHealth( exams[index].attackPower ); }
-                            exams[index].durability--;
-                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                        while (index < student.pencils.Count()) {
+                            student.pencils[index].update();
+                            if (student.pencils[index].checkBoundaries(pencilSprite.Width, pencilSprite.Height)) { student.pencils.RemoveAt(index); }
+                            else { index++; }
                         }
-                    }
 
-                    if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; examEncounter = false; }
-                    //if (exams[index].checkBoundaries(examsprite.Width, examsprite.Height) ) { exams.RemoveAt(index); }
-                    if (!exams[index].isAlive) {
-                        
-                        exams.RemoveAt(index); 
-                        student.gainExperience();
-                        
-                    }
-                    else { index++; }
-                }
+                    #endregion
 
+                    #region POSITION UPDATE - Professor and Their Ammo (Markers)
 
-                // POSITION UPDATE - Camera
-                for (int i = 0; i < exams.Count(); i++) {
-                    if ( WINDOW_WIDTH + screenOffset >= exams[i].position.X + examSprite.Width) {
-                        examEncounter = true;
-                    }
-                }
-
-                if (!examEncounter) { 
-                    translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
-                    screenOffset += 2;
-                }
-
-                // COLLISION UPDATE - Check if student hit by marker, but check first if professor is present and if they even have markers
-                if (professors[gameLevel - 1].isAlive /*&& professors[gameLevel - 1].markers.Count() > 0 */) { 
-                    index = 0;
-
-                    while ( index < professors[gameLevel - 1].markers.Count()) {
-                        student.handleCollision( professors[gameLevel-1].markers[index] );
-                        if( student.hit ){ break; }
-                        index++;
-                    }
-
-                    if( student.hit ){
-                        if (!lostHealth) {
-                            if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
-                            else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
-                            lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                        index = 0;
+                        professors[gameLevel - 1].update( student, gameTime );
+                        while (index < professors[gameLevel - 1].markers.Count()) {
+                            professors[gameLevel - 1].markers[index].update(student.position.X + studentSprite.Width / 2, student.position.Y + studentSprite.Height / 2);
+                            if (professors[gameLevel - 1].markers[index].checkBoundaries(markerSprite.Width, markerSprite.Height)) { professors[gameLevel - 1].markers.RemoveAt(index); }
+                            else { index++; }
                         }
-                    }
-                }
+
+                    #endregion
+
+                    #region POSITION AND COLLISION UPDATE - Homeworks
+
+                        index = 0;
+                        while (index < homeworks.Count()) {
+                            homeworks[index].update( student.position.X+student.origin.X, student.position.Y+student.origin.Y );
+
+                            int i = 0;
+                            while (i < student.pencils.Count() ) {
+                                homeworks[index].handleCollision(student.pencils[i]);
+                                if (homeworks[index].hit) { break; }
+                                i++;
+                            }
+
+                            if (homeworks[index].hit) { 
+                                homeworks[index].decrementHealth( student.attackPower );
+                                student.pencils.RemoveAt(i);
+                                homeworks[index].hit = false;
+                            }
+
+                            student.handleCollision(homeworks[index]);
+
+                            if (student.hit) {
+                                if (!lostHealth) {
+                                    if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                                    else { student.decrementHealth( homeworks[index].attackPower );  }
+                                    homeworks[index].isAlive = false;
+                                    lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                                }
+                            }
+
+                            if (!homeworks[index].isAlive) { homeworks.RemoveAt(index); student.gainExperience(); hwKilled++;  }
+                            else { index++; }
+                        }
+
+                    #endregion
+
+                    #region POSITION AND COLLISION UPDATE - Exams
+                    
+                        index = 0;
+                        while (index < exams.Count()) {
+                            exams[index].update(student.position.X + student.origin.X, student.position.Y + student.origin.Y);
+
+                            int i = 0;
+
+                            //Check if exams were hit by student pencils
+                            while (i < student.pencils.Count()) {
+                                exams[index].handleCollision(student.pencils[i]);
+                                if (exams[index].hit) { break; }
+                                i++;
+                            }
+
+                            //If yes, decrement exam health and reset their hit variable
+                            if (exams[index].hit) {
+                                exams[index].decrementHealth(student.attackPower);
+                                student.pencils.RemoveAt(i);
+                                exams[index].hit = false;
+                            }
+
+                            //May as well check if students were hit by exams
+                            student.handleCollision(exams[index]);
+
+                            //If they were, decrement student health and reduce exam durability
+                            if (student.hit) {
+                                if (!lostHealth) {
+                                    if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                                    else { student.decrementHealth( exams[index].attackPower ); }
+                                    exams[index].durability--;
+                                    lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                                }
+                            }
+
+                            if (exams[index].currentHealth <= 0 || exams[index].durability == 0) { exams[index].isAlive = false; examEncounter = false; }
+
+                            if (!exams[index].isAlive) {
+                                exams.RemoveAt(index); 
+                                student.gainExperience();
+                            }
+                            else { index++; }
+                        }
+
+                    #endregion
+
+                    #region POSITION UPDATE - Camera
+
+                        for (int i = 0; i < exams.Count(); i++) {
+                            if ( WINDOW_WIDTH + screenOffset >= exams[i].position.X + examSprite.Width) {
+                                examEncounter = true;
+                            }
+                        }
+
+                        if (!examEncounter) { 
+                            translation *= Matrix.CreateTranslation(new Vector3(-2, 0, 0));
+                            screenOffset += 2;
+                        }
+
+                    #endregion
+
+                    #region COLLISION UPDATE - Student and Professor Markers
+
+                        if (professors[gameLevel - 1].isAlive) { 
+                            index = 0;
+
+                            while ( index < professors[gameLevel - 1].markers.Count()) {
+                                student.handleCollision( professors[gameLevel-1].markers[index] );
+                                if( student.hit ){ break; }
+                                index++;
+                            }
+
+                            if( student.hit ){
+                                if (!lostHealth) {
+                                    if (student.notebook.numOfNotebook > 0) { student.notebook.isDamaged(); }
+                                    else { student.decrementHealth( professors[gameLevel-1].attackPower );  }
+                                    lostHealth = true; //lostHealth is set to false in handleInvulTime function
+                                }
+                            }
+                        }
+
+                    #endregion
 
                 #endregion
 
-                // BOOK-KEEPING
-                    updatePosition();
+                #region BOOK-KEEPING
+
+                updatePosition();
                 handleSpriteMovement(ref student.sprite);
                 handleStudentPlatformCollision( platforms );
                 handleStudentPlatformCollision( hiddenPlatforms );
@@ -714,7 +658,11 @@ namespace noRestForTheQuery
 
                 if (lastKeyState.IsKeyUp(Keys.Left) || lastKeyState.IsKeyUp(Keys.Right)) { student.velocity.X = 0; }
 
+                #endregion
+
             }
+
+            #endregion
 
             lastKeyState = Keyboard.GetState();
             lastMouseState = Mouse.GetState();
@@ -724,7 +672,7 @@ namespace noRestForTheQuery
             GraphicsDevice.Clear(Color.Gray);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, translation);
 
-            // Displays the different screen stages - START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY
+            // Displays the different screen stages - START, INTRODUCTION, PAUSE, STATUS, GAMEOVER, WEEKEND, WEEKDAY, WIN
 
             #region Static screens
 
@@ -775,9 +723,10 @@ namespace noRestForTheQuery
                 spriteBatch.DrawString(mainFont, winContMessage, winContMsgPos, Color.White);
             }
 
-            // WEEKEND SCREEN
-            // Temporary implementation; actual UI will be different. Selected choices will be brown and unselected choices will be red. 
-            // Hovering over a choice will show the choice as black. 
+            #endregion
+
+            #region WEEKEND SCREEN
+
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKEND) {
                 spriteBatch.Draw(weekEndBGSprite, statsPos, Color.White);
                 spriteBatch.Draw(plansSprite, statsPos, Color.White);
@@ -796,7 +745,8 @@ namespace noRestForTheQuery
 
             #endregion
 
-            // WEEKDAY SCREEN
+            #region WEEKDAY SCREEN
+
             else if (IsActive && currentStatus == (int)ScreenStatus.WEEKDAY) {
 
                 // Platform Display
@@ -864,9 +814,7 @@ namespace noRestForTheQuery
                 }
 
                 // SANITY CONTROL
-                //if (student.sanity <= SANITYTRIGGER) {
-                    spriteBatch.Draw(blockadeSprite, blockadePos, Color.White);
-                //}
+                spriteBatch.Draw(blockadeSprite, blockadePos, Color.White);
                 
                 // Display stats
                 spriteBatch.Draw(statSprite, statsPos, Color.White);
@@ -882,11 +830,44 @@ namespace noRestForTheQuery
                 else if (gameLevel == 3) spriteBatch.DrawString(mainFont, "Jr", levelPos, Color.Black);
                 else if (gameLevel == 4) spriteBatch.DrawString(mainFont, "Sr", levelPos, Color.Black);
             }
-            
+
+            #endregion
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
-
+        
+        public void updatePosition() {
+            if (currentStatus == (int)ScreenStatus.WEEKDAY) {
+                // Update Position to Keep Still - StatsBar
+                levelPos.X = 105 + screenOffset;
+                budgetPos.X = 255 + screenOffset;
+                ammoPos.X = 462 + screenOffset;
+                shieldPos.X = 628 + screenOffset;
+                healthPos.X = 161 + screenOffset;
+                sanityPos.X = 148 + screenOffset;
+                expPos.X = 135 + screenOffset;
+                statsPos.X = screenOffset;
+                blockadePos.X = WINDOW_WIDTH - sanityBlockade + screenOffset;
+            }
+            else if (currentStatus == (int)ScreenStatus.WEEKEND && staticScreenTrigger) {
+                for (int i = 0; i < weekendPositions.Count(); i++) {
+                    weekendPositions[i].X = 160 + screenOffset;
+                }
+                quantityPos.X = 850 + screenOffset;
+                pencilOption.X = 790 + screenOffset;
+                shieldOption.X = 790 + screenOffset;
+                minusPos.X = 795 + screenOffset;
+                plusPos.X = 1010 + screenOffset;
+                submitPos.X = 780 + screenOffset;
+                remainingPos.X = 910 + screenOffset;
+                spendingPos.X = 960 + screenOffset;
+            }
+            else if (currentStatus == (int)ScreenStatus.GAMEOVER && staticScreenTrigger) {
+                gameOverPos.X += screenOffset;
+                gameOverContPos.X += screenOffset;
+            }
+        }
         public bool checkMouseOverlap(Vector2 position, int width, int height) {
             if (mouseX > position.X && mouseX < position.X + width && mouseY > position.Y && mouseY < position.Y + height) { return true; }
             else { return false; }
@@ -1113,10 +1094,6 @@ namespace noRestForTheQuery
         private void writeSaves(){
             string[] lines = { 
                                 "gameLevel=" + gameLevel,
-                                //"offset=" + screenOffset,                     //Easier to save just before entering next level.
-                                //"translation=" + translation,                 //If we allow saves mid-level, we have to keep track
-                                //"student.position.X=" + student.position.X,   //of enemies as well
-                                //"student.position.Y=" + student.position.Y,
                                 "currentHealth=" + student.currentHealth,
                                 "fullHealth=" + student.fullHealth,
                                 "attackPower=" + student.attackPower,
