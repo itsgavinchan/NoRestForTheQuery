@@ -54,6 +54,9 @@ namespace noRestForTheQuery
             "paying tuition to be and get ready to sweat blood. Good luck, young",
             "programmer. May you survive this hurdle intact and graduate (on time).",
             "",
+            "Goal: Defeat the Homework to Get EXP and increase your attack power.",
+            "Tackle down the exams to progress the screen. Pray you're still sane then.",
+            "Reach the end of the stage and pass through the green boxes.",
             "Press Space to Proceed."
             };
 
@@ -737,7 +740,7 @@ namespace noRestForTheQuery
             else if (IsActive && currentStatus == (int)ScreenStatus.INTRODUCTION) {
                 spriteBatch.Draw(controlsIntro, Vector2.Zero, Color.White);
                 for (int i = 0; i < introMessage.Count(); i++) {
-                    spriteBatch.DrawString(mainFont, introMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(introMessage[i]).X / 2, i * 25 + 100), Color.White);
+                    spriteBatch.DrawString(mainFont, introMessage[i], new Vector2(WINDOW_WIDTH / 2 - mainFont.MeasureString(introMessage[i]).X / 2, i * 25 + 50), Color.White);
                 }
             }
 

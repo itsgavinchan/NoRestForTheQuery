@@ -8,7 +8,6 @@ Content\Sprites\professor.xnb
 Content\Sprites\platform.xnb
 Content\Sprites\player.xnb
 Content\Sprites\simplePlayerSheet.xnb
-Content\Sprites\menuItem01.xnb
 Content\Sprites\identification.xnb
 Content\Sprites\statsbar.xnb
 Content\Sprites\filler.xnb
