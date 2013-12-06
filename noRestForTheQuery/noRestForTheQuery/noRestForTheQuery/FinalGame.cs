@@ -352,6 +352,7 @@ namespace noRestForTheQuery
                             else if (numRepairing > student.notebook.maxBooks) { numRepairing = student.notebook.maxBooks; }
                             if (numRepairing * SHIELDCOST + pencilPurchasing * PENCILCOST > student.budget) {
                                 numRepairing = (student.budget - (int)(pencilPurchasing * PENCILCOST) ) / SHIELDCOST;
+                                if (numRepairing == 0) shieldCheck = false;
                             }
                         }
                         
@@ -362,7 +363,10 @@ namespace noRestForTheQuery
                             else if (chosenChoices[i] == (int)WeekendChoices.SLEEP) { student.sleepEffect(); }
                             else if (chosenChoices[i] == (int)WeekendChoices.STUDY) { student.studyEffect(); }
                             else if (chosenChoices[i] == (int)WeekendChoices.FOOD) { student.foodEffect(); }
-                            else if (chosenChoices[i] == (int)WeekendChoices.RELAX) { student.socialEffect(); }
+                            else if (chosenChoices[i] == (int)WeekendChoices.RELAX) { 
+                                student.socialEffect();
+                                sanityBlockade = (WINDOW_WIDTH / 2) * (float)(1 - student.sanity);
+                            }
                             else if (chosenChoices[i] == (int)WeekendChoices.STORE) { 
                                 student.amtPencil += pencilPurchasing;
                                 student.budget -= (int)(pencilPurchasing * PENCILCOST);

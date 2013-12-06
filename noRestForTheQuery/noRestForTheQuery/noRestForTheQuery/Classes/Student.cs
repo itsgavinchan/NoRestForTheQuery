@@ -69,12 +69,11 @@ namespace noRestForTheQuery {
 
         // Weekend Option Effects
         public void studyEffect() { attackPower += FinalGame.gameLevel * 5; }
-        public void sleepEffect() { fullHealth += FinalGame.SLEEPINCREMENT; }
+        public void sleepEffect() { fullHealth += FinalGame.SLEEPINCREMENT; currentHealth += FinalGame.SLEEPINCREMENT; }
         public void foodEffect() { currentHealth = fullHealth; }
         public void socialEffect() {
             double increaseAmt = FinalGame.rand.NextDouble() * 0.5;
-            if (increaseAmt <= 0.2) { increaseAmt = 0.2; }
-            else if (increaseAmt >= 0.4) { increaseAmt = 0.4; }
+            if (increaseAmt <= 0.3) { increaseAmt = 0.3; }
             sanity += increaseAmt;
             if (sanity > 1.0) { sanity = 1.0; }
         }
