@@ -6,5 +6,5 @@ No Rest For The Query is a 2D action side-scroller, developed by a two-person te
 
 ### Screenshots
 ![Screenshot 01](/nrftq01.jpg?raw=true "Image of Instructions")
-![Screenshot 02](/nrftq01.jpg?raw=true "Image of Gameplay")
-![Screenshot 03](/nrftq01.jpg?raw=true "Image of Market System")
+![Screenshot 02](/nrftq02.jpg?raw=true "Image of Gameplay")
+![Screenshot 03](/nrftq03.jpg?raw=true "Image of Market System")
